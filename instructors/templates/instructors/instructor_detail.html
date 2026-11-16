@@ -6,12 +6,13 @@
 {% block content %}
 <div class="profile-layout">
   <section class="profile-main" aria-labelledby="instructor-name">
-    <a class="back-link" href="{% url 'instructors:list' %}">&larr; All instructors</a>
+    <a class="back-link" href="{% url 'core:home' %}">&larr; Home</a>
 
     <header class="instructor-header">
       {% include "includes/instructor_avatar.html" with size="xl" %}
       <div>
         <h1 id="instructor-name">{{ instructor.display_name }}</h1>
+        <p class="qualification-badge">{{ instructor.get_qualification_display }}</p>
         {% if instructor.tagline %}<p class="lede">{{ instructor.tagline }}</p>{% endif %}
         <p class="rating-line">
           {% if review_count %}
@@ -95,6 +96,7 @@
       <p class="muted">You're logged in as an instructor.</p>
     {% elif instructor.is_accepting_pupils %}
       <a class="button button-accent button-block button-lg" href="{% url 'bookings:create' instructor.slug %}">Book a lesson</a>
+      <a class="button button-ghost button-block" href="{% url 'packages:list' %}">Save with a package</a>
       <p class="fine-print">Free cancellation up to 24 hours before. Secure card payment by Stripe.</p>
     {% else %}
       <p class="status-pill status-muted">Not taking new bookings</p>

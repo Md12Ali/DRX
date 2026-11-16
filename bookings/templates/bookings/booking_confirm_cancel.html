@@ -6,7 +6,9 @@
 <section class="form-card confirm-card" aria-labelledby="cancel-title">
   <h1 id="cancel-title">Cancel this lesson?</h1>
   <p><strong>{{ booking.start|date:"l j F, H:i" }}</strong> with {{ booking.instructor.display_name }} ({{ booking.reference }}).</p>
-  {% if booking.status == "confirmed" %}
+  {% if booking.status == "confirmed" and booking.paid_with_package %}
+    <p><strong>{{ booking.hours_label }}</strong> will go back into your package.</p>
+  {% elif booking.status == "confirmed" %}
     <p>You'll get a full refund of <strong>{{ booking.price_display }}</strong> to your card.</p>
   {% else %}
     <p>You haven't paid for this lesson, so nothing will be charged.</p>

@@ -8,7 +8,7 @@
   <h1>Hi {{ user.first_name|default:user.username }}</h1>
 </div>
 
-<div class="dashboard-grid">
+<div class="dashboard-grid dashboard-grid-3">
   <section class="panel panel-dark" aria-labelledby="next-title">
     <h2 id="next-title">Next lesson</h2>
     {% if next_lesson %}
@@ -18,7 +18,7 @@
       <a class="button button-accent" href="{{ next_lesson.get_absolute_url }}">View lesson</a>
     {% else %}
       <p>You don't have a confirmed lesson coming up.</p>
-      <a class="button button-accent" href="{% url 'instructors:list' %}">Book a lesson</a>
+      <a class="button button-accent" href="{% if main_instructor %}{% url 'bookings:create' main_instructor.slug %}{% else %}{% url 'instructors:list' %}{% endif %}">Book a lesson</a>
     {% endif %}
   </section>
 
@@ -30,12 +30,19 @@
     <p class="muted">{{ hours_driven|floatformat:"-1" }} hour{{ hours_driven|pluralize }} driven · {{ progress.rated_count }} of {{ progress.skill_count }} skills started</p>
     <a href="{% url 'progress:mine' %}">See every skill &rarr;</a>
   </section>
+
+  <section class="panel panel-amber" aria-labelledby="hours-title">
+    <h2 id="hours-title">Package hours</h2>
+    <p class="score-big score-dark">{{ package_hours }}<span> hours</span></p>
+    <p>Use them when you book, or top up and save.</p>
+    <a class="button button-dark button-small" href="{% url 'packages:list' %}">Buy a package</a>
+  </section>
 </div>
 
 <section class="panel" aria-labelledby="upcoming-title">
   <div class="section-heading-row">
     <h2 id="upcoming-title">Upcoming</h2>
-    <a class="button button-dark button-small" href="{% url 'instructors:list' %}">Book another lesson</a>
+    <a class="button button-dark button-small" href="{% if main_instructor %}{% url 'bookings:create' main_instructor.slug %}{% else %}{% url 'instructors:list' %}{% endif %}">Book another lesson</a>
   </div>
   {% if upcoming %}
     <ul class="booking-list">

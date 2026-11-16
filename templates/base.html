@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="{% block meta_description %}DRX: book driving lessons online with DVSA-approved instructors in East London. Pick a time, pay securely, and track your progress to test day.{% endblock %}">
+  <meta name="description" content="{% block meta_description %}Driving lessons in East London (E1, E2, E3, E8, E9, E14, EC1, EC2, N1). £35 an hour, money-saving packages, online booking and secure card payment.{% endblock %}">
   <title>{% block title %}Driving lessons{% endblock %} · DRX</title>
   <link rel="icon" href="{% static 'images/favicon.svg' %}" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,12 +35,17 @@
           <li><a href="{{ current_instructor.get_absolute_url }}"{% if app == 'instructors' and current == 'detail' %} aria-current="page"{% endif %}>Public profile</a></li>
           <li><a href="{% url 'instructors:edit' %}"{% if current == 'edit' and app == 'instructors' %} aria-current="page"{% endif %}>Edit profile</a></li>
         {% else %}
-          <li><a href="{% url 'instructors:list' %}"{% if app == 'instructors' %} aria-current="page"{% endif %}>Instructors</a></li>
-          <li><a href="{% url 'core:about' %}"{% if current == 'about' %} aria-current="page"{% endif %}>How it works</a></li>
+          {% if main_instructor %}
+            <li><a href="{{ main_instructor.get_absolute_url }}"{% if app == 'instructors' %} aria-current="page"{% endif %}>About me</a></li>
+          {% endif %}
+          <li><a href="{% url 'packages:list' %}"{% if app == 'packages' %} aria-current="page"{% endif %}>Prices</a></li>
+          <li><a href="{% url 'core:home' %}#areas">Areas</a></li>
           {% if user.is_authenticated %}
             <li><a href="{% url 'bookings:dashboard' %}"{% if current == 'dashboard' %} aria-current="page"{% endif %}>My lessons</a></li>
             <li><a href="{% url 'progress:mine' %}"{% if app == 'progress' %} aria-current="page"{% endif %}>Progress</a></li>
             <li><a href="{% url 'accounts:profile' %}"{% if current == 'profile' %} aria-current="page"{% endif %}>My details</a></li>
+          {% else %}
+            <li><a href="{% url 'core:about' %}"{% if current == 'about' %} aria-current="page"{% endif %}>How it works</a></li>
           {% endif %}
         {% endif %}
 
@@ -52,11 +57,11 @@
             </form>
           </li>
           {% if not is_instructor %}
-            <li><a class="button button-accent" href="{% url 'instructors:list' %}">Book a lesson</a></li>
+            <li><a class="button button-accent" href="{% if main_instructor %}{% url 'bookings:create' main_instructor.slug %}{% else %}{% url 'instructors:list' %}{% endif %}">Book a lesson</a></li>
           {% endif %}
         {% else %}
           <li><a href="{% url 'accounts:login' %}"{% if current == 'login' %} aria-current="page"{% endif %}>Log in</a></li>
-          <li><a class="button button-accent" href="{% url 'accounts:register' %}">Get started</a></li>
+          <li><a class="button button-accent" href="{% url 'accounts:register' %}">Book a lesson</a></li>
         {% endif %}
       </ul>
       {% endwith %}
@@ -81,18 +86,20 @@
   <footer class="site-footer">
     <div class="container footer-grid">
       <div>
-        <p class="footer-brand">DRX</p>
-        <p class="footer-note">Driving lessons with DVSA-approved instructors. Book online, pay securely, pass with confidence.</p>
+        <p class="footer-brand">{{ site_name }}</p>
+        <p class="footer-note">Driving lessons in East London{% if main_instructor %} with {{ main_instructor.display_name }}{% endif %}. {{ hourly_rate_display }} an hour, packages that save you money, booking and payment online.</p>
+        <p class="footer-note">Pick-ups in {{ covered_list }}.</p>
       </div>
       <nav aria-label="Footer">
         <ul class="footer-links">
-          <li><a href="{% url 'instructors:list' %}">Find an instructor</a></li>
+          <li><a href="{% url 'packages:list' %}">Prices and packages</a></li>
+          {% if main_instructor %}<li><a href="{{ main_instructor.get_absolute_url }}">About me and reviews</a></li>{% endif %}
           <li><a href="{% url 'core:about' %}">How it works</a></li>
           <li><a href="{% url 'core:about' %}#cancellations">Cancellation policy</a></li>
           <li><a href="https://www.gov.uk/book-driving-test" target="_blank" rel="noopener">Book your test on GOV.UK<span class="visually-hidden"> (opens in a new tab)</span></a></li>
         </ul>
       </nav>
-      <p class="footer-legal">&copy; DRX Driving School. Payments by Stripe.</p>
+      <p class="footer-legal">&copy; {{ site_name }} Driving School. Card payments by Stripe.</p>
     </div>
   </footer>
 

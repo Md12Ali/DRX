@@ -16,9 +16,9 @@ class InstructorModelTests(TestCase):
         self.instructor = make_instructor("sam")
 
     def test_lesson_price_is_pro_rata(self):
-        self.assertEqual(self.instructor.lesson_price_pence(60), 4000)
-        self.assertEqual(self.instructor.lesson_price_pence(90), 6000)
-        self.assertEqual(self.instructor.lesson_price_pence(120), 8000)
+        self.assertEqual(self.instructor.lesson_price_pence(60), 3500)
+        self.assertEqual(self.instructor.lesson_price_pence(90), 5250)
+        self.assertEqual(self.instructor.lesson_price_pence(120), 7000)
 
     def test_candidate_start_times_fit_working_day(self):
         day = timezone.localdate() + datetime.timedelta(days=2)
@@ -43,8 +43,18 @@ class InstructorModelTests(TestCase):
         self.assertFalse(self.instructor.teaches_transmission("automatic"))
 
     def test_display_helpers(self):
-        self.assertEqual(self.instructor.hourly_rate_display, "£40")
-        self.assertEqual(self.instructor.area_list, ["Ilford", "Romford", "IG3"])
+        self.assertEqual(self.instructor.hourly_rate_display, "£35")
+        self.assertEqual(self.instructor.area_list, ["Bow", "Hackney", "E3"])
+
+    def test_new_instructors_are_shown_as_trainees(self):
+        self.assertEqual(self.instructor.qualification, Instructor.Qualification.TRAINEE)
+        self.assertFalse(self.instructor.is_adi)
+
+    def test_main_instructor_prefers_one_taking_bookings(self):
+        make_instructor("priya", is_accepting_pupils=True)
+        self.instructor.is_accepting_pupils = False
+        self.instructor.save()
+        self.assertEqual(Instructor.objects.main().slug, "priya")
         self.assertEqual(self.instructor.initials, "SS")
 
 
@@ -65,7 +75,13 @@ class DirectoryViewTests(TestCase):
 
     def test_detail_shows_prices(self):
         response = self.client.get(self.manual.get_absolute_url())
-        self.assertContains(response, "£60.00")
+        self.assertContains(response, "£52.50")
+        self.assertContains(response, "Trainee driving instructor")
+
+    def test_single_instructor_list_redirects_to_profile(self):
+        self.auto.bookings.all().delete()
+        self.auto.delete()
+        self.assertRedirects(self.client.get(reverse("instructors:list")), self.manual.get_absolute_url())
 
     def test_unknown_instructor_404(self):
         self.assertEqual(self.client.get("/instructors/nobody/").status_code, 404)

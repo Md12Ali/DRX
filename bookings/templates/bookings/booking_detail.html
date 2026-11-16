@@ -20,8 +20,8 @@
     {% else %}
       <div><dt>Instructor</dt><dd><a href="{{ booking.instructor.get_absolute_url }}">{{ booking.instructor.display_name }}</a></dd></div>
     {% endif %}
-    <div><dt>Pick-up</dt><dd>{{ booking.pickup_address }}</dd></div>
-    <div><dt>Price</dt><dd>{{ booking.price_display }}{% if payment %} · {{ payment.get_status_display }}{% endif %}</dd></div>
+    <div><dt>Pick-up</dt><dd>{{ booking.pickup_address }}{% if booking.pickup_postcode %}, {{ booking.pickup_postcode }}{% endif %}</dd></div>
+    <div><dt>Payment</dt><dd>{% if booking.paid_with_package %}{{ booking.hours_label }} from package{% else %}{{ booking.price_display }}{% if payment %} · {{ payment.get_status_display }}{% endif %}{% endif %}</dd></div>
   </dl>
 
   {% if booking.learner_notes %}
@@ -47,7 +47,7 @@
       {% endif %}
     {% else %}
       {% if booking.is_awaiting_payment %}
-        <a class="button button-accent" href="{% url 'payments:checkout' booking.pk %}">Pay {{ booking.price_display }} now</a>
+        <a class="button button-accent" href="{% url 'payments:checkout' booking.pk %}">Pay now</a>
       {% endif %}
       {% if booking.can_be_changed_by_learner %}
         <a class="button button-dark" href="{% url 'bookings:edit' booking.pk %}">Reschedule</a>
