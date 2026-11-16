@@ -1,9 +1,23 @@
-# DRX: book driving lessons online
+# DRX: driving lessons in East London
 
-DRX is a full-stack Django web app for a driving school. Learners find a DVSA-approved instructor,
-book a lesson in a live time slot, pay by card through Stripe, reschedule or cancel online, and
-watch their **test-ready score** rise as their instructor rates their skills after each lesson.
-Instructors get a diary, sign off lessons with notes, and update each learner's progress.
+DRX is my personal driving-instructor website, built as a full-stack Django app. Learners can:
+- check I cover their postcode
+- book a lesson in a live time slot
+- **buy money-saving lesson packages**
+- pay online by card (Stripe) or with their package hours
+- reschedule or cancel online
+- watch their **test-ready score** rise as I rate their skills after each lesson
+
+I get a diary, sign off lessons with notes, and record each learner's progress.
+
+| | |
+|---|---|
+| Pay as you go | **£35 an hour** (1, 1.5 or 2-hour lessons) |
+| Packages | 5 h £170 · 10 h £330 · 20 h £640 · 30 h £930 (editable in the admin) |
+| Areas covered | **E1, E2, E3, E8, E9, E14, EC1, EC2, N1** |
+
+The site is built around one instructor today. The data model still supports more instructors,
+so DRX can grow into a school with branches later.
 
 ![DRX home page](docs/screenshots/home-desktop.png)
 
@@ -30,7 +44,7 @@ Instructors get a diary, sign off lessons with notes, and update each learner's 
 
 ## Purpose and rationale
 
-I'm an approved trainee driving instructor. Today most local instructors take bookings by phone
+I'm a trainee driving instructor working in East London. Most local instructors take bookings by phone
 and WhatsApp, collect cash or bank transfers, and track progress on paper or in their head.
 That causes double bookings, chasing payments, missed lessons, and learners who don't know how
 close they are to being ready for the test.
@@ -55,8 +69,9 @@ many more lessons do I need?" into a number the learner can see.
 
 **Visitor**
 1. Understand what DRX offers and what lessons cost from the home page.
-2. Search instructors by area/postcode and manual/automatic.
-3. See an instructor's prices, car, areas, working hours, reviews and free slots before signing up.
+2. Check whether my postcode is covered before signing up.
+3. Compare pay-as-you-go and package prices, and see how much each package saves.
+4. See the instructor's qualification, car, working hours, reviews and free slots.
 
 **Learner**
 4. Register, log in and log out.
@@ -64,6 +79,8 @@ many more lessons do I need?" into a number the learner can see.
 6. Pick a date and see only the times that are actually free.
 7. Choose a 1, 1.5 or 2-hour lesson and see the price update.
 8. Pay securely by card and get clear confirmation, or a clear message if payment fails or I cancel.
+8a. Buy a package of hours, see my balance, and pay for lessons with those hours.
+8b. Get my hours back automatically if I cancel a lesson paid with package hours.
 9. See my next lesson, upcoming lessons and past lessons.
 10. Reschedule or cancel up to 24 hours before, and get a refund automatically.
 11. Read my instructor's notes after each lesson.
@@ -123,8 +140,11 @@ many more lessons do I need?" into a number the learner can see.
 
 | Area | Features |
 |---|---|
-| Home | Hero with area and transmission search, live stats, how it works, featured instructors, bento features, real reviews only, FAQ |
-| Instructors | Directory with search and filter; profile with facts, bio, prices, 14-day availability strip, reviews |
+| Home | Personal hero, key facts, prices and packages, **postcode checker** (works with or without JavaScript), areas covered, about me, bento features, real reviews only, FAQ |
+| Prices | Pay-as-you-go prices, every package with price per hour and saving, learner's hour balance and purchase history |
+| Packages | Stripe Checkout for packages, success/cancel handling, webhook; hours spent on bookings and returned on cancellation |
+| Areas | Pick-up postcodes checked against E1, E2, E3, E8, E9, E14, EC1, EC2, N1 on sign-up details and every booking |
+| Instructor profile | Qualification badge (trainee or ADI), facts, bio, prices, 14-day availability strip, reviews |
 | Booking | Live slot picker (JSON API), 1/1.5/2-hour lessons, notes, rule checks, 35-minute payment hold |
 | Payments | Stripe Checkout, success/cancel pages, webhook, automatic refunds on cancellation |
 | Learner dashboard | Next lesson, test-ready ring, hours driven, upcoming and past lessons |
@@ -145,6 +165,8 @@ many more lessons do I need?" into a number the learner can see.
 | Instructor | Admin | Directory, profile | Instructor edits own profile | Admin |
 | SkillRating | Instructor rates a skill | Progress pages | Re-rate | Set to "Not started" |
 | Payment | Checkout | Booking detail, admin | Webhook, success, cancel, refund | Admin |
+| LessonPackage | Data migration / admin | Prices page, home | Admin (prices, popular flag) | Admin (or deactivate) |
+| PackagePurchase | Buy a package | Prices page history, admin | Webhook, success, cancel | Admin |
 
 ---
 
@@ -162,6 +184,8 @@ All rules live in one place: `drx/settings.py` (values) and `bookings/services.p
 | Payment hold | unpaid bookings hold the slot for 35 minutes, then expire |
 | Change/cancel | learners can reschedule or cancel until 24 hours before; refund is automatic |
 | Lesson length | locked once paid (cancel and rebook to change it) |
+| Pick-up area | postcode district must be E1, E2, E3, E8, E9, E14, EC1, EC2 or N1 (EC1A counts as EC1, E1W as E1, N1C as N1) |
+| Package hours | balance = paid package hours − hours of confirmed/completed lessons paid with hours, so cancelling returns hours automatically |
 | Reviews | only after a completed lesson; one per learner per instructor |
 | Ratings | only by an instructor who has a confirmed or completed lesson with that learner |
 | Test-ready | at least 85% overall **and** every skill "Seldom prompted" or better |
@@ -170,7 +194,7 @@ All rules live in one place: `drx/settings.py` (values) and `bookings/services.p
 
 ## Data schema
 
-PostgreSQL in production, SQLite locally, through Django's ORM. Six apps, one per natural part of the domain.
+PostgreSQL in production, SQLite locally, through Django's ORM. Seven apps, one per natural part of the domain.
 
 ```mermaid
 erDiagram
@@ -178,7 +202,9 @@ erDiagram
     USER ||--o| INSTRUCTOR : "may be"
     USER ||--o{ BOOKING : "books (learner)"
     INSTRUCTOR ||--o{ BOOKING : "teaches"
-    BOOKING ||--o| PAYMENT : "paid by"
+    BOOKING ||--o| PAYMENT : "paid by card"
+    USER ||--o{ PACKAGEPURCHASE : "buys"
+    LESSONPACKAGE ||--o{ PACKAGEPURCHASE : "sold as"
     INSTRUCTOR ||--o{ REVIEW : "receives"
     USER ||--o{ REVIEW : "writes"
     USER ||--o{ SKILLRATING : "is rated"
@@ -201,6 +227,7 @@ erDiagram
 | user | OneToOne → User | `related_name="instructor"` |
 | slug | Slug, unique | Used in URLs |
 | display_name, tagline, bio | Char / Text | Public profile |
+| qualification | Choice | trainee / adi. Trainees must not advertise as ADIs |
 | areas_covered | Char(200) | Comma-separated; searchable |
 | teaches | Choice | manual / automatic / both |
 | car, photo | Char / Image | |
@@ -226,6 +253,8 @@ Constraint: `one_review_per_learner` (instructor, learner).
 | learner | FK → User | Cascade |
 | instructor | FK → Instructor | **Protect**: can't delete an instructor with lessons |
 | start / end | DateTime | `end` is set from the duration on save |
+| pickup_postcode | Char(10) | Must be in a covered district |
+| payment_method | Choice | card / package |
 | duration_minutes | Choice | 60 / 90 / 120 |
 | pickup_address | Char(200) | |
 | learner_notes / instructor_notes | Text | |
@@ -245,6 +274,23 @@ Constraint: `booking_ends_after_start`.
 | status | Choice | pending, paid, failed, refunded, refund_failed |
 | created_on / paid_on | DateTime | |
 
+### `packages.LessonPackage`
+| Field | Type | Notes |
+|---|---|---|
+| slug, name, description | Slug / Char | |
+| hours | SmallInteger | e.g. 10 |
+| price_pence | PositiveInteger | e.g. 33000 = £330 |
+| is_popular, is_active, order | Boolean / Integer | Display options |
+
+### `packages.PackagePurchase`
+| Field | Type | Notes |
+|---|---|---|
+| learner → User, package → LessonPackage (protect) | FK | |
+| hours, price_pence | Integer | Copied at purchase so later price changes don't affect it |
+| status | Choice | pending, paid, failed |
+| stripe_session_id (unique), stripe_payment_intent | Char | |
+| created_on / paid_on | DateTime | |
+
 ### `progress.Skill` and `progress.SkillRating`
 | Skill field | Notes |
 |---|---|
@@ -262,11 +308,12 @@ Constraint: `booking_ends_after_start`.
 
 ```
 drx/            settings (all config in one place), root URLs, WSGI/ASGI
-core/           home, about, error handlers, shared helpers, test factories, seed_demo command
+core/           home, about, postcode checker, error handlers, postcode helpers, test factories, setup_instructor command
 accounts/       Profile, registration, log in/out, learner details, context processor
 instructors/    Instructor, Review, directory, profiles, availability API, reviews CRUD
 bookings/       Booking, booking rules (services.py), booking/reschedule/cancel, diary, sign-off
-payments/       Payment, Stripe Checkout, webhook, refunds
+payments/       Payment, shared Stripe client, card or package-hours payment, webhook, refunds
+packages/       LessonPackage, PackagePurchase, hour balance, prices page, buying packages
 progress/       Skill, SkillRating, syllabus data migration, progress pages, rating form
 templates/      base.html, 403/404/500, shared includes
 static/         css/style.css, js/script.js, images/
@@ -288,7 +335,7 @@ WhiteNoise · Gunicorn · dj-database-url · HTML5 · CSS3 · vanilla JavaScript
 
 ### Automated tests
 
-There are 88 Django tests across six apps. Stripe is always mocked. Shared factories are in
+There are 117 Django tests across seven apps. Stripe is always mocked. Shared factories are in
 `core/testing.py`.
 
 ```bash
@@ -305,6 +352,11 @@ Highlights:
   signature, refunds succeed or are flagged.
 - **instructors:** pro-rata pricing, start-time generation, filters and search, availability API
   validation and clash removal, profile editing rules, review permissions and CRUD.
+- **packages:** seeded packages, savings maths, hour balance (only paid purchases; cancelled lessons
+  return hours), pay with package hours (enough / not enough), buying through Stripe, Stripe outage,
+  success, cancel, webhook.
+- **core:** postcode parsing (EC1A → EC1, E1W → E1, N1C → N1, E10 is not E1), every covered and
+  several uncovered postcodes, the home-page checker and its JSON API.
 - **progress:** syllabus data migration, score maths, test-ready rule, rating permissions and saving.
 - **accounts / core:** sign-up, unique email, UK phone and postcode validation, anonymous-only
   pages, POST-only logout, account deletion, home, about and 404 pages.
@@ -314,7 +366,12 @@ Highlights:
 | # | Test | Expected | Result |
 |---|---|---|---|
 | 1 | Register, then add phone and address | Logged in; details saved; message shown | |
-| 2 | Search "Ilford" + Automatic on home | Directory filtered correctly | |
+| 1a | Enter postcode IG3 8XX in details | "Pick-ups are only available in E1, E2…" | |
+| 1b | Check "EC1A 1BB" on home page | "Yes! … is in EC1" without page reload | |
+| 1c | Buy the 10-hour package (card 4242…) | "10 hours added"; balance shows 10 | |
+| 1d | Book 1.5 h, choose "Use 1.5 hours from my package" | Booking confirmed; balance 8.5 | |
+| 1e | Cancel that lesson | "1.5 hours went back into your package" | |
+| 2 | Click "Prices" | Pay-as-you-go and 4 packages with savings | |
 | 3 | Open an instructor, click a green day | Booking form opens with that date | |
 | 4 | Change lesson length | Free times reload for the new length | |
 | 5 | Pick a slot and continue | Checkout shows summary, total and countdown | |
@@ -362,12 +419,17 @@ pip install -r requirements.txt
 cp env_example.py env.py        # then fill in your own keys
 python manage.py migrate        # also loads the 16-skill syllabus
 python manage.py createsuperuser
-python manage.py seed_demo      # optional: three clearly-labelled demo instructors
+python manage.py setup_instructor <your-username> --name "Mohammed Ali"
 python manage.py runserver
 ```
 
-**Make yourself an instructor:** in `/admin/`, open *Instructors → Add*, choose your user, fill in
-your details and save. Log in as that user to see the diary.
+`setup_instructor` turns your account into the site's instructor at £35/hour, covering the postcodes
+in settings, shown as a **trainee**. Add your photo, bio, car and hours under *Edit profile*. When
+you qualify, change *Qualification* to ADI (or re-run with `--adi`).
+
+**Change prices or areas:** the hourly rate and covered postcodes are in `drx/settings.py`
+(`STANDARD_HOURLY_RATE_PENCE`, `COVERED_POSTCODE_DISTRICTS`). Package prices are in the admin under
+*Lesson packages*.
 
 ### Stripe
 
@@ -410,5 +472,6 @@ your details and save. Log in as that user to see the diary.
 - Django, Stripe and WhiteNoise documentation.
 - Syllabus and five-step progress scale based on common UK driver-training practice (DVSA).
 - Layout patterns inspired by the VibeUI layout library. Fonts from Google Fonts.
-- All content and code written for this project. `seed_demo` instructors are labelled as demos and
-  create no reviews: reviews on DRX only ever come from real learners.
+- All content and code written for this project. Reviews on DRX only ever come from real learners
+  who have completed a lesson.
+- Postcode district names for the covered areas are approximate and for guidance.
