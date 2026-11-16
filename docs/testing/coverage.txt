@@ -12,11 +12,11 @@ accounts/views.py                                 62     10    84%
 bookings/__init__.py                               0      0   100%
 bookings/admin.py                                  9      0   100%
 bookings/apps.py                                   4      0   100%
-bookings/forms.py                                 72      3    96%
-bookings/models.py                               106      4    96%
+bookings/forms.py                                 72      2    97%
+bookings/models.py                               105      4    96%
 bookings/services.py                              84      2    98%
 bookings/urls.py                                   4      0   100%
-bookings/views.py                                175     20    89%
+bookings/views.py                                175     18    90%
 core/__init__.py                                   0      0   100%
 core/apps.py                                       4      0   100%
 core/context_processors.py                         7      0   100%
@@ -43,7 +43,7 @@ packages/admin.py                                 13      0   100%
 packages/apps.py                                   4      0   100%
 packages/models.py                                78      5    94%
 packages/urls.py                                   4      0   100%
-packages/views.py                                 68     14    79%
+packages/views.py                                 69     14    80%
 payments/__init__.py                               0      0   100%
 payments/admin.py                                  8      0   100%
 payments/apps.py                                   4      0   100%
@@ -60,4 +60,4 @@ progress/models.py                                53      3    94%
 progress/urls.py                                   4      0   100%
 progress/views.py                                 38      6    84%
 ------------------------------------------------------------------
-TOTAL                                           1622    155    90%
+TOTAL                                           1622    152    91%
