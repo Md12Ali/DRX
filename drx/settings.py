@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     "instructors",
     "bookings",
     "payments",
+    "packages",
     "progress",
 ]
 
@@ -92,6 +93,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "accounts.context_processors.user_role",
+                "core.context_processors.site_info",
             ],
         },
     },
@@ -186,3 +188,23 @@ BOOKING_MAX_WEEKS_AHEAD = 8          # furthest ahead a lesson can be booked
 BOOKING_CHANGE_CUTOFF_HOURS = 24     # learners can't change/cancel later than this
 BOOKING_PAYMENT_HOLD_MINUTES = 35    # unpaid bookings hold the slot this long
 BOOKING_SLOT_STEP_MINUTES = 30       # lessons start on the hour or half hour
+
+
+# ---------------------------------------------------------------------------
+# Business details (one place to change them)
+# ---------------------------------------------------------------------------
+SITE_NAME = "DRX"
+STANDARD_HOURLY_RATE_PENCE = 3500    # £35 an hour, pay as you go
+
+# Postcode districts covered for pick-ups, with the neighbourhoods they include.
+COVERED_POSTCODE_DISTRICTS = {
+    "E1": "Whitechapel, Stepney, Wapping",
+    "E2": "Bethnal Green, Haggerston",
+    "E3": "Bow, Bromley-by-Bow, Mile End",
+    "E8": "Dalston, Hackney Central",
+    "E9": "Homerton, Hackney Wick, South Hackney",
+    "E14": "Poplar, Limehouse, Canary Wharf, Isle of Dogs",
+    "EC1": "Clerkenwell, Farringdon, Old Street",
+    "EC2": "Shoreditch, Liverpool Street, Moorgate",
+    "N1": "Islington, Hoxton, King's Cross",
+}
