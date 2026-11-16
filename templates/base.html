@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{% block meta_description %}DRX: book driving lessons online with DVSA-approved instructors in East London. Pick a time, pay securely, and track your progress to test day.{% endblock %}">
+  <title>{% block title %}Driving lessons{% endblock %} · DRX</title>
+  <link rel="icon" href="{% static 'images/favicon.svg' %}" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112,700;112,800;112,900&family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- Header and main navigation -->
+  <header class="site-header">
+    <nav class="nav container" aria-label="Main">
+      <a class="brand" href="{% url 'core:home' %}" aria-label="DRX home">
+        <img src="{% static 'images/favicon.svg' %}" alt="" width="34" height="34">
+        <span class="brand-word">DRX</span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu">
+        <span class="visually-hidden">Open menu</span>
+        <span class="nav-toggle-bars" aria-hidden="true"></span>
+      </button>
+
+      {% with current=request.resolver_match.url_name app=request.resolver_match.app_name %}
+      <ul class="nav-menu" id="nav-menu">
+        {% if is_instructor %}
+          <li><a href="{% url 'bookings:diary' %}"{% if current == 'diary' %} aria-current="page"{% endif %}>My diary</a></li>
+          <li><a href="{{ current_instructor.get_absolute_url }}"{% if app == 'instructors' and current == 'detail' %} aria-current="page"{% endif %}>Public profile</a></li>
+          <li><a href="{% url 'instructors:edit' %}"{% if current == 'edit' and app == 'instructors' %} aria-current="page"{% endif %}>Edit profile</a></li>
+        {% else %}
+          <li><a href="{% url 'instructors:list' %}"{% if app == 'instructors' %} aria-current="page"{% endif %}>Instructors</a></li>
+          <li><a href="{% url 'core:about' %}"{% if current == 'about' %} aria-current="page"{% endif %}>How it works</a></li>
+          {% if user.is_authenticated %}
+            <li><a href="{% url 'bookings:dashboard' %}"{% if current == 'dashboard' %} aria-current="page"{% endif %}>My lessons</a></li>
+            <li><a href="{% url 'progress:mine' %}"{% if app == 'progress' %} aria-current="page"{% endif %}>Progress</a></li>
+            <li><a href="{% url 'accounts:profile' %}"{% if current == 'profile' %} aria-current="page"{% endif %}>My details</a></li>
+          {% endif %}
+        {% endif %}
+
+        {% if user.is_authenticated %}
+          <li>
+            <form method="post" action="{% url 'accounts:logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="nav-link-button">Log out</button>
+            </form>
+          </li>
+          {% if not is_instructor %}
+            <li><a class="button button-accent" href="{% url 'instructors:list' %}">Book a lesson</a></li>
+          {% endif %}
+        {% else %}
+          <li><a href="{% url 'accounts:login' %}"{% if current == 'login' %} aria-current="page"{% endif %}>Log in</a></li>
+          <li><a class="button button-accent" href="{% url 'accounts:register' %}">Get started</a></li>
+        {% endif %}
+      </ul>
+      {% endwith %}
+    </nav>
+  </header>
+
+  <!-- Feedback messages (also used by JavaScript) -->
+  <div class="messages container" id="messages" aria-live="polite">
+    {% for message in messages %}
+      <div class="message message-{{ message.tags }}">
+        <p>{{ message }}</p>
+        <button type="button" class="message-close" aria-label="Dismiss message">&times;</button>
+      </div>
+    {% endfor %}
+  </div>
+
+  <main id="main" class="{% block main_class %}container page{% endblock %}">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <p class="footer-brand">DRX</p>
+        <p class="footer-note">Driving lessons with DVSA-approved instructors. Book online, pay securely, pass with confidence.</p>
+      </div>
+      <nav aria-label="Footer">
+        <ul class="footer-links">
+          <li><a href="{% url 'instructors:list' %}">Find an instructor</a></li>
+          <li><a href="{% url 'core:about' %}">How it works</a></li>
+          <li><a href="{% url 'core:about' %}#cancellations">Cancellation policy</a></li>
+          <li><a href="https://www.gov.uk/book-driving-test" target="_blank" rel="noopener">Book your test on GOV.UK<span class="visually-hidden"> (opens in a new tab)</span></a></li>
+        </ul>
+      </nav>
+      <p class="footer-legal">&copy; DRX Driving School. Payments by Stripe.</p>
+    </div>
+  </footer>
+
+  <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

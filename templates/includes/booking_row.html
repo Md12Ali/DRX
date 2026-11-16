@@ -1,0 +1,22 @@
+{# One booking in a list. Expects `booking`; `show_learner` for instructor views. #}
+<li class="booking-row">
+  <div class="booking-date" aria-hidden="true">
+    <span class="booking-day">{{ booking.start|date:"D" }}</span>
+    <span class="booking-num">{{ booking.start|date:"j" }}</span>
+    <span class="booking-month">{{ booking.start|date:"M" }}</span>
+  </div>
+  <div class="booking-info">
+    <p class="booking-title">
+      <a href="{{ booking.get_absolute_url }}">
+        {{ booking.start|date:"l j F, H:i" }}
+        <span class="visually-hidden">: {% if show_learner %}{{ booking.learner.first_name }}{% else %}{{ booking.instructor.display_name }}{% endif %}</span>
+      </a>
+    </p>
+    <p class="muted">
+      {{ booking.get_duration_minutes_display }} ·
+      {% if show_learner %}{{ booking.learner.first_name|default:booking.learner.username }}{% else %}{{ booking.instructor.display_name }}{% endif %}
+      · {{ booking.reference }}
+    </p>
+  </div>
+  <span class="status-pill status-{{ booking.status }}">{{ booking.get_status_display }}</span>
+</li>
