@@ -1,3 +1,17 @@
+{% if field.widget_type == "radioselect" or field.widget_type == "checkboxselectmultiple" %}
+<fieldset class="field field-group{% if field.errors %} field-has-error{% endif %}">
+  <legend>
+    {{ field.label }}{% if field.field.required %} <span class="required" aria-hidden="true">*</span>{% endif %}
+  </legend>
+  {{ field }}
+  {% if field.help_text %}
+    <div class="field-help" id="{{ field.auto_id }}_helptext">{{ field.help_text|safe }}</div>
+  {% endif %}
+  {% for error in field.errors %}
+    <p class="field-error">{{ error }}</p>
+  {% endfor %}
+</fieldset>
+{% else %}
 <div class="field{% if field.errors %} field-has-error{% endif %}">
   <label for="{{ field.id_for_label }}">
     {{ field.label }}{% if field.field.required %} <span class="required" aria-hidden="true">*</span>{% endif %}
@@ -10,3 +24,4 @@
     <p class="field-error">{{ error }}</p>
   {% endfor %}
 </div>
+{% endif %}

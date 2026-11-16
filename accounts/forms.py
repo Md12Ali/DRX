@@ -60,7 +60,7 @@ class ProfileForm(forms.ModelForm):
         }
         widgets = {
             "phone": forms.TextInput(attrs={"autocomplete": "tel", "inputmode": "tel"}),
-            "pickup_address": forms.TextInput(attrs={"autocomplete": "street-address"}),
+            "pickup_address": forms.TextInput(attrs={"autocomplete": "address-line1"}),
             "postcode": forms.TextInput(attrs={"autocomplete": "postal-code"}),
         }
 

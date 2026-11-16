@@ -15,7 +15,7 @@
     {% for field in form %}
       {% include "includes/form_field.html" %}
     {% endfor %}
-    <img id="photo-preview" class="image-preview" alt="Preview of your new photo" hidden>
+    <img id="photo-preview" class="image-preview" src="data:," alt="Preview of your new photo" hidden>
     <div class="button-row">
       <button type="submit" class="button button-dark">Save profile</button>
       <a class="button button-ghost" href="{{ instructor.get_absolute_url }}">Cancel</a>

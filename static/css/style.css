@@ -584,8 +584,21 @@ img {
 }
 
 .field label,
-.field > div > label {
+.field > div > label,
+.field-group legend {
   font-weight: 600;
+}
+
+.field-group {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.field-group legend {
+  margin-bottom: 0.35rem;
+  padding: 0;
 }
 
 .required {
