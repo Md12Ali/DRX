@@ -60,7 +60,7 @@ def booking(start, minutes=60, status=Booking.Status.CONFIRMED, method=Booking.P
 
 
 done1 = booking(
-    at(-9, 10), 90, Booking.Status.COMPLETED,
+    at(-9, 10), 60, Booking.Status.COMPLETED,
     notes="Great start. Smooth clutch control; practise hill starts.",
 )
 done2 = booking(
@@ -69,7 +69,7 @@ done2 = booking(
 )
 Payment.objects.create(booking=done1, amount_pence=done1.price_pence, status=Payment.Status.PAID,
                        stripe_session_id="cs_demo_1", paid_on=timezone.now())
-next_lesson = booking(at(2, 9, 30), 90)
+next_lesson = booking(at(2, 9, 30), 120)
 Payment.objects.create(booking=next_lesson, amount_pence=next_lesson.price_pence, status=Payment.Status.PAID,
                        stripe_session_id="cs_demo_2", paid_on=timezone.now())
 booking(at(4, 17), 60, method=Booking.PaymentMethod.PACKAGE)
@@ -79,7 +79,7 @@ to_sign_off = booking(at(-1, 15), 60)
 # Next week: a mix of lessons, so the timetable shows free, booked and "your lesson" slots
 monday = 7 - timezone.localdate().weekday()
 sara = User.objects.create_user("sara", "sara@example.com", PASSWORD, first_name="Sara")
-for day, hour, minutes in [(0, 10, 120), (1, 14, 60), (2, 9, 90), (2, 18, 60), (3, 12, 120), (5, 14, 90)]:
+for day, hour, minutes in [(0, 10, 120), (1, 14, 60), (2, 9, 60), (2, 18, 60), (3, 12, 120), (5, 14, 120)]:
     Booking.objects.create(
         learner=sara, instructor=instructor, start=at(monday + day, hour), duration_minutes=minutes,
         pickup_address="5 Mare Street, London", pickup_postcode="E8 1HE",

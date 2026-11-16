@@ -1,5 +1,5 @@
 Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
-Found 127 test(s).
+Found 130 test(s).
 Operations to perform:
   Synchronize unmigrated apps: humanize, messages, runserver_nostatic, staticfiles
   Apply all migrations: accounts, admin, auth, bookings, contenttypes, instructors, packages, payments, progress, sessions
@@ -29,6 +29,7 @@ Running migrations:
   Applying instructors.0001_initial... OK
   Applying bookings.0001_initial... OK
   Applying bookings.0002_pickup_postcode_payment_method... OK
+  Applying bookings.0003_remove_ninety_minute_lessons... OK
   Applying instructors.0002_qualification_and_rate... OK
   Applying instructors.0003_default_automatic... OK
   Applying packages.0001_initial... OK
@@ -85,6 +86,9 @@ test_incomplete_profile_is_sent_to_details_page (bookings.tests.LearnerViewTests
 test_invalid_booking_is_not_saved (bookings.tests.LearnerViewTests.test_invalid_booking_is_not_saved) ... ok
 test_pickup_outside_area_rejected (bookings.tests.LearnerViewTests.test_pickup_outside_area_rejected) ... ok
 test_reschedule (bookings.tests.LearnerViewTests.test_reschedule) ... ok
+test_a_ninety_minute_booking_is_refused (bookings.tests.LessonLengthTests.test_a_ninety_minute_booking_is_refused) ... ok
+test_only_one_and_two_hours_are_offered (bookings.tests.LessonLengthTests.test_only_one_and_two_hours_are_offered) ... ok
+test_timetable_ignores_a_ninety_minute_request (bookings.tests.LessonLengthTests.test_timetable_ignores_a_ninety_minute_request) ... ok
 test_booking_form_is_prefilled_from_the_timetable (bookings.tests.TimetableTests.test_booking_form_is_prefilled_from_the_timetable) ... ok
 test_days_off_are_marked (bookings.tests.TimetableTests.test_days_off_are_marked) ... ok
 test_free_booked_and_own_slots (bookings.tests.TimetableTests.test_free_booked_and_own_slots) ... ok
@@ -170,7 +174,7 @@ test_learner_sees_own_progress (progress.tests.ProgressViewTests.test_learner_se
 test_syllabus_is_loaded_by_migration (progress.tests.SyllabusTests.test_syllabus_is_loaded_by_migration) ... ok
 
 ----------------------------------------------------------------------
-Ran 127 tests in 71.668s
+Ran 130 tests in 49.300s
 
 OK
 Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...

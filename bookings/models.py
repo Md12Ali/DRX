@@ -59,8 +59,8 @@ class Booking(models.Model):
         PACKAGE = "package", "Package hours"
 
     class Duration(models.IntegerChoices):
+        # Lessons are 1 or 2 hours (the 1.5-hour option was removed)
         ONE_HOUR = 60, "1 hour"
-        NINETY_MINUTES = 90, "1.5 hours"
         TWO_HOURS = 120, "2 hours"
 
     learner = models.ForeignKey(

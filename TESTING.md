@@ -24,7 +24,7 @@ before every deploy, so a failing test stops a broken version going live.
 
 | Check | Tool | Result | Report |
 | --- | --- | --- | --- |
-| Automated tests | Django test runner | **127 tests, all pass** | [test-results.txt](docs/testing/test-results.txt) |
+| Automated tests | Django test runner | **130 tests, all pass** | [test-results.txt](docs/testing/test-results.txt) |
 | Coverage | coverage.py | 90% of application code | [coverage.txt](docs/testing/coverage.txt) |
 | Python style (PEP 8) | flake8 (max line 119) | 0 findings | [flake8.txt](docs/testing/flake8.txt) |
 | JavaScript | JSHint (`esversion: 11`) | 0 warnings | [jshint.txt](docs/testing/jshint.txt) |
@@ -47,13 +47,13 @@ PostgreSQL in production), Chromium through Playwright, Ubuntu (GitHub Actions).
 Run them with:
 
 ```bash
-python manage.py test                 # all 127 tests
+python manage.py test                 # all 130 tests
 coverage run manage.py test && coverage report
 ```
 
 | App | What is tested |
 | --- | --- |
-| **bookings** | Every booking rule: 12-hour notice, 8-week window, working days and hours, half-hour starts, instructor and learner clashes, rescheduling, the 35-minute hold and its expiry, the 24-hour change cut-off, cancelling with a card refund or with package hours returned, instructor sign-off and cancellation, permissions (learners only see their own bookings, only instructors reach the diary). **Timetable:** free, booked and "your lesson" slots; longer lessons closing slots before another lesson; days off; visitors can look and free times link to the booking form with date, time and length; learners never see other learners' names; the instructor does; weeks are kept inside the booking window; the booking form is pre-filled from the timetable. |
+| **bookings** | Every booking rule: 12-hour notice, 8-week window, working days and hours, half-hour starts, instructor and learner clashes, rescheduling, the 35-minute hold and its expiry, the 24-hour change cut-off, cancelling with a card refund or with package hours returned, instructor sign-off and cancellation, permissions (learners only see their own bookings, only instructors reach the diary). **Timetable:** free, booked and "your lesson" slots; longer lessons closing slots before another lesson; days off; visitors can look and free times link to the booking form with date, time and length; learners never see other learners' names; the instructor does; weeks are kept inside the booking window; the booking form is pre-filled from the timetable. **Lesson lengths:** only 1 and 2 hours are offered; a 1.5-hour booking is refused; the timetable ignores a 1.5-hour request. |
 | **payments** | Checkout page, redirect to Stripe, Stripe outage and missing keys handled with a message, expired hold, success checked with Stripe (an unpaid session is not trusted), cancel page, webhook signature and events, refunds and failed refunds. |
 | **packages** | Savings maths, hour balance, paying for a lesson with hours (enough and not enough), buying through Stripe, success, cancel, webhook. |
 | **instructors** | Pro-rata pricing, start-time generation, default automatic and trainee, profile page and highlights, availability API, profile editing rules, review permissions and full review CRUD. |

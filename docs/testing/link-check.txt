@@ -1,2 +1,2 @@
-315 internal links checked.
+305 internal links checked.
 No broken internal links.

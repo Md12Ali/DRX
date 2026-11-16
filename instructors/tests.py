@@ -76,7 +76,7 @@ class DirectoryViewTests(TestCase):
 
     def test_detail_shows_prices(self):
         response = self.client.get(self.manual.get_absolute_url())
-        self.assertContains(response, "£52.50")
+        self.assertContains(response, "£70.00")
         # No badge, but trainees are still clearly described as trainees (DVSA advertising rule)
         self.assertNotContains(response, "qualification-badge")
         self.assertContains(response, "Licensed by DVSA as a trainee driving instructor")

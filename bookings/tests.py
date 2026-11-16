@@ -18,11 +18,11 @@ class BookingModelTests(TestCase):
         self.learner = make_learner("amira")
 
     def test_end_and_reference_are_set(self):
-        booking = make_booking(self.learner, self.instructor, minutes=90)
-        self.assertEqual(booking.end - booking.start, datetime.timedelta(minutes=90))
+        booking = make_booking(self.learner, self.instructor, minutes=120)
+        self.assertEqual(booking.end - booking.start, datetime.timedelta(minutes=120))
         self.assertEqual(booking.reference, f"DRX-{booking.pk:05d}")
-        self.assertEqual(booking.price_display, "£52.50")
-        self.assertEqual(booking.hours_display, "1.5")
+        self.assertEqual(booking.price_display, "£70.00")
+        self.assertEqual(booking.hours_display, "2")
 
     def test_change_cutoff(self):
         soon = make_booking(self.learner, self.instructor, start=timezone.now() + datetime.timedelta(hours=5))
@@ -112,7 +112,7 @@ class LearnerViewTests(TestCase):
         data = {
             "date": timezone.localtime(start).date().isoformat(),
             "start_time": "10:00",
-            "duration_minutes": "90",
+            "duration_minutes": "120",
             "pickup_address": "12 Roman Road, London",
             "pickup_postcode": "E3 5AA",
             "learner_notes": "",
@@ -136,7 +136,7 @@ class LearnerViewTests(TestCase):
         booking = Booking.objects.get()
         self.assertRedirects(response, reverse("payments:checkout", args=[booking.pk]))
         self.assertEqual(booking.status, Booking.Status.PENDING)
-        self.assertEqual(booking.price_pence, 5250)
+        self.assertEqual(booking.price_pence, 7000)
         self.assertEqual(booking.pickup_postcode, "E3 5AA")
         self.assertEqual(booking.learner, self.learner)
 
@@ -278,11 +278,11 @@ class TimetableTests(TestCase):
         self.assertTrue(all(row["cells"][6]["state"] == "off" for row in table["rows"]))
 
     def test_visitors_can_see_it_and_free_times_link_to_the_booking_form(self):
-        response = self.client.get(self.url, {"week": self.week.isoformat(), "duration": 90})
+        response = self.client.get(self.url, {"week": self.week.isoformat(), "duration": 120})
         self.assertEqual(response.status_code, 200)
         booking_link = (
             f'{reverse("bookings:create", args=["sam"])}?date={self.start:%Y-%m-%d}'
-            f'&amp;time={timezone.localtime(self.start):%H:%M}&amp;duration=90'
+            f'&amp;time={timezone.localtime(self.start):%H:%M}&amp;duration=120'
         )
         self.assertContains(response, booking_link)
 
@@ -317,3 +317,32 @@ class TimetableTests(TestCase):
         form = response.context["form"]
         self.assertEqual(form.initial["start_time"], "10:00")
         self.assertEqual(form.initial["duration_minutes"], 120)
+
+
+class LessonLengthTests(TestCase):
+    """Only 1-hour and 2-hour lessons can be booked."""
+
+    def setUp(self):
+        self.instructor = make_instructor("sam")
+        self.learner = make_learner("lily")
+        self.client.force_login(self.learner)
+
+    def test_only_one_and_two_hours_are_offered(self):
+        self.assertEqual(Booking.Duration.values, [60, 120])
+        response = self.client.get(reverse("bookings:create", args=["sam"]))
+        self.assertNotContains(response, "1.5 hours")
+
+    def test_a_ninety_minute_booking_is_refused(self):
+        start = future_start()
+        response = self.client.post(reverse("bookings:create", args=["sam"]), {
+            "date": timezone.localtime(start).date().isoformat(), "start_time": "10:00",
+            "duration_minutes": "90", "pickup_address": "12 Roman Road, London", "pickup_postcode": "E3 5AA",
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["form"].errors["duration_minutes"])
+        self.assertFalse(Booking.objects.exists())
+
+    def test_timetable_ignores_a_ninety_minute_request(self):
+        response = self.client.get(reverse("bookings:timetable", args=["sam"]), {"duration": 90})
+        self.assertEqual(response.context["duration"], 60)
+        self.assertNotContains(response, "1.5 hours")
