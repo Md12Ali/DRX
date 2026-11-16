@@ -33,7 +33,7 @@ instructor.bio = (
     "Born and raised in East London, I know these roads and test routes inside out. "
     "My lessons are calm and patient, and every one is planned around what you need to work on next."
 )
-instructor.car = "VW Polo, dual controls"
+instructor.car = "Automatic, dual controls"
 instructor.working_days = "0123456"
 instructor.save()
 

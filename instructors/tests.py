@@ -46,6 +46,9 @@ class InstructorModelTests(TestCase):
         self.assertEqual(self.instructor.hourly_rate_display, "£35")
         self.assertEqual(self.instructor.area_list, ["Bow", "Hackney", "E3"])
 
+    def test_new_instructors_teach_automatic(self):
+        self.assertEqual(Instructor().teaches, Instructor.Teaches.AUTOMATIC)
+
     def test_new_instructors_are_shown_as_trainees(self):
         self.assertEqual(self.instructor.qualification, Instructor.Qualification.TRAINEE)
         self.assertFalse(self.instructor.is_adi)

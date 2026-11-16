@@ -65,7 +65,7 @@ class Instructor(models.Model):
         max_length=200,
         help_text="Comma-separated towns or postcode areas, e.g. Ilford, Romford, IG3",
     )
-    teaches = models.CharField(max_length=10, choices=Teaches.choices, default=Teaches.MANUAL)
+    teaches = models.CharField(max_length=10, choices=Teaches.choices, default=Teaches.AUTOMATIC)
     car = models.CharField(max_length=80, blank=True)
     photo = models.ImageField(upload_to="instructors/", blank=True)
     hourly_rate_pence = models.PositiveIntegerField(

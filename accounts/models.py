@@ -34,7 +34,7 @@ class Profile(models.Model):
     transmission = models.CharField(
         max_length=10,
         choices=Transmission.choices,
-        default=Transmission.MANUAL,
+        default=Transmission.AUTOMATIC,
     )
     created_on = models.DateTimeField(auto_now_add=True)
 
