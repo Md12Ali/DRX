@@ -1,0 +1,35 @@
+# Render Blueprint: describes the DRX web service so it can be recreated in one click.
+# The database is hosted on Neon (free, never expires); paste its connection
+# string into DATABASE_URL. Secrets are set in the Render dashboard, never here.
+services:
+  - type: web
+    name: drx
+    runtime: python
+    plan: free
+    region: frankfurt
+    branch: main
+    buildCommand: ./build.sh
+    startCommand: gunicorn drx.wsgi --log-file -
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: SECRET_KEY
+        generateValue: true
+      - key: SECURE_SSL_REDIRECT
+        value: "True"
+      - key: DATABASE_URL
+        sync: false
+      - key: STRIPE_PUBLIC_KEY
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: DJANGO_SUPERUSER_USERNAME
+        sync: false
+      - key: DJANGO_SUPERUSER_EMAIL
+        sync: false
+      - key: DJANGO_SUPERUSER_PASSWORD
+        sync: false
+      - key: INSTRUCTOR_NAME
+        sync: false
