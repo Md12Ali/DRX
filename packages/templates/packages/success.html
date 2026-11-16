@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Package bought{% endblock %}
+
+{% block content %}
+<section class="form-card result-card" aria-labelledby="success-title">
+  <p class="result-icon result-success" aria-hidden="true">&#10003;</p>
+  <h1 id="success-title">{{ purchase.hours }} hours added!</h1>
+  <p>Thanks for buying the <strong>{{ purchase.package.name }}</strong> package ({{ purchase.price_display }}).
+    You now have <strong>{{ balance_hours }} hours</strong> to book with.</p>
+  <p class="muted">When you book, choose "Use package hours" on the payment page. Stripe will email a receipt to {{ user.email|default:"your email address" }}.</p>
+  <div class="button-row">
+    {% if main_instructor %}<a class="button button-accent" href="{% url 'bookings:create' main_instructor.slug %}">Book a lesson now</a>{% endif %}
+    <a class="button button-ghost" href="{% url 'bookings:dashboard' %}">Go to my lessons</a>
+  </div>
+</section>
+{% endblock %}
