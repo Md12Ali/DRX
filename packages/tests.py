@@ -86,7 +86,7 @@ class PayWithPackageTests(TestCase):
         give_hours(self.learner, 1)
         response = self.client.get(reverse("payments:checkout", args=[self.booking.pk]))
         self.assertNotContains(response, "from my package</button>")
-        self.assertContains(response, "isn&#x27;t enough for this lesson")
+        self.assertContains(response, "isn't enough for this lesson")
 
     def test_pay_with_package_confirms_booking(self):
         give_hours(self.learner, 5)

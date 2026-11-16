@@ -65,13 +65,11 @@ class DirectoryViewTests(TestCase):
 
     def test_list_filters_by_transmission(self):
         response = self.client.get(reverse("instructors:list"), {"transmission": "automatic"})
-        self.assertContains(response, self.auto.display_name)
-        self.assertNotContains(response, self.manual.display_name)
+        self.assertEqual(list(response.context["instructors"]), [self.auto])
 
     def test_list_searches_areas(self):
         response = self.client.get(reverse("instructors:list"), {"q": "ilford"})
-        self.assertContains(response, self.manual.display_name)
-        self.assertNotContains(response, self.auto.display_name)
+        self.assertEqual(list(response.context["instructors"]), [self.manual])
 
     def test_detail_shows_prices(self):
         response = self.client.get(self.manual.get_absolute_url())
@@ -120,7 +118,7 @@ class InstructorEditTests(TestCase):
         instructor = make_instructor("sam")
         self.client.login(username="sam", password=PASSWORD)
         self.client.post(reverse("instructors:edit"), {
-            "tagline": "Patient lessons", "bio": "", "areas_covered": "Ilford",
+            "qualification": "trainee", "tagline": "Patient lessons", "bio": "", "areas_covered": "Ilford",
             "teaches": "manual", "car": "Polo", "day_start": "09:00", "day_end": "17:00",
             "is_accepting_pupils": "on", "hourly_rate": "45.50", "days": ["0", "2", "4"],
         })
