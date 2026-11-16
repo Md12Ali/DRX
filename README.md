@@ -96,7 +96,7 @@ Every story below is implemented and was checked in the manual tests in [TESTING
 | 5 | Visitor | call or text the instructor | I can ask questions before booking | Phone number in header, home page and footer |
 | 6 | Learner | register, log in and log out | my bookings and progress are kept | Accounts app |
 | 7 | Learner | save my phone and pick-up address once | I'm never asked again when booking | My details; booking form pre-filled |
-| 8 | Learner | see only times that are really free | I don't pick a slot that fails | Live slot picker |
+| 8 | Learner | see a week timetable of when the instructor is free and booked, and book a free time straight from it | I can find a time that suits me | **Timetable** page, live slot picker |
 | 9 | Learner | choose a 1, 1.5 or 2-hour lesson and see the price | I know what I'll pay | Booking form summary |
 | 10 | Learner | pay securely and get a clear result | I know whether I'm booked | Stripe Checkout, success and cancel pages |
 | 11 | Learner | buy a package, see my balance and pay with hours | I save money | Prices page, checkout "use package hours" |
@@ -127,6 +127,9 @@ Every story below is implemented and was checked in the manual tests in [TESTING
   page reload; a countdown shows how long the slot is held during payment.
 - **Never ask twice.** Pick-up address and postcode are pre-filled from the learner's details, and
   Stripe Checkout is pre-filled with their email.
+- **See it, then book it.** The timetable works like a familiar diary: green means free, striped
+  grey means booked, yellow means your own lesson. One tap on a free time opens the booking form with
+  everything filled in, so booking takes two steps.
 - **Mobile first.** Every layout stacks to one column on a phone; the phone number is tap-to-call.
 - **Progressive enhancement.** Every form works without JavaScript; the server checks every rule again.
 
@@ -146,7 +149,7 @@ the favicon ([`favicon.svg`](static/images/favicon.svg)).
 A bright, friendly "fresh licence" theme aimed at young learners. Cards, buttons and stickers have a
 2 px ink outline and a hard offset shadow, so they look like printed stickers; buttons press in when
 clicked. Contrast ratios were calculated with the WCAG 2.1 formula and confirmed in the browser by
-axe-core on all 23 pages ([TESTING.md](TESTING.md#4-accessibility-console-and-link-checks)).
+axe-core on every page ([TESTING.md](TESTING.md#4-accessibility-console-and-link-checks)).
 
 | Role | Hex | Used for | Contrast |
 | --- | --- | --- | --- |
@@ -187,6 +190,7 @@ Low-fidelity layouts for desktop and mobile were planned before building. They a
 | Progress | [06-progress.png](docs/wireframes/06-progress.png) |
 | Instructor diary | [07-instructor-diary.png](docs/wireframes/07-instructor-diary.png) |
 | Instructor profile | [08-instructor-profile.png](docs/wireframes/08-instructor-profile.png) |
+| Timetable | [09-timetable.png](docs/wireframes/09-timetable.png) |
 
 ![Home wireframe](docs/wireframes/01-home.png)
 
@@ -200,8 +204,8 @@ All screenshots are taken automatically by a real browser on every push (desktop
 | ![Home](docs/screenshots/home-desktop.png) | ![Prices](docs/screenshots/prices-desktop.png) | ![Booking](docs/screenshots/booking-form-desktop.png) |
 | **Checkout** | **Learner dashboard** | **Progress** |
 | ![Checkout](docs/screenshots/checkout-desktop.png) | ![Dashboard](docs/screenshots/learner-dashboard-desktop.png) | ![Progress](docs/screenshots/progress-desktop.png) |
-| **Instructor diary** | **Rate skills** | **Mobile home** |
-| ![Diary](docs/screenshots/instructor-diary-desktop.png) | ![Rate skills](docs/screenshots/instructor-rate-skills-desktop.png) | ![Mobile](docs/screenshots/home-mobile.png) |
+| **Timetable** | **Instructor diary** | **Mobile timetable** |
+| ![Timetable](docs/screenshots/timetable-desktop.png) | ![Diary](docs/screenshots/instructor-diary-desktop.png) | ![Mobile timetable](docs/screenshots/timetable-mobile.png) |
 
 ### Accessibility
 
@@ -212,7 +216,7 @@ All screenshots are taken automatically by a real browser on every push (desktop
 - The test-ready score uses a native `<progress>` element.
 - Animations are turned off for users who prefer reduced motion; touch targets are at least 44 px.
 - External links open in a new tab and say so to screen readers.
-- axe-core finds no WCAG 2.1 A or AA violations on any of the 23 pages checked.
+- axe-core finds no WCAG 2.1 A or AA violations on any page checked.
 
 ### Design decisions that break a convention
 
@@ -237,6 +241,7 @@ All screenshots are taken automatically by a real browser on every push (desktop
 | Prices | Pay-as-you-go prices, every package with price per hour and saving, the learner's hour balance and purchase history |
 | Packages | Stripe Checkout for packages, success and cancel handling, webhook; hours spent on bookings and returned on cancellation |
 | Instructor profile | "Why learn with me" highlights, facts, bio, prices, 14-day availability strip, reviews |
+| Timetable | Week grid (Monday to Sunday, half-hour rows) showing **free**, **booked** and **your lesson** slots for 1, 1.5 or 2-hour lessons, up to 8 weeks ahead; tap a free time to book it with the date, time and length filled in; learners never see who else booked, the instructor sees first names; day-by-day list on phones |
 | Booking | Live slot picker (JSON API), 1/1.5/2-hour lessons, notes, rule checks, 35-minute payment hold with countdown |
 | Payments | Stripe Checkout, success and cancel pages, webhook, automatic refunds on cancellation |
 | Learner dashboard | Next lesson, test-ready ring, hours left, upcoming and past lessons |
@@ -532,7 +537,7 @@ python manage.py migrate        # creates the tables, the 16 skills and the 4 pa
 python manage.py createsuperuser
 python manage.py setup_instructor <your-username> --name "Mohammed Ali"
 python manage.py runserver
-python manage.py test           # 119 tests
+python manage.py test           # 127 tests
 ```
 
 Without `DATABASE_URL`, the project uses a local SQLite file. Without Stripe keys, everything works
@@ -565,13 +570,13 @@ fixed, and the known limitations, is in **[TESTING.md](TESTING.md)**. In summary
 
 | Check | Tool | Result |
 | --- | --- | --- |
-| Automated tests | `python manage.py test` | **119 tests, all pass** |
+| Automated tests | `python manage.py test` | **127 tests, all pass** |
 | Coverage | coverage.py | 90% of application code |
 | Python style (PEP 8) | flake8 | 0 findings |
 | JavaScript | JSHint | 0 warnings |
-| HTML | W3C Nu HTML Checker | 0 errors on 23 pages |
+| HTML | W3C Nu HTML Checker | 0 errors on every page |
 | CSS | W3C Nu checker (CSS) | 0 errors |
-| Accessibility | axe-core, WCAG 2.1 A and AA | 0 violations on 23 pages |
+| Accessibility | axe-core, WCAG 2.1 A and AA | 0 violations on every page |
 | Console | Browser run on every page | No JavaScript errors |
 | Internal links | Browser run, logged in as each user type | No broken links |
 | Migrations match models | `makemigrations --check` | No changes |
@@ -644,7 +649,7 @@ database (free plan, Frankfurt, does not expire).
   autocomplete value`). Run `git log --stat` to see each change.
 - **Branches and pull requests.** Work happens on feature branches (`drx-website`, `redesign`,
   `highlights`, `logo-automatic`) and is merged into `main` after the GitHub Actions checks pass.
-- **Tests with every app.** Each app was committed with its own tests; the 119 tests run on every
+- **Tests with every app.** Each app was committed with its own tests; the 127 tests run on every
   push and in every deploy. For honesty: tests were usually written in the same or the next commit as
   the feature, rather than always before it.
 - **Bugs found by the checks are fixed in their own commits** and listed in

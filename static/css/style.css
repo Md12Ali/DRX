@@ -3277,3 +3277,7 @@ a.tt-free:hover {
 .button-row-tight {
   margin-top: 0;
 }
+
+.timetable thead th.is-today .tt-count {
+  color: var(--ink);
+}
