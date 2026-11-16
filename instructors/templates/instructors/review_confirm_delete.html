@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Delete review{% endblock %}
+
+{% block content %}
+<section class="form-card confirm-card" aria-labelledby="delete-title">
+  <h1 id="delete-title">Delete your review?</h1>
+  <blockquote class="quoted">{{ review.comment }}</blockquote>
+  <p>This removes it from {{ review.instructor.display_name }}'s profile. This can't be undone.</p>
+  <form method="post" class="button-row">
+    {% csrf_token %}
+    <button type="submit" class="button button-danger">Yes, delete it</button>
+    <a class="button button-ghost" href="{{ review.instructor.get_absolute_url }}#reviews">No, keep it</a>
+  </form>
+</section>
+{% endblock %}

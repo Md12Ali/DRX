@@ -1,0 +1,22 @@
+{# One lesson package. Expects `package`. #}
+<article class="price-card{% if package.is_popular %} price-card-popular{% endif %}" id="package-{{ package.slug }}">
+  {% if package.is_popular %}<p class="popular-tag">Most popular</p>{% endif %}
+  <h3>{{ package.name }}</h3>
+  <p class="price-big">{{ package.price_display }}<span> for {{ package.hours }} hours</span></p>
+  <p class="price-per-hour">{{ package.per_hour_display }} an hour{% if package.saving_pence %} · <strong>save {{ package.saving_display }}</strong>{% endif %}</p>
+  {% if package.description %}<p class="muted">{{ package.description }}</p>{% endif %}
+  {% if user.is_authenticated %}
+    {% if not is_instructor %}
+      <form method="post" action="{% url 'packages:buy' package.slug %}" data-loading-text="Opening secure checkout…">
+        {% csrf_token %}
+        <button type="submit" class="button {% if package.is_popular %}button-accent{% else %}button-dark{% endif %} button-block">
+          Buy {{ package.hours }} hours<span class="visually-hidden"> ({{ package.name }} package)</span>
+        </button>
+      </form>
+    {% endif %}
+  {% else %}
+    <a class="button {% if package.is_popular %}button-accent{% else %}button-dark{% endif %} button-block" href="{% url 'accounts:register' %}">
+      Sign up to buy<span class="visually-hidden"> the {{ package.name }} package</span>
+    </a>
+  {% endif %}
+</article>

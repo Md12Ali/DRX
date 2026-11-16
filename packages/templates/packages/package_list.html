@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Prices and lesson packages{% endblock %}
+{% block meta_description %}Driving lessons in East London from {{ hourly_rate }} an hour. Save with 5, 10, 20 and 30-hour packages, bought and used online.{% endblock %}
+
+{% block content %}
+<div class="page-heading page-heading-center">
+  <p class="eyebrow">Prices</p>
+  <h1>Pay as you go, or save with a package</h1>
+  <p class="muted">Buy hours now, book lessons with them whenever you like. Hours stay in your account until you use them.</p>
+  {% if balance_hours %}
+    <p class="balance-pill">You have <strong>{{ balance_hours }} hours</strong> in your account</p>
+  {% endif %}
+</div>
+
+<div class="pricing-grid pricing-grid-full">
+  <article class="price-card">
+    <h2 class="h3">Pay as you go</h2>
+    <p class="price-big">{{ hourly_rate }}<span>/hour</span></p>
+    <p class="price-per-hour">{% for label, price in payg_prices %}{{ label }} {{ price }}{% if not forloop.last %} · {% endif %}{% endfor %}</p>
+    <p class="muted">Pay by card each time you book. No commitment.</p>
+    {% if main_instructor and not is_instructor %}
+      <a class="button button-dark button-block" href="{% url 'bookings:create' main_instructor.slug %}">Book a lesson</a>
+    {% endif %}
+  </article>
+  {% for package in packages %}
+    {% include "includes/package_card.html" %}
+  {% endfor %}
+</div>
+
+<section class="panel narrow-panel" aria-labelledby="included-title">
+  <h2 id="included-title">Every lesson includes</h2>
+  <ul class="check-list">
+    <li>Pick-up and drop-off anywhere in {{ covered_list }}</li>
+    <li>Dual-controlled car</li>
+    <li>Skill ratings and notes after every lesson in your account</li>
+    <li>Free rescheduling and cancellation up to 24 hours before</li>
+  </ul>
+  <p class="fine-print">Packages are paid by card through Stripe. If you need a refund on unused package hours, get in touch.</p>
+</section>
+
+{% if purchases %}
+<section class="panel narrow-panel" aria-labelledby="history-title">
+  <h2 id="history-title">Your package purchases</h2>
+  <div class="table-wrap">
+    <table class="data-table">
+      <caption class="visually-hidden">Your package purchases</caption>
+      <thead><tr><th scope="col">Date</th><th scope="col">Package</th><th scope="col">Price</th><th scope="col">Status</th></tr></thead>
+      <tbody>
+        {% for purchase in purchases %}
+          <tr>
+            <td>{{ purchase.created_on|date:"j M Y" }}</td>
+            <td>{{ purchase.package.name }} ({{ purchase.hours }} hours)</td>
+            <td>{{ purchase.price_display }}</td>
+            <td><span class="status-pill status-{{ purchase.status }}">{{ purchase.get_status_display }}</span></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Access denied{% endblock %}
+
+{% block content %}
+<section class="error-page">
+  <p class="eyebrow">Error 403</p>
+  <h1>No entry.</h1>
+  <p>You don't have permission to see this page. If you think you should, try logging in with a different account.</p>
+  <div class="button-row">
+    <a class="button button-dark" href="{% url 'core:home' %}">Back to the home page</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}My diary{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <p class="eyebrow">Instructor diary</p>
+  <h1>Hi {{ instructor.first_name }}</h1>
+  <p class="muted">Your next 14 days of confirmed lessons.</p>
+</div>
+
+{% if to_complete %}
+<section class="panel panel-alert" aria-labelledby="signoff-title">
+  <h2 id="signoff-title">Lessons to sign off ({{ to_complete|length }})</h2>
+  <ul class="booking-list">
+    {% for booking in to_complete %}
+      {% include "includes/booking_row.html" with show_learner=True %}
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<section aria-labelledby="days-title">
+  <h2 id="days-title" class="visually-hidden">Next 14 days</h2>
+  <div class="diary-grid">
+    {% for day in days %}
+      <article class="diary-day{% if not day.working %} diary-off{% endif %}">
+        <h3><span>{{ day.date|date:"D" }}</span> {{ day.date|date:"j M" }}</h3>
+        {% for lesson in day.lessons %}
+          <a class="diary-lesson" href="{{ lesson.get_absolute_url }}">
+            <strong>{{ lesson.start|date:"H:i" }}–{{ lesson.end|date:"H:i" }}</strong>
+            <span>{{ lesson.learner.first_name|default:lesson.learner.username }}</span>
+          </a>
+        {% empty %}
+          <p class="muted">{% if day.working %}No lessons{% else %}Day off{% endif %}</p>
+        {% endfor %}
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="panel" aria-labelledby="learners-title">
+  <h2 id="learners-title">My learners</h2>
+  {% if learners %}
+    <ul class="chip-list">
+      {% for username, first_name in learners %}
+        <li><a class="chip chip-link" href="{% url 'progress:learner' username %}">{{ first_name|default:username }}</a></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="muted">Learners appear here once they book with you.</p>
+  {% endif %}
+</section>
+{% endblock %}

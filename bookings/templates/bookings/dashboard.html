@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}My lessons{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <p class="eyebrow">My lessons</p>
+  <h1>Hi {{ user.first_name|default:user.username }}</h1>
+</div>
+
+<div class="dashboard-grid dashboard-grid-3">
+  <section class="panel panel-dark" aria-labelledby="next-title">
+    <h2 id="next-title">Next lesson</h2>
+    {% if next_lesson %}
+      <p class="big-date">{{ next_lesson.start|date:"l j F" }}</p>
+      <p class="big-time">{{ next_lesson.start|date:"H:i" }} – {{ next_lesson.end|date:"H:i" }}</p>
+      <p>With {{ next_lesson.instructor.display_name }} · pick-up at {{ next_lesson.pickup_address }}</p>
+      <a class="button button-accent" href="{{ next_lesson.get_absolute_url }}">View lesson</a>
+    {% else %}
+      <p>You don't have a confirmed lesson coming up.</p>
+      <a class="button button-accent" href="{% if main_instructor %}{% url 'bookings:create' main_instructor.slug %}{% else %}{% url 'instructors:list' %}{% endif %}">Book a lesson</a>
+    {% endif %}
+  </section>
+
+  <section class="panel" aria-labelledby="progress-title">
+    <h2 id="progress-title">Test-ready score</h2>
+    <div class="score-ring" data-percent="{{ progress.percent }}" role="img" aria-label="{{ progress.percent }} percent test-ready">
+      <span class="score-value">{{ progress.percent }}%</span>
+    </div>
+    <p class="muted">{{ hours_driven|floatformat:"-1" }} hour{{ hours_driven|pluralize }} driven · {{ progress.rated_count }} of {{ progress.skill_count }} skills started</p>
+    <a href="{% url 'progress:mine' %}">See every skill &rarr;</a>
+  </section>
+
+  <section class="panel panel-amber" aria-labelledby="hours-title">
+    <h2 id="hours-title">Package hours</h2>
+    <p class="score-big score-dark">{{ package_hours }}<span> hours</span></p>
+    <p>Use them when you book, or top up and save.</p>
+    <a class="button button-dark button-small" href="{% url 'packages:list' %}">Buy a package</a>
+  </section>
+</div>
+
+<section class="panel" aria-labelledby="upcoming-title">
+  <div class="section-heading-row">
+    <h2 id="upcoming-title">Upcoming</h2>
+    <a class="button button-dark button-small" href="{% if main_instructor %}{% url 'bookings:create' main_instructor.slug %}{% else %}{% url 'instructors:list' %}{% endif %}">Book another lesson</a>
+  </div>
+  {% if upcoming %}
+    <ul class="booking-list">
+      {% for booking in upcoming %}
+        {% include "includes/booking_row.html" %}
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty-state">No upcoming lessons yet.</p>
+  {% endif %}
+</section>
+
+{% if past %}
+<section class="panel" aria-labelledby="past-title">
+  <h2 id="past-title">Recent lessons</h2>
+  <ul class="booking-list">
+    {% for booking in past %}
+      {% include "includes/booking_row.html" %}
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% endblock %}

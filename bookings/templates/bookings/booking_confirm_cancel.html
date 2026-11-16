@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Cancel lesson{% endblock %}
+
+{% block content %}
+<section class="form-card confirm-card" aria-labelledby="cancel-title">
+  <h1 id="cancel-title">Cancel this lesson?</h1>
+  <p><strong>{{ booking.start|date:"l j F, H:i" }}</strong> with {{ booking.instructor.display_name }} ({{ booking.reference }}).</p>
+  {% if booking.status == "confirmed" and booking.paid_with_package %}
+    <p><strong>{{ booking.hours_label }}</strong> will go back into your package.</p>
+  {% elif booking.status == "confirmed" %}
+    <p>You'll get a full refund of <strong>{{ booking.price_display }}</strong> to your card.</p>
+  {% else %}
+    <p>You haven't paid for this lesson, so nothing will be charged.</p>
+  {% endif %}
+  <form method="post" class="button-row" data-loading-text="Cancelling…">
+    {% csrf_token %}
+    <button type="submit" class="button button-danger">Yes, cancel it</button>
+    <a class="button button-ghost" href="{{ booking.get_absolute_url }}">No, keep my lesson</a>
+  </form>
+</section>
+{% endblock %}

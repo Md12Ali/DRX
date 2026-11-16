@@ -1,0 +1,166 @@
+Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+Found 117 test(s).
+Operations to perform:
+  Synchronize unmigrated apps: humanize, messages, runserver_nostatic, staticfiles
+  Apply all migrations: accounts, admin, auth, bookings, contenttypes, instructors, packages, payments, progress, sessions
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  Applying accounts.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying instructors.0001_initial... OK
+  Applying bookings.0001_initial... OK
+  Applying bookings.0002_pickup_postcode_payment_method... OK
+  Applying instructors.0002_qualification_and_rate... OK
+  Applying packages.0001_initial... OK
+  Applying packages.0002_seed_packages... OK
+  Applying payments.0001_initial... OK
+  Applying progress.0001_initial... OK
+  Applying progress.0002_seed_syllabus... OK
+  Applying sessions.0001_initial...test_instructor_cannot_self_delete (accounts.tests.AuthViewTests.test_instructor_cannot_self_delete) ... /opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/django/core/handlers/base.py:61: UserWarning: No directory at: /home/runner/work/DRX/DRX/staticfiles/
+  mw_instance = middleware(adapted_handler)
+ok
+test_learner_can_delete_account (accounts.tests.AuthViewTests.test_learner_can_delete_account) ... ok
+test_login_and_register_redirect_logged_in_users (accounts.tests.AuthViewTests.test_login_and_register_redirect_logged_in_users) ... ok
+test_logout_requires_post (accounts.tests.AuthViewTests.test_logout_requires_post) ... ok
+test_profile_requires_login (accounts.tests.AuthViewTests.test_profile_requires_login) ... ok
+test_profile_update (accounts.tests.AuthViewTests.test_profile_update) ... ok
+test_register_logs_in_and_asks_for_details (accounts.tests.AuthViewTests.test_register_logs_in_and_asks_for_details) ... ok
+test_profile_rejects_bad_phone_and_postcode (accounts.tests.FormTests.test_profile_rejects_bad_phone_and_postcode) ... ok
+test_profile_rejects_postcode_outside_area (accounts.tests.FormTests.test_profile_rejects_postcode_outside_area) ... ok
+test_profile_tidies_postcode (accounts.tests.FormTests.test_profile_tidies_postcode) ... ok
+test_register_requires_unique_email (accounts.tests.FormTests.test_register_requires_unique_email) ... ok
+test_full_pickup_address (accounts.tests.ProfileModelTests.test_full_pickup_address) ... ok
+test_is_instructor (accounts.tests.ProfileModelTests.test_is_instructor) ... ok
+test_profile_created_automatically (accounts.tests.ProfileModelTests.test_profile_created_automatically) ... ok
+test_cancel_only_once (bookings.tests.BookingModelTests.test_cancel_only_once) ... ok
+test_change_cutoff (bookings.tests.BookingModelTests.test_change_cutoff) ... ok
+test_end_and_reference_are_set (bookings.tests.BookingModelTests.test_end_and_reference_are_set) ... ok
+test_stale_pending_bookings_expire_and_free_the_slot (bookings.tests.BookingModelTests.test_stale_pending_bookings_expire_and_free_the_slot) ... ok
+test_available_times_skip_cancelled_bookings (bookings.tests.BookingRuleTests.test_available_times_skip_cancelled_bookings) ... ok
+test_day_off (bookings.tests.BookingRuleTests.test_day_off) ... ok
+test_instructor_clash (bookings.tests.BookingRuleTests.test_instructor_clash) ... ok
+test_learner_clash_with_other_instructor (bookings.tests.BookingRuleTests.test_learner_clash_with_other_instructor) ... ok
+test_odd_start_minute (bookings.tests.BookingRuleTests.test_odd_start_minute) ... ok
+test_outside_working_hours (bookings.tests.BookingRuleTests.test_outside_working_hours) ... ok
+test_rescheduling_ignores_own_booking (bookings.tests.BookingRuleTests.test_rescheduling_ignores_own_booking) ... ok
+test_short_notice_rejected (bookings.tests.BookingRuleTests.test_short_notice_rejected) ... ok
+test_too_far_ahead_rejected (bookings.tests.BookingRuleTests.test_too_far_ahead_rejected) ... ok
+test_valid_booking_has_no_problems (bookings.tests.BookingRuleTests.test_valid_booking_has_no_problems) ... ok
+test_cannot_complete_future_lesson (bookings.tests.InstructorViewTests.test_cannot_complete_future_lesson) ... ok
+test_cannot_touch_another_instructors_booking (bookings.tests.InstructorViewTests.test_cannot_touch_another_instructors_booking) ... ok
+test_complete_lesson (bookings.tests.InstructorViewTests.test_complete_lesson) ... ok
+test_dashboard_redirects_instructors_to_diary (bookings.tests.InstructorViewTests.test_dashboard_redirects_instructors_to_diary) ... ok
+test_diary_shows_lessons (bookings.tests.InstructorViewTests.test_diary_shows_lessons) ... ok
+test_instructor_cancel_refunds (bookings.tests.InstructorViewTests.test_instructor_cancel_refunds) ... ok
+test_cancel_package_booking_returns_hours (bookings.tests.LearnerViewTests.test_cancel_package_booking_returns_hours) ... ok
+test_cancel_paid_booking_refunds (bookings.tests.LearnerViewTests.test_cancel_paid_booking_refunds) ... ok
+test_cancel_unpaid_booking (bookings.tests.LearnerViewTests.test_cancel_unpaid_booking) ... ok
+test_cannot_reschedule_inside_cutoff (bookings.tests.LearnerViewTests.test_cannot_reschedule_inside_cutoff) ... ok
+test_cannot_see_someone_elses_booking (bookings.tests.LearnerViewTests.test_cannot_see_someone_elses_booking) ... ok
+test_create_booking_form_prefills_address (bookings.tests.LearnerViewTests.test_create_booking_form_prefills_address) ... ok
+test_create_booking_then_pay (bookings.tests.LearnerViewTests.test_create_booking_then_pay) ... ok
+test_dashboard_lists_bookings (bookings.tests.LearnerViewTests.test_dashboard_lists_bookings) ... ok
+test_diary_is_for_instructors_only (bookings.tests.LearnerViewTests.test_diary_is_for_instructors_only) ... ok
+test_incomplete_profile_is_sent_to_details_page (bookings.tests.LearnerViewTests.test_incomplete_profile_is_sent_to_details_page) ... ok
+test_invalid_booking_is_not_saved (bookings.tests.LearnerViewTests.test_invalid_booking_is_not_saved) ... ok
+test_pickup_outside_area_rejected (bookings.tests.LearnerViewTests.test_pickup_outside_area_rejected) ... ok
+test_reschedule (bookings.tests.LearnerViewTests.test_reschedule) ... ok
+test_about_page (core.tests.CorePageTests.test_about_page) ... ok
+test_custom_404 (core.tests.CorePageTests.test_custom_404) ... ok
+test_home_page (core.tests.CorePageTests.test_home_page) ... ok
+test_home_postcode_checker (core.tests.CorePageTests.test_home_postcode_checker) ... ok
+test_postcode_check_api (core.tests.CorePageTests.test_postcode_check_api) ... ok
+test_covered_areas (core.tests.PostcodeTests.test_covered_areas) ... ok
+test_district (core.tests.PostcodeTests.test_district) ... ok
+test_list_display (core.tests.PostcodeTests.test_list_display) ... ok
+test_normalise (core.tests.PostcodeTests.test_normalise) ... ok
+test_bad_date (instructors.tests.AvailabilityApiTests.test_bad_date) ... ok
+test_bad_duration (instructors.tests.AvailabilityApiTests.test_bad_duration) ... ok
+test_booked_times_are_removed (instructors.tests.AvailabilityApiTests.test_booked_times_are_removed) ... ok
+test_detail_shows_prices (instructors.tests.DirectoryViewTests.test_detail_shows_prices) ... ok
+test_list_filters_by_transmission (instructors.tests.DirectoryViewTests.test_list_filters_by_transmission) ... ok
+test_list_searches_areas (instructors.tests.DirectoryViewTests.test_list_searches_areas) ... ok
+test_single_instructor_list_redirects_to_profile (instructors.tests.DirectoryViewTests.test_single_instructor_list_redirects_to_profile) ... ok
+test_unknown_instructor_404 (instructors.tests.DirectoryViewTests.test_unknown_instructor_404) ... ok
+test_instructor_updates_rate_and_days (instructors.tests.InstructorEditTests.test_instructor_updates_rate_and_days) ... ok
+test_learners_cannot_edit (instructors.tests.InstructorEditTests.test_learners_cannot_edit) ... ok
+test_working_day_must_be_an_hour (instructors.tests.InstructorEditTests.test_working_day_must_be_an_hour) ... ok
+test_candidate_start_times_fit_working_day (instructors.tests.InstructorModelTests.test_candidate_start_times_fit_working_day) ... ok
+test_display_helpers (instructors.tests.InstructorModelTests.test_display_helpers) ... ok
+test_lesson_price_is_pro_rata (instructors.tests.InstructorModelTests.test_lesson_price_is_pro_rata) ... ok
+test_main_instructor_prefers_one_taking_bookings (instructors.tests.InstructorModelTests.test_main_instructor_prefers_one_taking_bookings) ... ok
+test_new_instructors_are_shown_as_trainees (instructors.tests.InstructorModelTests.test_new_instructors_are_shown_as_trainees) ... ok
+test_no_times_on_days_off (instructors.tests.InstructorModelTests.test_no_times_on_days_off) ... ok
+test_teaches_transmission (instructors.tests.InstructorModelTests.test_teaches_transmission) ... ok
+test_cannot_review_without_completed_lesson (instructors.tests.ReviewTests.test_cannot_review_without_completed_lesson) ... ok
+test_edit_and_delete_own_review_only (instructors.tests.ReviewTests.test_edit_and_delete_own_review_only) ... ok
+test_review_after_completed_lesson (instructors.tests.ReviewTests.test_review_after_completed_lesson) ... ok
+test_only_paid_purchases_count (packages.tests.BalanceTests.test_only_paid_purchases_count) ... ok
+test_package_lessons_use_hours_and_cancelling_returns_them (packages.tests.BalanceTests.test_package_lessons_use_hours_and_cancelling_returns_them) ... ok
+test_buy_redirects_to_stripe (packages.tests.BuyPackageTests.test_buy_redirects_to_stripe) ... ok
+test_buying_requires_login (packages.tests.BuyPackageTests.test_buying_requires_login) ... ok
+test_cancelled (packages.tests.BuyPackageTests.test_cancelled) ... ok
+test_prices_page_is_public (packages.tests.BuyPackageTests.test_prices_page_is_public) ... ok
+test_stripe_error (packages.tests.BuyPackageTests.test_stripe_error) ... Stripe checkout failed for package purchase 1: Down
+ok
+test_success_adds_hours (packages.tests.BuyPackageTests.test_success_adds_hours) ... ok
+test_webhook_marks_package_paid (packages.tests.BuyPackageTests.test_webhook_marks_package_paid) ... ok
+test_hours_display (packages.tests.PackageModelTests.test_hours_display) ... ok
+test_savings_and_per_hour (packages.tests.PackageModelTests.test_savings_and_per_hour) ... ok
+test_seeded_packages (packages.tests.PackageModelTests.test_seeded_packages) ... ok
+test_checkout_hides_package_when_not_enough (packages.tests.PayWithPackageTests.test_checkout_hides_package_when_not_enough) ... ok
+test_checkout_offers_package_when_enough_hours (packages.tests.PayWithPackageTests.test_checkout_offers_package_when_enough_hours) ... ok
+test_get_not_allowed (packages.tests.PayWithPackageTests.test_get_not_allowed) ... ok
+test_not_enough_hours_is_refused (packages.tests.PayWithPackageTests.test_not_enough_hours_is_refused) ... ok
+test_pay_with_package_confirms_booking (packages.tests.PayWithPackageTests.test_pay_with_package_confirms_booking) ... ok
+test_cancelled_page (payments.tests.CheckoutTests.test_cancelled_page) ... ok
+test_expired_hold_cannot_be_paid (payments.tests.CheckoutTests.test_expired_hold_cannot_be_paid) ... ok
+test_missing_keys (payments.tests.CheckoutTests.test_missing_keys) ... ok
+test_other_learners_cannot_pay (payments.tests.CheckoutTests.test_other_learners_cannot_pay) ... ok
+test_redirects_to_stripe (payments.tests.CheckoutTests.test_redirects_to_stripe) ... ok
+test_stripe_error_is_reported (payments.tests.CheckoutTests.test_stripe_error_is_reported) ... Stripe checkout failed for DRX-00001: Network down
+ok
+test_success_confirms_booking (payments.tests.CheckoutTests.test_success_confirms_booking) ... ok
+test_summary_page (payments.tests.CheckoutTests.test_summary_page) ... ok
+test_unpaid_session_not_trusted (payments.tests.CheckoutTests.test_unpaid_session_not_trusted) ... ok
+test_failed_refund_is_flagged (payments.tests.RefundTests.test_failed_refund_is_flagged) ... Refund failed for DRX-00001: Down
+ok
+test_successful_refund (payments.tests.RefundTests.test_successful_refund) ... ok
+test_unpaid_booking_needs_no_refund (payments.tests.RefundTests.test_unpaid_booking_needs_no_refund) ... ok
+test_bad_signature (payments.tests.WebhookTests.test_bad_signature) ... ok
+test_completed_event_confirms (payments.tests.WebhookTests.test_completed_event_confirms) ... ok
+test_expired_event_fails_payment (payments.tests.WebhookTests.test_expired_event_fails_payment) ... ok
+test_no_ratings_is_zero (progress.tests.ProgressSummaryTests.test_no_ratings_is_zero) ... ok
+test_one_weak_skill_blocks_test_ready (progress.tests.ProgressSummaryTests.test_one_weak_skill_blocks_test_ready) ... ok
+test_percent_and_test_ready (progress.tests.ProgressSummaryTests.test_percent_and_test_ready) ... ok
+test_instructor_must_teach_learner (progress.tests.ProgressViewTests.test_instructor_must_teach_learner) ... ok
+test_instructor_rates_skills (progress.tests.ProgressViewTests.test_instructor_rates_skills) ... ok
+test_learner_cannot_rate (progress.tests.ProgressViewTests.test_learner_cannot_rate) ... ok
+test_learner_sees_own_progress (progress.tests.ProgressViewTests.test_learner_sees_own_progress) ... ok
+test_syllabus_is_loaded_by_migration (progress.tests.SyllabusTests.test_syllabus_is_loaded_by_migration) ... ok
+
+----------------------------------------------------------------------
+Ran 117 tests in 48.315s
+
+OK
+Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+ OK
+System check identified no issues (0 silenced).

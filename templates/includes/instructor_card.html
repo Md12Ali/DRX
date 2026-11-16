@@ -1,0 +1,31 @@
+{# One instructor in a grid. Expects `instructor` (ideally annotated with ratings). #}
+<article class="instructor-card">
+  <div class="instructor-card-top">
+    {% include "includes/instructor_avatar.html" with size="lg" %}
+    <div>
+      <h3 class="instructor-card-name"><a href="{{ instructor.get_absolute_url }}">{{ instructor.display_name }}</a></h3>
+      <p class="rating-line">
+        {% if instructor.review_count %}
+          <span class="stars" aria-hidden="true">★</span>
+          <strong>{{ instructor.avg_rating|floatformat:1 }}</strong>
+          <span class="muted">({{ instructor.review_count }} review{{ instructor.review_count|pluralize }})</span>
+        {% else %}
+          <span class="muted">New on DRX</span>
+        {% endif %}
+      </p>
+    </div>
+  </div>
+  {% if instructor.tagline %}<p class="instructor-card-tagline">{{ instructor.tagline }}</p>{% endif %}
+  <ul class="chip-list" aria-label="Details">
+    <li class="chip">{{ instructor.get_teaches_display }}</li>
+    {% for area in instructor.area_list|slice:":3" %}<li class="chip chip-soft">{{ area }}</li>{% endfor %}
+  </ul>
+  <div class="instructor-card-footer">
+    <p class="price-tag"><strong>{{ instructor.hourly_rate_display }}</strong> <span>/ hour</span></p>
+    {% if instructor.is_accepting_pupils %}
+      <a class="button button-dark button-small" href="{{ instructor.get_absolute_url }}">View &amp; book<span class="visually-hidden"> with {{ instructor.display_name }}</span></a>
+    {% else %}
+      <span class="status-pill status-muted">Fully booked</span>
+    {% endif %}
+  </div>
+</article>

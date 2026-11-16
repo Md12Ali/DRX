@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}{{ learner.first_name|default:learner.username }}'s progress{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <a class="back-link" href="{% url 'bookings:diary' %}">&larr; Back to diary</a>
+  <p class="eyebrow">Learner progress</p>
+  <h1>{{ learner.get_full_name|default:learner.username }}</h1>
+  <p class="muted">Test-ready score <strong>{{ summary.percent }}%</strong>{% if summary.test_ready %} · ready to book a test{% endif %}</p>
+</div>
+
+<div class="profile-layout">
+  <section class="form-card form-card-wide" aria-labelledby="rate-title">
+    <h2 id="rate-title">Update skills</h2>
+    <p class="muted">Choose the level that best describes how the learner drove today.</p>
+    <form method="post" novalidate data-loading-text="Saving…">
+      {% csrf_token %}
+      {% for skill, field in form.skill_fields %}
+        <fieldset class="rating-fieldset">
+          <legend>{{ skill.name }} <span class="muted">· {{ skill.get_category_display }}</span></legend>
+          <div class="segmented">
+            {% for radio in field %}
+              <label class="segment">{{ radio.tag }}<span>{{ radio.choice_label }}</span></label>
+            {% endfor %}
+          </div>
+          {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </fieldset>
+      {% endfor %}
+      <div class="button-row sticky-actions">
+        <button type="submit" class="button button-dark">Save progress</button>
+      </div>
+    </form>
+  </section>
+
+  <aside class="booking-panel" aria-labelledby="recent-title">
+    <h2 id="recent-title">Recent lessons</h2>
+    {% for lesson in recent_lessons %}
+      <div class="recent-lesson">
+        <p><a href="{{ lesson.get_absolute_url }}">{{ lesson.start|date:"D j M" }}</a> · {{ lesson.get_duration_minutes_display }}</p>
+        {% if lesson.instructor_notes %}<p class="muted">{{ lesson.instructor_notes|truncatechars:120 }}</p>{% endif %}
+      </div>
+    {% empty %}
+      <p class="muted">No completed lessons yet.</p>
+    {% endfor %}
+  </aside>
+</div>
+{% endblock %}

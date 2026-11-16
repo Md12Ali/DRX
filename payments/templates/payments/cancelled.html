@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Payment cancelled{% endblock %}
+
+{% block content %}
+<section class="form-card result-card" aria-labelledby="cancel-title">
+  <p class="result-icon result-neutral" aria-hidden="true">&ndash;</p>
+  <h1 id="cancel-title">Payment cancelled</h1>
+  <p>No problem. You have not been charged.</p>
+  {% if booking.is_awaiting_payment %}
+    <p>We're still holding <strong>{{ booking.start|date:"l j F, H:i" }}</strong> for you until {{ booking.hold_expires_at|date:"H:i" }}.</p>
+  {% endif %}
+  <div class="button-row">
+    {% if booking.is_awaiting_payment %}
+      <a class="button button-accent" href="{% url 'payments:checkout' booking.pk %}">Try paying again</a>
+    {% endif %}
+    <a class="button button-ghost" href="{% url 'bookings:dashboard' %}">Go to my lessons</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}{% if is_edit %}Reschedule lesson{% else %}Book with {{ instructor.display_name }}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="booking-layout">
+  <section class="form-card form-card-wide" aria-labelledby="booking-title">
+    <a class="back-link" href="{% if is_edit %}{{ booking.get_absolute_url }}{% else %}{{ instructor.get_absolute_url }}{% endif %}">&larr; Back</a>
+    <h1 id="booking-title">{% if is_edit %}Reschedule your lesson{% else %}Book a lesson with {{ instructor.first_name }}{% endif %}</h1>
+    <p class="muted">
+      {{ instructor.first_name }} teaches {{ instructor.working_days_display }}, {{ instructor.day_start|time:"H:i" }}–{{ instructor.day_end|time:"H:i" }}.
+      Book at least 12 hours ahead.
+    </p>
+
+    <form method="post" class="stack-form booking-form" novalidate
+          data-loading-text="{% if is_edit %}Saving…{% else %}Holding your slot…{% endif %}"
+          {% if is_edit %}data-booking-id="{{ booking.pk }}"{% endif %}>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="form-errors" role="alert">{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>
+      {% endif %}
+
+      {% include "includes/form_field.html" with field=form.duration_minutes %}
+      {% include "includes/form_field.html" with field=form.date %}
+
+      <div class="slot-picker" id="slot-picker" hidden>
+        <p class="slot-picker-label" id="slot-picker-label">Free start times</p>
+        <div class="slot-grid" role="group" aria-labelledby="slot-picker-label"></div>
+        <p class="slot-status muted" aria-live="polite"></p>
+      </div>
+
+      {% include "includes/form_field.html" with field=form.start_time %}
+      {% include "includes/form_field.html" with field=form.pickup_address %}
+      {% include "includes/form_field.html" with field=form.pickup_postcode %}
+      {% include "includes/form_field.html" with field=form.learner_notes %}
+
+      <div class="button-row">
+        <button type="submit" class="button button-accent button-lg">{% if is_edit %}Save new time{% else %}Continue to payment{% endif %}</button>
+        <a class="button button-ghost" href="{% if is_edit %}{{ booking.get_absolute_url }}{% else %}{{ instructor.get_absolute_url }}{% endif %}">Cancel</a>
+      </div>
+    </form>
+  </section>
+
+  <aside class="booking-panel" aria-label="Lesson summary">
+    {% include "includes/instructor_avatar.html" with size="lg" %}
+    <h2>{{ instructor.display_name }}</h2>
+    <p class="muted">{{ instructor.get_teaches_display }} · {{ instructor.car|default:"Dual-control car" }}</p>
+    <ul class="price-list">
+      {% for label, price in instructor.price_table %}
+        <li><span>{{ label }}</span><strong>{{ price }}</strong></li>
+      {% endfor %}
+    </ul>
+    <p class="fine-print">{% if is_edit %}Moving a lesson is free. The price stays the same.{% else %}We'll hold your time for 35 minutes while you pay.{% endif %}</p>
+  </aside>
+</div>
+{% endblock %}

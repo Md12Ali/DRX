@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Edit your profile{% endblock %}
+
+{% block content %}
+<section class="form-card form-card-wide" aria-labelledby="edit-title">
+  <h1 id="edit-title">Your public profile</h1>
+  <p class="muted">Learners see this before they book. Your working days and hours decide which times they can choose.</p>
+
+  <form method="post" enctype="multipart/form-data" class="stack-form" novalidate data-loading-text="Saving…">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="form-errors" role="alert">{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>
+    {% endif %}
+    {% for field in form %}
+      {% include "includes/form_field.html" %}
+    {% endfor %}
+    <img id="photo-preview" class="image-preview" src="data:," alt="Preview of your new photo" hidden>
+    <div class="button-row">
+      <button type="submit" class="button button-dark">Save profile</button>
+      <a class="button button-ghost" href="{{ instructor.get_absolute_url }}">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

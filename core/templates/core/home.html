@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %}Driving lessons in East London{% endblock %}
+{% block main_class %}landing{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow eyebrow-light">Driving lessons · East London</p>
+      <h1 id="hero-title">Learn to drive with {% if instructor %}{{ instructor.first_name }}{% else %}DRX{% endif %}.<br><span class="highlight">Book online in 60 seconds.</span></h1>
+      <p class="hero-lede">
+        Patient one-to-one lessons around Bow, Hackney, Shoreditch, Islington and Canary Wharf.
+        Pick a time that suits you, pay securely online, and watch your progress to test day after every lesson.
+      </p>
+      <div class="button-row">
+        <a class="button button-accent button-lg" href="{% if instructor %}{% url 'bookings:create' instructor.slug %}{% else %}{% url 'accounts:register' %}{% endif %}">Book a lesson</a>
+        <a class="button button-outline-light button-lg" href="{% url 'packages:list' %}">See prices and packages</a>
+      </div>
+      <ul class="hero-points">
+        <li>{{ hourly_rate_display }} an hour, or save with a package</li>
+        <li>Free cancellation up to 24 hours before</li>
+        <li>Pick-up from your door</li>
+      </ul>
+    </div>
+
+    <div class="hero-visual" aria-hidden="true">
+      <div class="road"><span class="road-line"></span></div>
+      {% if instructor %}
+      <div class="hero-ticket">
+        <div class="ticket-head">
+          {% include "includes/instructor_avatar.html" with size="md" %}
+          <div>
+            <p class="ticket-name">{{ instructor.display_name }}</p>
+            <p class="ticket-meta">{% if instructor.is_adi %}Approved Driving Instructor{% else %}Trainee driving instructor{% endif %}</p>
+          </div>
+        </div>
+        <p class="ticket-time">{{ hourly_rate_display }}<span>/hour</span></p>
+        <p class="ticket-meta">{{ instructor.get_teaches_display }} lessons</p>
+        <div class="ticket-progress"><span class="fill-72"></span></div>
+        <p class="ticket-meta">Your test-ready score, updated every lesson</p>
+      </div>
+      {% endif %}
+      <div class="l-plate">L</div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats strip -->
+<section class="stats-strip" aria-label="Key facts">
+  <div class="container stats-grid">
+    <div><p class="stat-number">{{ hourly_rate_display }}</p><p class="stat-label">per hour, pay as you go</p></div>
+    <div><p class="stat-number">{{ covered_districts|length }}</p><p class="stat-label">postcode areas covered</p></div>
+    <div><p class="stat-number">16</p><p class="stat-label">skills tracked to test day</p></div>
+    <div><p class="stat-number">24h</p><p class="stat-label">free cancellation</p></div>
+  </div>
+</section>
+
+<!-- Prices -->
+<section class="section container" aria-labelledby="prices-title">
+  <div class="section-heading section-heading-row">
+    <div>
+      <p class="eyebrow">Prices</p>
+      <h2 id="prices-title">Simple prices. Bigger packages save more.</h2>
+    </div>
+    <a class="button button-ghost" href="{% url 'packages:list' %}">All packages</a>
+  </div>
+  <div class="pricing-grid">
+    <article class="price-card">
+      <h3>Pay as you go</h3>
+      <p class="price-big">{{ hourly_rate_display }}<span>/hour</span></p>
+      <p class="muted">Book and pay for one lesson at a time. 1, 1.5 or 2-hour lessons.</p>
+      <a class="button button-dark button-block" href="{% if instructor %}{% url 'bookings:create' instructor.slug %}{% else %}{% url 'accounts:register' %}{% endif %}">Book a lesson</a>
+    </article>
+    {% for package in packages %}
+      {% include "includes/package_card.html" %}
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Areas covered -->
+<section class="section section-tint" id="areas" aria-labelledby="areas-title">
+  <div class="container areas-grid">
+    <div>
+      <p class="eyebrow">Areas covered</p>
+      <h2 id="areas-title">Pick-ups across East and Central-East London</h2>
+      <p class="muted">Lessons start from your home, school or work in any of these postcode areas.</p>
+
+      <form method="get" action="{% url 'core:home' %}#areas" class="postcode-check js-postcode-check" role="search"
+            data-check-url="{% url 'core:postcode_check' %}"
+            data-book-url="{% if instructor %}{% url 'bookings:create' instructor.slug %}{% else %}{% url 'accounts:register' %}{% endif %}">
+        <label for="postcode-input">Do you cover my postcode?</label>
+        <div class="postcode-check-row">
+          <input type="text" id="postcode-input" name="postcode" maxlength="10" autocomplete="postal-code"
+                 placeholder="e.g. E3 5AA" value="{{ postcode_result.postcode|default:'' }}">
+          <button type="submit" class="button button-dark">Check</button>
+        </div>
+      </form>
+      <div class="postcode-result js-postcode-result" aria-live="polite">
+        {% if postcode_result %}
+          {% if not postcode_result.valid %}
+            <p class="result-no">That doesn't look like a UK postcode. Try something like E3 5AA.</p>
+          {% elif postcode_result.covered %}
+            <p class="result-yes">Yes! {{ postcode_result.postcode }} is in {{ postcode_result.district }} ({{ postcode_result.areas }}). <a href="{% if instructor %}{% url 'bookings:create' instructor.slug %}{% else %}{% url 'accounts:register' %}{% endif %}">Book a lesson</a></p>
+          {% else %}
+            <p class="result-no">Sorry, {{ postcode_result.postcode }} ({{ postcode_result.district }}) is outside the area I cover. You could choose a pick-up point in a covered area, like your school or work.</p>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+
+    <ul class="district-grid">
+      {% for code, places in covered_districts.items %}
+        <li class="district">
+          <span class="district-code">{{ code }}</span>
+          <span class="district-places">{{ places }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+<!-- How it works -->
+<section class="section container" aria-labelledby="how-title">
+  <div class="section-heading">
+    <p class="eyebrow">How it works</p>
+    <h2 id="how-title">From first lesson to full licence</h2>
+  </div>
+  <ol class="steps">
+    <li>
+      <h3>Create your account</h3>
+      <p>Add your pick-up address once. You'll never have to type it again.</p>
+    </li>
+    <li>
+      <h3>Book and pay online</h3>
+      <p>See live free times, choose your lesson length, then pay by card or use your package hours.</p>
+    </li>
+    <li>
+      <h3>Track every skill</h3>
+      <p>After each lesson I rate 16 syllabus skills and leave notes, so you always know what to practise next.</p>
+    </li>
+  </ol>
+</section>
+
+<!-- About the instructor -->
+{% if instructor %}
+<section class="section container" aria-labelledby="about-title">
+  <div class="about-card">
+    {% include "includes/instructor_avatar.html" with size="xl" %}
+    <div>
+      <p class="eyebrow">Your instructor</p>
+      <h2 id="about-title">Hi, I'm {{ instructor.first_name }}</h2>
+      <p class="qualification-badge">{{ instructor.get_qualification_display }}</p>
+      <p>{% if instructor.bio %}{{ instructor.bio|truncatewords:60 }}{% else %}{{ instructor.tagline|default:"Calm, patient lessons that fit around your week." }}{% endif %}</p>
+      <ul class="chip-list">
+        <li class="chip">{{ instructor.get_teaches_display }}</li>
+        {% if instructor.car %}<li class="chip chip-soft">{{ instructor.car }}</li>{% endif %}
+        {% if instructor.review_count %}<li class="chip chip-soft">★ {{ instructor.avg_rating|floatformat:1 }} from {{ instructor.review_count }} review{{ instructor.review_count|pluralize }}</li>{% endif %}
+      </ul>
+      <div class="button-row">
+        <a class="button button-dark" href="{{ instructor.get_absolute_url }}">More about me</a>
+        <a class="button button-ghost" href="{% url 'bookings:create' instructor.slug %}">Check my availability</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- Features bento -->
+<section class="section container" aria-labelledby="why-title">
+  <div class="section-heading">
+    <p class="eyebrow">Why learn with DRX</p>
+    <h2 id="why-title">Built around you, not paperwork</h2>
+  </div>
+  <div class="bento">
+    <article class="bento-card bento-dark bento-wide">
+      <h3>Your progress, in one place</h3>
+      <p>Every skill from cockpit drill to independent driving is rated on the five-step scale UK instructors use, from "Introduced" to "Independent". You'll know exactly how close you are to test day.</p>
+      <div class="mini-bars" aria-hidden="true">
+        <span class="bar-100">Moving off</span>
+        <span class="bar-80">Junctions</span>
+        <span class="bar-60">Roundabouts</span>
+        <span class="bar-40">Parallel parking</span>
+      </div>
+    </article>
+    <article class="bento-card bento-accent">
+      <h3>Packages that save</h3>
+      <p>Buy hours in advance and book with them whenever you like.</p>
+    </article>
+    <article class="bento-card">
+      <h3>Reschedule online</h3>
+      <p>Move a lesson yourself up to 24 hours before. No phone tag.</p>
+    </article>
+    <article class="bento-card">
+      <h3>Secure payments</h3>
+      <p>Card payments go through Stripe. Your card details never touch this site.</p>
+    </article>
+    <article class="bento-card">
+      <h3>Lesson notes</h3>
+      <p>Notes from every lesson stay in your account.</p>
+    </article>
+    <article class="bento-card">
+      <h3>Automatic refunds</h3>
+      <p>Cancel in time and card payments go straight back. Package hours return to your balance.</p>
+    </article>
+  </div>
+</section>
+
+<!-- Reviews (real reviews only) -->
+{% if latest_reviews %}
+<section class="section container" aria-labelledby="reviews-title">
+  <div class="section-heading">
+    <p class="eyebrow">Reviews</p>
+    <h2 id="reviews-title">What learners say</h2>
+  </div>
+  <div class="review-grid">
+    {% for review in latest_reviews %}
+      <figure class="review-card">
+        <p class="stars" aria-label="{{ review.rating }} out of 5 stars">{{ review.stars }}</p>
+        <blockquote>{{ review.comment|truncatechars:220 }}</blockquote>
+        <figcaption>{{ review.learner.first_name|default:"A learner" }} · {{ review.created_on|date:"F Y" }}</figcaption>
+      </figure>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- FAQ -->
+<section class="section container faq" aria-labelledby="faq-title">
+  <div class="section-heading">
+    <p class="eyebrow">Questions</p>
+    <h2 id="faq-title">Good to know</h2>
+  </div>
+  <details>
+    <summary>Do I need a provisional licence?</summary>
+    <p>Yes. You need a valid provisional licence before your first lesson. You can apply on GOV.UK from age 15 years and 9 months, and drive from 17.</p>
+  </details>
+  <details>
+    <summary>How do packages work?</summary>
+    <p>Buy a package and the hours go into your account. When you book, choose "Use package hours" instead of paying by card. If you cancel in time, the hours go back into your balance.</p>
+  </details>
+  <details>
+    <summary>Where do lessons start?</summary>
+    <p>I pick you up from any address in {{ covered_list }}. You can change the pick-up for each lesson.</p>
+  </details>
+  <details>
+    <summary>What if I need to cancel?</summary>
+    <p>Cancel or reschedule in your account up to 24 hours before the lesson. Card payments are refunded and package hours are returned. Inside 24 hours, please call me.</p>
+  </details>
+</section>
+
+<!-- Final call to action -->
+<section class="final-cta">
+  <div class="container final-cta-inner">
+    <h2>Ready when you are.</h2>
+    <p>Create a free account and book your first lesson today.</p>
+    <a class="button button-accent button-lg" href="{% if user.is_authenticated and instructor %}{% url 'bookings:create' instructor.slug %}{% else %}{% url 'accounts:register' %}{% endif %}">Book your first lesson</a>
+  </div>
+</section>
+{% endblock %}
