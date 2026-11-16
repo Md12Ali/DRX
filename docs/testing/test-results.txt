@@ -1,5 +1,5 @@
 Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
-Found 127 test(s).
+Found 130 test(s).
 Operations to perform:
   Synchronize unmigrated apps: humanize, messages, runserver_nostatic, staticfiles
   Apply all migrations: accounts, admin, auth, bookings, contenttypes, instructors, packages, payments, progress, sessions
@@ -29,6 +29,7 @@ Running migrations:
   Applying instructors.0001_initial... OK
   Applying bookings.0001_initial... OK
   Applying bookings.0002_pickup_postcode_payment_method... OK
+  Applying bookings.0003_remove_ninety_minute_lessons... OK
   Applying instructors.0002_qualification_and_rate... OK
   Applying instructors.0003_default_automatic... OK
   Applying packages.0001_initial... OK
@@ -54,7 +55,7 @@ test_is_instructor (accounts.tests.ProfileModelTests.test_is_instructor) ... ok
 test_profile_created_automatically (accounts.tests.ProfileModelTests.test_profile_created_automatically) ... ok
 test_cancel_only_once (bookings.tests.BookingModelTests.test_cancel_only_once) ... ok
 test_change_cutoff (bookings.tests.BookingModelTests.test_change_cutoff) ... ok
-test_end_and_reference_are_set (bookings.tests.BookingModelTests.test_end_and_reference_are_set) ... ok
+test_end_and_reference_are_set (bookings.tests.BookingModelTests.test_end_and_reference_are_set) ... FAIL
 test_stale_pending_bookings_expire_and_free_the_slot (bookings.tests.BookingModelTests.test_stale_pending_bookings_expire_and_free_the_slot) ... ok
 test_available_times_skip_cancelled_bookings (bookings.tests.BookingRuleTests.test_available_times_skip_cancelled_bookings) ... ok
 test_day_off (bookings.tests.BookingRuleTests.test_day_off) ... ok
@@ -78,13 +79,16 @@ test_cancel_unpaid_booking (bookings.tests.LearnerViewTests.test_cancel_unpaid_b
 test_cannot_reschedule_inside_cutoff (bookings.tests.LearnerViewTests.test_cannot_reschedule_inside_cutoff) ... ok
 test_cannot_see_someone_elses_booking (bookings.tests.LearnerViewTests.test_cannot_see_someone_elses_booking) ... ok
 test_create_booking_form_prefills_address (bookings.tests.LearnerViewTests.test_create_booking_form_prefills_address) ... ok
-test_create_booking_then_pay (bookings.tests.LearnerViewTests.test_create_booking_then_pay) ... ok
+test_create_booking_then_pay (bookings.tests.LearnerViewTests.test_create_booking_then_pay) ... FAIL
 test_dashboard_lists_bookings (bookings.tests.LearnerViewTests.test_dashboard_lists_bookings) ... ok
 test_diary_is_for_instructors_only (bookings.tests.LearnerViewTests.test_diary_is_for_instructors_only) ... ok
 test_incomplete_profile_is_sent_to_details_page (bookings.tests.LearnerViewTests.test_incomplete_profile_is_sent_to_details_page) ... ok
 test_invalid_booking_is_not_saved (bookings.tests.LearnerViewTests.test_invalid_booking_is_not_saved) ... ok
 test_pickup_outside_area_rejected (bookings.tests.LearnerViewTests.test_pickup_outside_area_rejected) ... ok
 test_reschedule (bookings.tests.LearnerViewTests.test_reschedule) ... ok
+test_a_ninety_minute_booking_is_refused (bookings.tests.LessonLengthTests.test_a_ninety_minute_booking_is_refused) ... ok
+test_only_one_and_two_hours_are_offered (bookings.tests.LessonLengthTests.test_only_one_and_two_hours_are_offered) ... ok
+test_timetable_ignores_a_ninety_minute_request (bookings.tests.LessonLengthTests.test_timetable_ignores_a_ninety_minute_request) ... ok
 test_booking_form_is_prefilled_from_the_timetable (bookings.tests.TimetableTests.test_booking_form_is_prefilled_from_the_timetable) ... ok
 test_days_off_are_marked (bookings.tests.TimetableTests.test_days_off_are_marked) ... ok
 test_free_booked_and_own_slots (bookings.tests.TimetableTests.test_free_booked_and_own_slots) ... ok
@@ -106,7 +110,7 @@ test_normalise (core.tests.PostcodeTests.test_normalise) ... ok
 test_bad_date (instructors.tests.AvailabilityApiTests.test_bad_date) ... ok
 test_bad_duration (instructors.tests.AvailabilityApiTests.test_bad_duration) ... ok
 test_booked_times_are_removed (instructors.tests.AvailabilityApiTests.test_booked_times_are_removed) ... ok
-test_detail_shows_prices (instructors.tests.DirectoryViewTests.test_detail_shows_prices) ... ok
+test_detail_shows_prices (instructors.tests.DirectoryViewTests.test_detail_shows_prices) ... FAIL
 test_list_filters_by_transmission (instructors.tests.DirectoryViewTests.test_list_filters_by_transmission) ... ok
 test_list_searches_areas (instructors.tests.DirectoryViewTests.test_list_searches_areas) ... ok
 test_single_instructor_list_redirects_to_profile (instructors.tests.DirectoryViewTests.test_single_instructor_list_redirects_to_profile) ... ok
@@ -169,10 +173,38 @@ test_learner_cannot_rate (progress.tests.ProgressViewTests.test_learner_cannot_r
 test_learner_sees_own_progress (progress.tests.ProgressViewTests.test_learner_sees_own_progress) ... ok
 test_syllabus_is_loaded_by_migration (progress.tests.SyllabusTests.test_syllabus_is_loaded_by_migration) ... ok
 
+======================================================================
+FAIL: test_end_and_reference_are_set (bookings.tests.BookingModelTests.test_end_and_reference_are_set)
 ----------------------------------------------------------------------
-Ran 127 tests in 71.668s
+Traceback (most recent call last):
+  File "/home/runner/work/DRX/DRX/bookings/tests.py", line 24, in test_end_and_reference_are_set
+    self.assertEqual(booking.price_display, "£52.50")
+AssertionError: '£70.00' != '£52.50'
+- £70.00
++ £52.50
 
-OK
+
+======================================================================
+FAIL: test_create_booking_then_pay (bookings.tests.LearnerViewTests.test_create_booking_then_pay)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/runner/work/DRX/DRX/bookings/tests.py", line 139, in test_create_booking_then_pay
+    self.assertEqual(booking.price_pence, 5250)
+AssertionError: 7000 != 5250
+
+======================================================================
+FAIL: test_detail_shows_prices (instructors.tests.DirectoryViewTests.test_detail_shows_prices)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/runner/work/DRX/DRX/instructors/tests.py", line 79, in test_detail_shows_prices
+    self.assertContains(response, "£52.50")
+AssertionError: False is not true : Couldn't find '£52.50' in the following response
+b'\n<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <meta name="description" content="Book driving lessons with Sam Sam in Ilford. ">\n  <title>Sam Sam, driving instructor \xc2\xb7 DRX</title>\n  <link rel="icon" href="/static/images/favicon.svg" type="image/svg+xml">\n  <link rel="preconnect" href="https://fonts.googleapis.com">\n  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap">\n  <link rel="stylesheet" href="/static/css/style.css">\n</head>\n<body>\n  <a class="skip-link" href="#main">Skip to main content</a>\n\n  <!-- Header and main navigation -->\n  <header class="site-header">\n    <nav class="nav container" aria-label="Main">\n      <a class="brand" href="/">\n        <img class="brand-logo" src="/static/images/logo.svg" alt="DRX home" width="141" height="44">\n      </a>\n\n      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu">\n        <span class="visually-hidden">Open menu</span>\n        <span class="nav-toggle-bars" aria-hidden="true"></span>\n      </button>\n\n      \n      <ul class="nav-menu" id="nav-menu">\n        \n          \n            <li><a href="/instructors/sam/" aria-current="page">About me</a></li>\n          \n          <li><a href="/prices/">Prices</a></li>\n          \n            <li><a href="/bookings/timetable/sam/">Timetable</a></li>\n          \n          <li><a href="/#areas">Areas</a></li>\n          \n            <li><a href="/about/">How it works</a></li>\n          \n        \n\n        <li><a class="nav-phone" href="tel:+447476283894"><span aria-hidden="true">&#9742;</span> 07476 283894</a></li>\n        \n          <li><a href="/accounts/login/">Log in</a></li>\n          <li><a class="button button-accent" href="/accounts/register/">Book a lesson</a></li>\n        \n      </ul>\n      \n    </nav>\n  </header>\n\n  <!-- Feedback messages (also used by JavaScript) -->\n  <div class="messages container" id="messages" aria-live="polite">\n    \n  </div>\n\n  <main id="main" class="container page">\n    \n<div class="profile-layout">\n  <section class="profile-main" aria-labelledby="instructor-name">\n    <a class="back-link" href="/">&larr; Home</a>\n\n    <header class="instructor-header">\n      \n  <span class="avatar avatar-xl avatar-initials" aria-hidden="true">SS</span>\n\n\n      <div>\n        <h1 id="instructor-name">Sam Sam</h1>\n        \n        <p class="rating-line">\n          \n            <span class="muted">No reviews yet</span>\n          \n        </p>\n      </div>\n    </header>\n\n    <dl class="fact-grid">\n      <div><dt>Teaches</dt><dd>Manual</dd></div>\n      <div><dt>Car</dt><dd>Dual-control car</dd></div>\n      <div><dt>Areas</dt><dd>Ilford</dd></div>\n      <div><dt>Hours</dt><dd>Mon, Tue, Wed, Thu, Fri, Sat, Sun, 08:00\xe2\x80\x9320:00</dd></div>\n    </dl>\n\n    <h2>Why learn with Sam</h2>\n    \n<ul class="highlight-list">\n  <li><strong>Automatic car.</strong> No clutch or gears to worry about, so you can focus on the road.</li>\n  <li><strong>Calm and patient.</strong> One-to-one lessons at your pace, with no pressure.</li>\n  <li><strong>Planned around you.</strong> Every lesson builds on what you need to work on next.</li>\n  <li><strong>Clear progress.</strong> Notes and an updated test-ready score after every lesson.</li>\n  <li><strong>Door-to-door.</strong> Pick-up from your home, school or work in E1, E2, E3, E8, E9, E14, EC1, EC2 and N1.</li>\n  <li><strong>Flexible.</strong> 1 or 2-hour lessons, and free changes up to 24 hours before.</li>\n</ul>\n\n  <p class="licence-note">Licensed by DVSA as a trainee driving instructor, working towards the final ADI qualification.</p>\n\n\n\n    \n\n    \n      <h2>Free slots in the next two weeks</h2>\n      <p class="muted">Number of free one-hour slots each day. Pick a day to start booking, or\n        <a href="/bookings/timetable/sam/">open the full timetable</a> to see every free and booked time.</p>\n      <ul class="availability-strip">\n        \n          <li>\n            \n              <span class="day-chip day-full">\n                <span class="day-name">Mon</span>\n                <span class="day-num">16</span>\n                <span class="day-count">Full</span>\n              </span>\n            \n          </li>\n        \n          <li>\n            \n              <a class="day-chip day-free" href="/bookings/new/sam/?date=2026-11-17">\n                <span class="day-name">Tue</span>\n                <span class="day-num">17</span>\n                <span class="day-count">23 free</span>\n              </a>\n            \n          </li>\n        \n          <li>\n            \n              <a class="day-chip day-free" href="/bookings/new/sam/?date=2026-11-18">\n                <span class="day-name">Wed</span>\n                <span class="day-num">18</span>\n                <span class="day-count">23 free</span>\n              </a>\n            \n          </li>\n        \n          <li>\n            \n              <a class="day-chip day-free" href="/bookings/new/sam/?date=2026-11-19">\n                <span class="day-name">Thu</span>\n                <span class="day-num">19</span>\n                <span class="day-count">23 free</span>\n              </a>\n            \n          </li>\n        \n          <li>\n            \n              <a class="day-chip day-free" href="/bookings/new/sam/?date=2026-11-20">\n                <span class="day-name">Fri</span>\n                <span class="day-num">20</span>\n                <span class="day-count">23 free</span>\n              </a>\n            \n          </li>\n        \n          <li>\n            \n              <a class="day-chip day-free" href="/bookings/new/sam/?date=2026-11-21">\n                <span class="day-name">Sat</span>\n                <span class="day-num">21</span>\n                <span class="day-count">23 free</span>\n              </a>\n            \n          </li>\n        \n          <li>\n            \n              <a class="day-chip day-free" href="/bookings/new/sam/?date=2026-11-22">\n                <span class="day-name">Sun</span>\n                <span class="day-num">22</span>\n                <span class="day-count">23 free</span>\n              </a>\n            \n          </li>\n        \n          <li>\n            \n              <a class="day-chip day-free" href="/bookings/new/sam/?date=2026-11-23">\n                <span class="day-name">Mon</span>\n                <span class="day-num">23</span>\n                <span class="day-count">23 free</span>\n              </a>\n            \n          </li>\n        \n          <li>\n            \n              <a class="day-chip day-free" href="/bookings/new/sam/?date=2026-11-24">\n                <span class="day-name">Tue</span>\n                <span class="day-num">24</span>\n                <span class="day-count">23 free</span>\n              </a>\n            \n          </li>\n        \n          <li>\n            \n              <a class="day-chip day-free" href="/bookings/new/sam/?date=2026-11-25">\n                <span class="day-name">Wed</span>\n                <span class="day-num">25</span>\n                <span class="day-count">23 free</span>\n              </a>\n            \n          </li>\n        \n          <li>\n            \n              <a class="day-chip day-free" href="/bookings/new/sam/?date=2026-11-26">\n                <span class="day-name">Thu</span>\n                <span class="day-num">26</span>\n                <span class="day-count">23 free</span>\n              </a>\n            \n          </li>\n        \n          <li>\n            \n              <a class="day-chip day-free" href="/bookings/new/sam/?date=2026-11-27">\n                <span class="day-name">Fri</span>\n                <span class="day-num">27</span>\n                <span class="day-count">23 free</span>\n              </a>\n            \n          </li>\n        \n          <li>\n            \n              <a class="day-chip day-free" href="/bookings/new/sam/?date=2026-11-28">\n                <span class="day-name">Sat</span>\n                <span class="day-num">28</span>\n                <span class="day-count">23 free</span>\n              </a>\n            \n          </li>\n        \n          <li>\n            \n              <a class="day-chip day-free" href="/bookings/new/sam/?date=2026-11-29">\n                <span class="day-name">Sun</span>\n                <span class="day-num">29</span>\n                <span class="day-count">23 free</span>\n              </a>\n            \n          </li>\n        \n      </ul>\n    \n\n    <section id="reviews" class="reviews" aria-labelledby="reviews-title">\n      <div class="section-heading-row">\n        <h2 id="reviews-title">Reviews</h2>\n        \n      </div>\n      \n        <p class="muted">Reviews appear here after learners finish lessons with Sam.</p>\n      \n    </section>\n  </section>\n\n  <aside class="booking-panel" aria-labelledby="price-title">\n    <h2 id="price-title">Prices</h2>\n    <ul class="price-list">\n      \n        <li><span>1 hour</span><strong>\xc2\xa335.00</strong></li>\n      \n        <li><span>2 hours</span><strong>\xc2\xa370.00</strong></li>\n      \n    </ul>\n    \n      <a class="button button-accent button-block button-lg" href="/bookings/new/sam/">Book a lesson</a>\n      <a class="button button-ghost button-block" href="/prices/">Save with a package</a>\n      <p class="fine-print">Free cancellation up to 24 hours before. Secure card payment by Stripe.</p>\n    \n  </aside>\n</div>\n\n  </main>\n\n  <!-- Footer -->\n  <footer class="site-footer">\n    <div class="container footer-grid">\n      <div>\n        <p class="footer-logo"><img src="/static/images/logo-light.svg" alt="DRX" width="128" height="40"></p>\n        <p class="footer-note">Driving lessons in East London with Sam Sam. \xc2\xa335 an hour, packages that save you money, booking and payment online.</p>\n        <p class="footer-note">Pick-ups in E1, E2, E3, E8, E9, E14, EC1, EC2 and N1.</p>\n      </div>\n      <nav aria-label="Footer">\n        <ul class="footer-links">\n          <li><a href="/prices/">Prices and packages</a></li>\n          <li><a href="/instructors/sam/">About me and reviews</a></li>\n          <li><a href="/about/">How it works</a></li>\n          <li><a href="/about/#cancellations">Cancellation policy</a></li>\n          <li><a href="https://www.gov.uk/book-driving-test" target="_blank" rel="noopener">Book your test on GOV.UK<span class="visually-hidden"> (opens in a new tab)</span></a></li>\n        </ul>\n      </nav>\n      <div class="footer-contact">\n        <p class="footer-brand">Contact</p>\n        <p class="footer-note">Questions before you book, or running late? Call or text me.</p>\n        <p><a href="tel:+447476283894">Call 07476 283894</a></p>\n        <p><a href="sms:+447476283894">Send a text</a></p>\n      </div>\n      <p class="footer-legal">&copy; DRX Driving School. Card payments by Stripe.</p>\n    </div>\n  </footer>\n\n  <script src="/static/js/script.js"></script>\n</body>\n</html>\n'
+
+----------------------------------------------------------------------
+Ran 130 tests in 80.759s
+
+FAILED (failures=3)
 Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
  OK
 System check identified no issues (0 silenced).
