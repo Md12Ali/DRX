@@ -1,28 +1,55 @@
-"""Site-wide pages: landing page, about page and error handlers."""
-from django.db.models import Min
+"""Site-wide pages: home, about, the area checker and error handlers."""
+from django.conf import settings
+from django.http import JsonResponse
 from django.shortcuts import render
 
 from bookings.models import Booking
 from instructors.models import Instructor, Review
-from progress.models import Skill
+from packages.models import LessonPackage
+
+from .postcodes import district, is_covered, normalise
+
+
+def _postcode_check(raw):
+    """A small result dict for the 'Do you cover my area?' checker."""
+    raw = (raw or "").strip()[:10]
+    if not raw:
+        return None
+    found = district(raw)
+    if not found:
+        return {"postcode": raw, "valid": False, "covered": False}
+    return {
+        "postcode": normalise(raw) or raw.upper(),
+        "valid": True,
+        "district": found,
+        "covered": is_covered(raw),
+        "areas": settings.COVERED_POSTCODE_DISTRICTS.get(found, ""),
+    }
 
 
 def home(request):
-    """Landing page: what DRX is, who teaches, what it costs."""
-    instructors = Instructor.objects.with_ratings().accepting()
+    """Personal landing page: the instructor, prices, area covered and reviews."""
+    instructor = Instructor.objects.with_ratings().order_by("-is_accepting_pupils", "created_on").first()
     context = {
-        "featured_instructors": instructors.order_by("-review_count", "display_name")[:3],
-        "instructor_count": instructors.count(),
-        "from_price": instructors.aggregate(lowest=Min("hourly_rate_pence"))["lowest"],
+        "instructor": instructor,
+        "packages": LessonPackage.objects.filter(is_active=True)[:3],
         "lessons_completed": Booking.objects.filter(status=Booking.Status.COMPLETED).count(),
-        "skill_count": Skill.objects.count(),
-        "latest_reviews": Review.objects.select_related("instructor", "learner").filter(rating__gte=4)[:3],
+        "latest_reviews": Review.objects.select_related("learner").filter(rating__gte=4)[:3],
+        "postcode_result": _postcode_check(request.GET.get("postcode")),
     }
     return render(request, "core/home.html", context)
 
 
+def postcode_check(request):
+    """JSON version of the area checker, used by the home page script."""
+    result = _postcode_check(request.GET.get("postcode"))
+    if result is None:
+        return JsonResponse({"error": "Please enter a postcode."}, status=400)
+    return JsonResponse(result)
+
+
 def about(request):
-    """How DRX works, prices and cancellation policy."""
+    """How booking works, prices, packages and the cancellation policy."""
     return render(request, "core/about.html")
 
 
