@@ -114,11 +114,21 @@ many more lessons do I need?" into a number the learner can see.
 
 ### Design
 
-- **Look and feel:** "road" theme. Asphalt dark (`#171c23`) header, hero and footer. Road-marking
-  amber (`#f4b400`) for calls to action and highlights. L-plate red (`#c8233a`) for warnings and
-  destructive actions. Green (`#1b7343`) for success and progress. Text and button colour pairs meet
-  WCAG AA contrast (amber is always paired with dark text).
-- **Type:** *Archivo* (expanded, heavy) for headings, a sturdy automotive feel. *Inter* for body text.
+- **Look and feel:** a bright, friendly "fresh licence" theme, aimed at young learners rather than
+  a corporate look. Warm paper background (`#fff8ef`) with deep indigo ink (`#1b1a3a`) for text,
+  outlines and the footer. Cards, buttons and stickers have a 2px ink outline and a hard offset
+  shadow, so they look like printed stickers; buttons "press in" when clicked.
+- **Colours:** tangerine (`#ff6b3d`) for main actions, sunshine yellow (`#ffd23f`) for labels and
+  the road markings, mint (`#7ee0b8`) for progress and the contact card, lilac (`#d9cdff`) for the
+  areas section, L-plate red (`#d62839`) for warnings and destructive actions, green (`#0f7a55`)
+  for success. Every text and background pair meets WCAG AA contrast: the tangerine and yellow
+  are always paired with dark ink text, never white.
+- **Type:** *Bricolage Grotesque* (bold, characterful) for headings and *DM Sans* for body text,
+  both from Google Fonts.
+- **Contact:** my phone number (07476 283894) appears in the header, the home page hero, a
+  "Not sure yet? Just ask" card, the FAQ, the How it works page and the footer. It uses `tel:` and
+  `sms:` links, so learners on a phone can call or text with one tap. The number is set once in
+  `CONTACT_PHONE` in settings.
 - **Layout:** layout patterns (hero with search, stats strip, steps, bento features, reviews, FAQ,
   call to action) follow the VibeUI layout library. Booking pages use a two-column layout with a
   sticky summary panel, which stacks on mobile.
@@ -366,7 +376,7 @@ matches the current code:
 
 | Evidence | Where |
 |---|---|
-| Automated test run (117 tests) | [`docs/testing/test-results.txt`](docs/testing/test-results.txt) |
+| Automated test run (118 tests) | [`docs/testing/test-results.txt`](docs/testing/test-results.txt) |
 | Code coverage | [`docs/testing/coverage.txt`](docs/testing/coverage.txt) |
 | PEP 8 (flake8) | [`docs/testing/flake8.txt`](docs/testing/flake8.txt) |
 | JavaScript (JSHint) | [`docs/testing/jshint.txt`](docs/testing/jshint.txt) |
@@ -383,12 +393,12 @@ matches the current code:
    ([`scripts/ci_screenshots.py`](scripts/ci_screenshots.py)), and validates each page's HTML
    and the stylesheet with the W3C Nu validator. The results are committed back into `docs/`.
 2. **Render** runs [`build.sh`](build.sh) on every deploy. It checks the migrations, runs all
-   117 tests and Django's deployment checks *before* the new version can go live. A failing test
+   118 tests and Django's deployment checks *before* the new version can go live. A failing test
    blocks the deploy.
 
 ### Results
 
-- **Automated tests:** 117 tests, all passing. During development the first real run found 3
+- **Automated tests:** 118 tests, all passing. During development the first real run found 3
   test mistakes (114/117), which were fixed in commit `56ad0fb`.
 - **Coverage:** 90% of the application code.
 - **flake8:** no issues (PEP 8, with Django's 119-character line length set in `setup.cfg`).
@@ -437,6 +447,7 @@ they can be repeated on the live site.
 | 15 | Visit a missing page | Custom 404 with links home | `error-404-desktop.png` |
 | 16 | Pay with Stripe test card 4242 4242 4242 4242 | "You're booked in!" | Needs Stripe test keys on Render |
 | 17 | Mobile layout (390px) | Single column, collapsed menu | the `*-mobile.png` screenshots |
+| 18 | Tap the phone number on a mobile | Phone app opens with 07476 283894 ready to call | `home-mobile.png` |
 
 ### Screenshots
 
@@ -473,7 +484,7 @@ python manage.py migrate        # also loads the syllabus and the packages
 python manage.py createsuperuser
 python manage.py setup_instructor <your-username> --name "Mohammed Ali"
 python manage.py runserver
-python manage.py test           # 117 tests
+python manage.py test           # 118 tests
 ```
 
 ### 1. Database on Neon

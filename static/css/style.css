@@ -2805,11 +2805,6 @@ h2 {
   color: var(--ink);
 }
 
-.mini-bars span.bar-40,
-.mini-bars span.bar-60 {
-  color: #fff;
-}
-
 /* FAQ as outlined cards */
 .faq details {
   margin-bottom: 0.75rem;
