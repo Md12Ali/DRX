@@ -1,3 +1,2 @@
-Error: Unable to access jarfile [String: '/home/runner/work/DRX/DRX/node_modules/vnu-jar/build/dist/vnu.jar'] {
-  vnu: { check: [AsyncFunction: check] }
-}
+Document checking completed. No errors found.
+No CSS errors found in static/css/style.css.
