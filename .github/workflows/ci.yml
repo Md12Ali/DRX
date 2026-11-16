@@ -1,0 +1,85 @@
+# Continuous integration for DRX.
+# On every push: run the automated tests, check code quality, validate the
+# HTML and CSS with the W3C validator, and take screenshots of every page.
+# Results are uploaded as the "testing-evidence" artifact.
+name: Tests, validation and screenshots
+
+on:
+  push:
+    branches: [main, drx-website]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      SECRET_KEY: ci-only-not-secret
+      DEBUG: "True"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt coverage flake8 playwright
+          python -m playwright install --with-deps chromium
+          npm install --no-save vnu-jar jshint
+
+      - name: Check models match migrations
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Run automated tests with coverage
+        run: |
+          set -o pipefail
+          mkdir -p docs/testing
+          coverage run manage.py test -v 2 2>&1 | tee docs/testing/test-results.txt
+          coverage report | tee docs/testing/coverage.txt
+
+      - name: Python style (flake8, PEP 8)
+        run: flake8 | tee docs/testing/flake8.txt
+
+      - name: JavaScript lint (JSHint)
+        run: npx jshint static/js/script.js | tee docs/testing/jshint.txt
+
+      - name: Build demo database and start the site
+        run: |
+          python manage.py migrate --noinput
+          python manage.py shell < scripts/ci_demo_data.py
+          python manage.py runserver 127.0.0.1:8000 > runserver.log 2>&1 &
+          sleep 5
+
+      - name: Screenshots of every page
+        run: python scripts/ci_screenshots.py
+
+      - name: W3C HTML and CSS validation
+        if: always()
+        run: |
+          VNU=$(node -e "console.log(require('vnu-jar'))")
+          java -jar "$VNU" --errors-only --format text docs/testing/html/*.html > docs/testing/html-validation.txt 2>&1 \
+            && echo "No HTML errors found in $(ls docs/testing/html | wc -l) pages." >> docs/testing/html-validation.txt || true
+          java -jar "$VNU" --css --errors-only --format text static/css/style.css > docs/testing/css-validation.txt 2>&1 \
+            && echo "No CSS errors found in static/css/style.css." >> docs/testing/css-validation.txt || true
+          cat docs/testing/html-validation.txt docs/testing/css-validation.txt
+
+      - name: Upload testing evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testing-evidence
+          path: |
+            docs/screenshots
+            docs/testing
+            runserver.log
