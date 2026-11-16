@@ -21,8 +21,21 @@ so DRX can grow into a school with branches later.
 
 ![DRX home page](docs/screenshots/home-desktop.png)
 
-**Live site:** _add your Heroku URL here_
+**Live site:** https://drx-hec8.onrender.com (free Render plan: the first visit after a quiet spell takes up to a minute to wake up)
+[![Tests, validation and screenshots](https://github.com/Md12Ali/DRX/actions/workflows/ci.yml/badge.svg)](https://github.com/Md12Ali/DRX/actions/workflows/ci.yml)
 **Repository:** https://github.com/Md12Ali/DRX
+
+### For the assessor
+
+- **Try it as a learner:** open the live site, choose *Book a lesson*, register (use a covered
+  postcode such as `E3 5AA`), then pick a time. Card payments use Stripe **test mode**: card
+  `4242 4242 4242 4242`, any future date, any CVC. No real money is taken.
+- **Instructor and admin views:** login details are supplied with the submission, not in this
+  repository.
+- **Evidence:** tests, coverage, linting and W3C results are in [`docs/testing/`](docs/testing/),
+  screenshots in [`docs/screenshots/`](docs/screenshots/), wireframes in
+  [`docs/wireframes/`](docs/wireframes/), and a criterion-by-criterion map in
+  [`docs/assessment-checklist.md`](docs/assessment-checklist.md).
 
 ---
 
@@ -37,8 +50,9 @@ so DRX can grow into a school with branches later.
 7. [Technologies](#technologies)
 8. [Testing](#testing)
 9. [Deployment](#deployment)
-10. [Security](#security)
-11. [Credits](#credits)
+10. [Version control](#version-control)
+11. [Security](#security)
+12. [Credits](#credits)
 
 ---
 
@@ -108,8 +122,21 @@ many more lessons do I need?" into a number the learner can see.
 - **Layout:** layout patterns (hero with search, stats strip, steps, bento features, reviews, FAQ,
   call to action) follow the VibeUI layout library. Booking pages use a two-column layout with a
   sticky summary panel, which stacks on mobile.
-- **Wireframes:** _add images in `docs/wireframes/`_ for Home, Instructor list, Instructor profile,
-  Booking form, Checkout, Learner dashboard, Progress, Instructor diary (mobile and desktop).
+- **Wireframes:** low-fidelity layouts for desktop and mobile were planned before building.
+  They are in [`docs/wireframes/`](docs/wireframes/).
+
+| Page | Wireframe |
+|---|---|
+| Home | [01-home.png](docs/wireframes/01-home.png) |
+| Prices and packages | [02-prices.png](docs/wireframes/02-prices.png) |
+| Book a lesson | [03-booking.png](docs/wireframes/03-booking.png) |
+| Checkout | [04-checkout.png](docs/wireframes/04-checkout.png) |
+| Learner dashboard | [05-learner-dashboard.png](docs/wireframes/05-learner-dashboard.png) |
+| Progress | [06-progress.png](docs/wireframes/06-progress.png) |
+| Instructor diary | [07-instructor-diary.png](docs/wireframes/07-instructor-diary.png) |
+| Instructor profile | [08-instructor-profile.png](docs/wireframes/08-instructor-profile.png) |
+
+![Home wireframe](docs/wireframes/01-home.png)
 
 ### Accessibility
 
@@ -325,132 +352,185 @@ Each app has its own models, forms, views, namespaced URLs, admin, templates, mi
 
 ## Technologies
 
-Python 3.12 · Django 5.2 · PostgreSQL · Stripe (Checkout, Webhooks, Refunds) · Pillow ·
+Python 3.12 · Django 5.2 · PostgreSQL (Neon) · Stripe (Checkout, Webhooks, Refunds) · Pillow ·
 WhiteNoise · Gunicorn · dj-database-url · HTML5 · CSS3 · vanilla JavaScript · Google Fonts
-(Archivo, Inter) · Git and GitHub · Heroku
+(Archivo, Inter) · Git and GitHub · GitHub Actions · Render · Playwright (screenshots) ·
+W3C Nu validator · JSHint · flake8 · coverage.py
 
 ---
 
 ## Testing
 
-### Automated tests
+All test evidence is produced automatically and committed to this repository, so it always
+matches the current code:
 
-There are 117 Django tests across seven apps. Stripe is always mocked. Shared factories are in
-`core/testing.py`.
+| Evidence | Where |
+|---|---|
+| Automated test run (117 tests) | [`docs/testing/test-results.txt`](docs/testing/test-results.txt) |
+| Code coverage | [`docs/testing/coverage.txt`](docs/testing/coverage.txt) |
+| PEP 8 (flake8) | [`docs/testing/flake8.txt`](docs/testing/flake8.txt) |
+| JavaScript (JSHint) | [`docs/testing/jshint.txt`](docs/testing/jshint.txt) |
+| HTML (W3C Nu validator, every page) | [`docs/testing/html-validation.txt`](docs/testing/html-validation.txt) |
+| CSS (W3C Nu validator) | [`docs/testing/css-validation.txt`](docs/testing/css-validation.txt) |
+| Screenshots of every page | [`docs/screenshots/`](docs/screenshots) |
 
-```bash
-python manage.py test
-coverage run manage.py test && coverage report   # optional (pip install coverage)
-```
+### How the testing is automated
 
-Highlights:
-- **bookings:** every rule in `services.py` (notice, window, working hours, day off, half-hour
-  starts, instructor and learner clashes, rescheduling), hold expiry, permissions, reschedule
-  cut-off, cancel with and without refund, instructor sign-off and cancel.
+1. **GitHub Actions** ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs on every push.
+   It installs the project, checks the migrations, runs the tests with coverage, runs flake8 and
+   JSHint, builds a demo database ([`scripts/ci_demo_data.py`](scripts/ci_demo_data.py)), starts
+   the site, takes screenshots of every page with Playwright
+   ([`scripts/ci_screenshots.py`](scripts/ci_screenshots.py)), and validates each page's HTML
+   and the stylesheet with the W3C Nu validator. The results are committed back into `docs/`.
+2. **Render** runs [`build.sh`](build.sh) on every deploy. It checks the migrations, runs all
+   117 tests and Django's deployment checks *before* the new version can go live. A failing test
+   blocks the deploy.
+
+### Results
+
+- **Automated tests:** 117 tests, all passing. During development the first real run found 3
+  test mistakes (114/117), which were fixed in commit `56ad0fb`.
+- **Coverage:** 90% of the application code.
+- **flake8:** no issues (PEP 8, with Django's 119-character line length set in `setup.cfg`).
+- **JSHint:** no warnings (`esversion: 11`).
+- **W3C HTML:** no errors on all 23 pages checked (public, learner and instructor pages).
+- **W3C CSS:** no errors in `static/css/style.css`.
+- The first validator run found 3 HTML errors (empty `for` on radio labels, an `<img>` without
+  `src`, an invalid `autocomplete` value). They were fixed in commit `6d8e46f`.
+
+What the automated tests cover:
+- **bookings:** every booking rule (notice, booking window, working hours, day off, half-hour
+  starts, instructor and learner clashes, rescheduling), hold expiry, permissions, the change
+  cut-off, cancelling with a refund or with package hours, instructor sign-off and cancellation.
 - **payments:** checkout page, redirect to Stripe, Stripe outage, missing keys, expired hold,
-  success verified with Stripe, unpaid sessions not trusted, cancel page, webhook events, bad
-  signature, refunds succeed or are flagged.
-- **instructors:** pro-rata pricing, start-time generation, filters and search, availability API
-  validation and clash removal, profile editing rules, review permissions and CRUD.
-- **packages:** seeded packages, savings maths, hour balance (only paid purchases; cancelled lessons
-  return hours), pay with package hours (enough / not enough), buying through Stripe, Stripe outage,
-  success, cancel, webhook.
-- **core:** postcode parsing (EC1A → EC1, E1W → E1, N1C → N1, E10 is not E1), every covered and
-  several uncovered postcodes, the home-page checker and its JSON API.
-- **progress:** syllabus data migration, score maths, test-ready rule, rating permissions and saving.
-- **accounts / core:** sign-up, unique email, UK phone and postcode validation, anonymous-only
-  pages, POST-only logout, account deletion, home, about and 404 pages.
+  success checked with Stripe, unpaid sessions not trusted, cancel page, webhooks, refunds.
+- **packages:** savings maths, hour balance, paying with hours (enough / not enough), buying
+  through Stripe, success, cancel, webhook.
+- **instructors:** pro-rata pricing, start-time generation, filters, availability API, profile
+  editing rules, review permissions and CRUD.
+- **progress:** syllabus data migration, score maths, test-ready rule, rating permissions.
+- **accounts / core:** sign-up, unique email, UK phone and postcode validation, covered
+  postcodes, anonymous-only pages, POST-only logout, account deletion, home, about and 404.
 
 ### Manual testing
 
-| # | Test | Expected | Result |
+Each step was run in a real browser (Chromium, desktop 1366px and mobile 390px) against the
+app with demo data, and the screenshot was saved in `docs/screenshots/`. The steps are written so
+they can be repeated on the live site.
+
+| # | Test | Expected | Evidence |
 |---|---|---|---|
-| 1 | Register, then add phone and address | Logged in; details saved; message shown | |
-| 1a | Enter postcode IG3 8XX in details | "Pick-ups are only available in E1, E2…" | |
-| 1b | Check "EC1A 1BB" on home page | "Yes! … is in EC1" without page reload | |
-| 1c | Buy the 10-hour package (card 4242…) | "10 hours added"; balance shows 10 | |
-| 1d | Book 1.5 h, choose "Use 1.5 hours from my package" | Booking confirmed; balance 8.5 | |
-| 1e | Cancel that lesson | "1.5 hours went back into your package" | |
-| 2 | Click "Prices" | Pay-as-you-go and 4 packages with savings | |
-| 3 | Open an instructor, click a green day | Booking form opens with that date | |
-| 4 | Change lesson length | Free times reload for the new length | |
-| 5 | Pick a slot and continue | Checkout shows summary, total and countdown | |
-| 6 | Pay with `4242 4242 4242 4242` | "You're booked in!"; booking confirmed | |
-| 7 | Pay with `4000 0000 0000 0002` | Stripe shows decline; booking stays unpaid | |
-| 8 | Click back on Stripe checkout | "Payment cancelled. You have not been charged." | |
-| 9 | Leave a booking unpaid for 35 min | Slot released; booking shows "Expired" | |
-| 10 | Two browsers book the same slot | Second sees "that time has just been booked" | |
-| 11 | Reschedule a lesson more than 24h away | Moved; same price | |
-| 12 | Try to reschedule inside 24h | Blocked with "please call your instructor" | |
-| 13 | Cancel a paid lesson | Refund in Stripe dashboard; message shown | |
-| 14 | Instructor signs off a lesson | Status completed; redirected to rating form | |
-| 15 | Instructor rates skills | Learner's score and bars update | |
-| 16 | Learner writes, edits, deletes a review | Each step works; only after a completed lesson | |
-| 17 | Learner opens `/bookings/diary/` | 403 page | |
-| 18 | Learner opens another learner's booking URL | 403 page | |
-| 19 | Visit `/nope/` | Custom 404 with links home | |
-| 20 | Delete account | Logged out; data removed | |
-| 21 | 360px / 768px / 1280px | Layout adapts; menu collapses | |
-| 22 | Keyboard only | Skip link, focus ring, slot buttons and menu all usable | |
+| 1 | Open the home page | Hero, prices, packages, areas, FAQ | `home-desktop.png`, `home-mobile.png` |
+| 2 | Check postcode EC1A 1BB | "Yes! … is in EC1" | `home-postcode-check-desktop.png` |
+| 3 | Open Prices | Pay as you go plus 4 packages with savings | `prices-desktop.png` |
+| 4 | Submit the empty sign-up form | Every required field shows an error | `register-validation-errors-desktop.png` |
+| 5 | Log in as a learner | Dashboard: next lesson, score, hours | `learner-dashboard-desktop.png` |
+| 6 | Pick a date when booking | Free start times appear | `booking-form-desktop.png` |
+| 7 | Book with postcode IG3 8XX | "Sorry, pick-ups are only available in…" | `booking-postcode-outside-area-desktop.png` |
+| 8 | Continue to payment | Summary, countdown, package or card option | `checkout-desktop.png` |
+| 9 | Open a booking, then Cancel | Confirmation page before cancelling | `booking-cancel-confirm-desktop.png` |
+| 10 | Open Progress | Score and every skill's level | `progress-desktop.png` |
+| 11 | Learner opens `/bookings/diary/` | 403 "No entry" page | `learner-blocked-from-diary-desktop.png` |
+| 12 | Log in as the instructor | Diary and lessons to sign off | `instructor-diary-desktop.png` |
+| 13 | Sign off a lesson | Notes form | `instructor-sign-off-desktop.png` |
+| 14 | Rate a learner's skills | Five-step rating per skill | `instructor-rate-skills-desktop.png` |
+| 15 | Visit a missing page | Custom 404 with links home | `error-404-desktop.png` |
+| 16 | Pay with Stripe test card 4242 4242 4242 4242 | "You're booked in!" | Needs Stripe test keys on Render |
+| 17 | Mobile layout (390px) | Single column, collapsed menu | the `*-mobile.png` screenshots |
 
-### Validators
+### Screenshots
 
-Record results with screenshots in `docs/testing/`:
-[W3C HTML](https://validator.w3.org/) (paste "View source" from the live site) ·
-[Jigsaw CSS](https://jigsaw.w3.org/css-validator/) · [JSHint](https://jshint.com/) (`esversion: 11`) ·
-`flake8` (config in `setup.cfg`: PEP 8 with Django's 119-character line length) · Lighthouse · WAVE.
+| Home | Prices | Booking |
+|---|---|---|
+| ![Home](docs/screenshots/home-desktop.png) | ![Prices](docs/screenshots/prices-desktop.png) | ![Booking](docs/screenshots/booking-form-desktop.png) |
+| **Checkout** | **Learner dashboard** | **Progress** |
+| ![Checkout](docs/screenshots/checkout-desktop.png) | ![Dashboard](docs/screenshots/learner-dashboard-desktop.png) | ![Progress](docs/screenshots/progress-desktop.png) |
+| **Instructor diary** | **Rate skills** | **Mobile** |
+| ![Diary](docs/screenshots/instructor-diary-desktop.png) | ![Rate skills](docs/screenshots/instructor-rate-skills-desktop.png) | ![Mobile](docs/screenshots/home-mobile.png) |
 
 ### Known limitations
 
-- Uploaded instructor photos are stored on the server's disk. On Heroku the disk resets on each
-  deploy, so use Cloudinary or S3 for photos in production.
+- Uploaded instructor photos are stored on the server's disk, which Render resets on each deploy.
+  Use Cloudinary or S3 for photos in a long-term production setup. Without a photo, the site shows
+  the instructor's initials.
 - Times assume the UK time zone (`Europe/London`).
 
 ---
 
 ## Deployment
 
-### Local
+The live site runs on **Render** (web service, free plan). The database is **Neon**
+(free PostgreSQL that doesn't expire).
+
+### Run locally
 
 ```bash
 git clone https://github.com/Md12Ali/DRX.git && cd DRX
 python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 cp env_example.py env.py        # then fill in your own keys
-python manage.py migrate        # also loads the 16-skill syllabus
+python manage.py migrate        # also loads the syllabus and the packages
 python manage.py createsuperuser
 python manage.py setup_instructor <your-username> --name "Mohammed Ali"
 python manage.py runserver
+python manage.py test           # 117 tests
 ```
 
-`setup_instructor` turns your account into the site's instructor at £35/hour, covering the postcodes
-in settings, shown as a **trainee**. Add your photo, bio, car and hours under *Edit profile*. When
-you qualify, change *Qualification* to ADI (or re-run with `--adi`).
+### 1. Database on Neon
 
-**Change prices or areas:** the hourly rate and covered postcodes are in `drx/settings.py`
-(`STANDARD_HOURLY_RATE_PENCE`, `COVERED_POSTCODE_DISTRICTS`). Package prices are in the admin under
-*Lesson packages*.
+1. Sign up at neon.com (free, no card) and create a project, e.g. `drx`, in the EU (Frankfurt) region.
+2. Copy the connection string. It looks like
+   `postgresql://user:password@ep-xxx.eu-central-1.aws.neon.tech/neondb?sslmode=require`.
+   **It contains a password, so never commit it.**
 
-### Stripe
+### 2. Web service on Render
 
-1. Create a Stripe account and stay in **Test mode**. Put the publishable and secret keys in
-   `STRIPE_PUBLIC_KEY` and `STRIPE_SECRET_KEY`.
-2. Local webhooks: `stripe listen --forward-to localhost:8000/payments/webhook/`, then copy the
-   `whsec_…` value into `STRIPE_WEBHOOK_SECRET`.
-3. Production webhooks: Developers → Webhooks → add `https://<app>.herokuapp.com/payments/webhook/`.
-   Select `checkout.session.completed`, `checkout.session.expired`,
+1. Render → **New → Web Service** → connect the `Md12Ali/DRX` GitHub repository.
+   (Or **New → Blueprint**, which reads [`render.yaml`](render.yaml).)
+2. Settings: runtime **Python**, region **Frankfurt**, plan **Free**,
+   build command `./build.sh`, start command `gunicorn drx.wsgi --log-file -`.
+3. Environment variables:
+
+   | Key | Value |
+   |---|---|
+   | `PYTHON_VERSION` | `3.12.8` |
+   | `SECRET_KEY` | a long random string |
+   | `DATABASE_URL` | the Neon connection string |
+   | `SECURE_SSL_REDIRECT` | `True` |
+   | `STRIPE_PUBLIC_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | from Stripe (test mode) |
+   | `DJANGO_SUPERUSER_USERNAME`, `DJANGO_SUPERUSER_EMAIL`, `DJANGO_SUPERUSER_PASSWORD` | the admin account to create |
+   | `INSTRUCTOR_NAME` | e.g. `Mohammed Ali` |
+
+   `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS` are filled in automatically from Render's
+   `RENDER_EXTERNAL_HOSTNAME`. `DEBUG` is **not** set, so it stays off.
+4. Deploy. [`build.sh`](build.sh) installs the requirements, checks the migrations, **runs all
+   the tests**, runs `check --deploy`, collects static files, migrates the Neon database, and
+   creates the admin account and instructor profile.
+
+### 3. Stripe
+
+1. Stripe → Developers → API keys (test mode): put the keys in the Render environment variables.
+2. Developers → Webhooks → add `https://drx-hec8.onrender.com/payments/webhook/` with the events
+   `checkout.session.completed`, `checkout.session.expired`,
    `checkout.session.async_payment_succeeded` and `checkout.session.async_payment_failed`.
+   Copy its signing secret into `STRIPE_WEBHOOK_SECRET`.
+3. Test with card `4242 4242 4242 4242`, any future expiry date and any CVC.
 
-### Heroku with PostgreSQL
+### Checking the deployed version matches development
 
-1. Create the app, then add Heroku Postgres (or another Postgres URL) as `DATABASE_URL`.
-2. Config vars: `SECRET_KEY`, `DATABASE_URL`, `ALLOWED_HOSTS=<app>.herokuapp.com`,
-   `CSRF_TRUSTED_ORIGINS=https://<app>.herokuapp.com`, `STRIPE_PUBLIC_KEY`, `STRIPE_SECRET_KEY`,
-   `STRIPE_WEBHOOK_SECRET`, `SECURE_SSL_REDIRECT=True`. **Do not set `DEBUG`.** It defaults to off.
-3. Connect the GitHub repo and deploy the `main` branch. The `Procfile` runs migrations in the
-   release phase and starts Gunicorn. WhiteNoise serves static files after `collectstatic`.
-4. Run `python manage.py createsuperuser` from the Heroku console and add your instructor profile.
-5. Repeat the manual tests on the live site and check it matches the local version.
+The same commit is tested three times: on your computer (`python manage.py test`), in GitHub
+Actions, and in Render's build before it goes live. The live site's footer, prices and pages
+match the screenshots taken from the development server in CI.
+
+---
+
+## Version control
+
+- Git and GitHub from the start. Work is done on the `drx-website` branch and merged into `main`
+  through a pull request, after the GitHub Actions checks pass.
+- Commit messages describe one change each (for example `Fix W3C HTML errors: fieldset for
+  radio groups…`), so the history shows how the app was built and fixed.
+- `.gitignore` keeps out `env.py`, the local database, `staticfiles/`, media uploads and caches.
 
 ---
 
