@@ -72,7 +72,8 @@ jobs:
       - name: W3C HTML and CSS validation
         if: always()
         run: |
-          VNU=$(node -e "console.log(require('vnu-jar'))")
+          VNU=node_modules/vnu-jar/build/dist/vnu.jar
+          ls -la "$VNU"
           java -jar "$VNU" --errors-only --format text docs/testing/html/*.html > docs/testing/html-validation.txt 2>&1 \
             && echo "No HTML errors found in $(ls docs/testing/html | wc -l) pages." >> docs/testing/html-validation.txt || true
           java -jar "$VNU" --css --errors-only --format text static/css/style.css > docs/testing/css-validation.txt 2>&1 \

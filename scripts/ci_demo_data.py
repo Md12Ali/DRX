@@ -59,9 +59,14 @@ def booking(start, minutes=60, status=Booking.Status.CONFIRMED, method=Booking.P
     )
 
 
-done1 = booking(at(-9, 10), 90, Booking.Status.COMPLETED, notes="Great start. Smooth clutch control; practise hill starts.")
-done2 = booking(at(-2, 16), 120, Booking.Status.COMPLETED, Booking.PaymentMethod.PACKAGE,
-                notes="Roundabouts much better. Next time: parallel parking and pedestrian crossings.")
+done1 = booking(
+    at(-9, 10), 90, Booking.Status.COMPLETED,
+    notes="Great start. Smooth clutch control; practise hill starts.",
+)
+done2 = booking(
+    at(-2, 16), 120, Booking.Status.COMPLETED, Booking.PaymentMethod.PACKAGE,
+    notes="Roundabouts much better. Next time: parallel parking and pedestrian crossings.",
+)
 Payment.objects.create(booking=done1, amount_pence=done1.price_pence, status=Payment.Status.PAID,
                        stripe_session_id="cs_demo_1", paid_on=timezone.now())
 next_lesson = booking(at(2, 9, 30), 90)
@@ -69,7 +74,7 @@ Payment.objects.create(booking=next_lesson, amount_pence=next_lesson.price_pence
                        stripe_session_id="cs_demo_2", paid_on=timezone.now())
 booking(at(4, 17), 60, method=Booking.PaymentMethod.PACKAGE)
 pending = booking(at(6, 11), 120, Booking.Status.PENDING)
-to_sign_off = booking(timezone.now() - datetime.timedelta(hours=3), 60)
+to_sign_off = booking(at(-1, 15), 60)
 
 levels = [5, 5, 4, 4, 4, 3, 3, 4, 2, 1, 3, 2, 2, 1, 0, 3]
 for skill, level in zip(Skill.objects.all(), levels):

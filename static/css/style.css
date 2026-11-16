@@ -2078,7 +2078,7 @@ textarea:focus {
   background: var(--amber);
 }
 
-.score-dark {
+.score-big.score-dark {
   color: var(--ink);
 }
 
@@ -2272,10 +2272,8 @@ textarea:focus {
 }
 
 .sticky-actions {
-  position: sticky;
-  bottom: 0;
-  padding: 1rem 0;
-  background: var(--surface);
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
 }
 
 .recent-lesson {
