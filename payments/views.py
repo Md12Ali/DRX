@@ -1,11 +1,11 @@
-"""Stripe Checkout for lesson bookings."""
+"""Paying for a booking: by card through Stripe, or with prepaid package hours."""
 import logging
-import time
 
 import stripe
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -14,31 +14,25 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 from bookings.models import Booking
+from packages.models import PackagePurchase, hours_display, package_minutes_balance
 
 from .models import Payment
+from .stripe_client import create_checkout_session, stripe_ready
 
 logger = logging.getLogger(__name__)
 
-# Stripe Checkout sessions must stay open for at least 30 minutes.
-CHECKOUT_SESSION_MINUTES = 30
 
-
-def _stripe_ready():
-    """True if the secret key needed to talk to Stripe is configured."""
-    stripe.api_key = settings.STRIPE_SECRET_KEY
-    return bool(settings.STRIPE_SECRET_KEY)
-
-
-@login_required
-def checkout(request, pk):
-    """Show the booking summary (GET) and send the learner to Stripe (POST)."""
+def _payable_booking(request, pk):
+    """
+    The learner's booking if it can still be paid for, otherwise a redirect
+    with a helpful message. Returns (booking, redirect_response).
+    """
     booking = get_object_or_404(
         Booking.objects.select_related("instructor"), pk=pk, learner=request.user
     )
-
     if booking.status == Booking.Status.CONFIRMED:
         messages.info(request, "This lesson is already paid for.")
-        return redirect(booking)
+        return booking, redirect(booking)
     if not booking.is_awaiting_payment:
         Booking.objects.expire_stale_holds()
         messages.error(
@@ -46,12 +40,28 @@ def checkout(request, pk):
             "The time we held for you has run out, so the slot has been released. "
             "You have not been charged. Please book again.",
         )
-        return redirect(booking.instructor)
+        return booking, redirect(booking.instructor)
+    return booking, None
+
+
+@login_required
+def checkout(request, pk):
+    """Show payment options (GET) and send the learner to Stripe (POST)."""
+    booking, problem = _payable_booking(request, pk)
+    if problem:
+        return problem
 
     if request.method == "GET":
-        return render(request, "payments/checkout.html", {"booking": booking})
+        balance = package_minutes_balance(request.user)
+        context = {
+            "booking": booking,
+            "balance_hours": hours_display(balance),
+            "can_use_package": balance >= booking.duration_minutes,
+            "has_package_hours": balance > 0,
+        }
+        return render(request, "payments/checkout.html", context)
 
-    if not _stripe_ready():
+    if not stripe_ready():
         messages.error(request, "Card payments are not available right now. You have not been charged.")
         return redirect("payments:checkout", booking.pk)
 
@@ -59,32 +69,19 @@ def checkout(request, pk):
         booking=booking, defaults={"amount_pence": booking.price_pence}
     )
     local_start = timezone.localtime(booking.start)
-    success_url = request.build_absolute_uri(reverse("payments:success"))
-    cancel_url = request.build_absolute_uri(reverse("payments:cancelled", args=[booking.pk]))
-
     try:
-        session = stripe.checkout.Session.create(
-            mode="payment",
-            line_items=[{
-                "price_data": {
-                    "currency": settings.STRIPE_CURRENCY,
-                    "unit_amount": booking.price_pence,
-                    "product_data": {
-                        "name": f"Driving lesson with {booking.instructor.display_name}",
-                        "description": (
-                            f"{booking.get_duration_minutes_display()} on "
-                            f"{local_start:%a %d %b %Y at %H:%M} · {booking.reference}"
-                        ),
-                    },
-                },
-                "quantity": 1,
-            }],
-            customer_email=request.user.email or None,
-            client_reference_id=str(booking.pk),
-            metadata={"booking_reference": booking.reference},
-            expires_at=int(time.time()) + CHECKOUT_SESSION_MINUTES * 60,
-            success_url=f"{success_url}?session_id={{CHECKOUT_SESSION_ID}}",
-            cancel_url=cancel_url,
+        session = create_checkout_session(
+            name=f"Driving lesson with {booking.instructor.display_name}",
+            description=(
+                f"{booking.get_duration_minutes_display()} on "
+                f"{local_start:%a %d %b %Y at %H:%M} · {booking.reference}"
+            ),
+            amount_pence=booking.price_pence,
+            email=request.user.email,
+            reference=booking.reference,
+            client_reference_id=booking.pk,
+            success_url=request.build_absolute_uri(reverse("payments:success")),
+            cancel_url=request.build_absolute_uri(reverse("payments:cancelled", args=[booking.pk])),
         )
     except stripe.StripeError as error:
         logger.warning("Stripe checkout failed for %s: %s", booking.reference, error)
@@ -102,6 +99,36 @@ def checkout(request, pk):
 
 
 @login_required
+@require_POST
+def pay_with_package(request, pk):
+    """Confirm a booking using the learner's prepaid package hours."""
+    booking, problem = _payable_booking(request, pk)
+    if problem:
+        return problem
+
+    with transaction.atomic():
+        balance = package_minutes_balance(request.user)
+        if balance < booking.duration_minutes:
+            messages.error(
+                request,
+                f"You have {hours_display(balance)} hours left, but this lesson needs "
+                f"{booking.hours_display}. Please pay by card or buy a package.",
+            )
+            return redirect("payments:checkout", booking.pk)
+        booking.payment_method = Booking.PaymentMethod.PACKAGE
+        booking.status = Booking.Status.CONFIRMED
+        booking.save(update_fields=["payment_method", "status", "updated_on"])
+
+    remaining = package_minutes_balance(request.user)
+    messages.success(
+        request,
+        f"Lesson booked using {booking.hours_label} from your package. "
+        f"You have {hours_display(remaining)} hours left.",
+    )
+    return redirect(booking)
+
+
+@login_required
 def checkout_success(request):
     """Stripe sends the learner here after paying. Verify with Stripe first."""
     session_id = request.GET.get("session_id", "")
@@ -115,7 +142,7 @@ def checkout_success(request):
         return redirect("bookings:dashboard")
 
     if payment.status != Payment.Status.PAID:
-        if not _stripe_ready():
+        if not stripe_ready():
             messages.error(request, "Card payments are not available right now.")
             return redirect("bookings:dashboard")
         try:
@@ -152,8 +179,8 @@ def checkout_cancelled(request, pk):
 @require_POST
 def stripe_webhook(request):
     """
-    Stripe calls this directly, so payments are recorded even if the
-    learner closes their browser before reaching the success page.
+    Stripe calls this directly, so payments for lessons and packages are
+    recorded even if the learner closes their browser before returning.
     """
     if not settings.STRIPE_WEBHOOK_SECRET:
         return HttpResponseBadRequest("Webhook not configured.")
@@ -168,12 +195,16 @@ def stripe_webhook(request):
         return HttpResponseBadRequest("Invalid payload or signature.")
 
     session = event["data"]["object"]
-    payment = Payment.objects.filter(stripe_session_id=session.get("id")).first()
-    if payment is not None:
+    session_id = session.get("id")
+    record = (
+        Payment.objects.filter(stripe_session_id=session_id).first()
+        or PackagePurchase.objects.filter(stripe_session_id=session_id).first()
+    )
+    if record is not None:
         if event["type"] in ("checkout.session.completed", "checkout.session.async_payment_succeeded"):
             if session.get("payment_status") == "paid":
-                payment.mark_paid(session.get("payment_intent") or "")
+                record.mark_paid(session.get("payment_intent") or "")
         elif event["type"] in ("checkout.session.expired", "checkout.session.async_payment_failed"):
-            payment.mark_failed()
+            record.mark_failed()
 
     return HttpResponse(status=200)

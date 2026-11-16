@@ -11,6 +11,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from instructors.models import Instructor
+from packages.models import hours_display, package_minutes_balance
 from payments.refunds import refund_booking
 from progress.models import progress_summary
 
@@ -47,6 +48,7 @@ def dashboard(request):
         "next_lesson": upcoming.filter(status=Booking.Status.CONFIRMED).first(),
         "past": bookings.past()[:10],
         "progress": progress_summary(request.user),
+        "package_hours": hours_display(package_minutes_balance(request.user)),
         "hours_driven": sum(
             booking.duration_minutes for booking in bookings.filter(status=Booking.Status.COMPLETED)
         ) / 60,
@@ -156,7 +158,12 @@ def booking_cancel(request, pk):
     if request.method == "POST":
         was_paid = booking.status == Booking.Status.CONFIRMED
         booking.cancel()
-        if was_paid:
+        if was_paid and booking.paid_with_package:
+            messages.success(
+                request,
+                f"Lesson cancelled. {booking.hours_label} went back into your package.",
+            )
+        elif was_paid:
             if refund_booking(booking):
                 messages.success(
                     request,
@@ -237,7 +244,9 @@ def instructor_cancel(request, pk):
     if not booking.cancel():
         messages.error(request, "That lesson can't be cancelled.")
         return redirect(booking)
-    if was_paid and not refund_booking(booking):
+    if was_paid and booking.paid_with_package:
+        messages.success(request, "Lesson cancelled. The learner's package hours have been returned.")
+    elif was_paid and not refund_booking(booking):
         messages.warning(request, "Lesson cancelled, but the refund failed. Please refund it in Stripe.")
     else:
         messages.success(request, "Lesson cancelled and the learner refunded.")

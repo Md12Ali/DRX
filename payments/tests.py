@@ -28,7 +28,7 @@ class CheckoutTests(TestCase):
 
     def test_summary_page(self):
         response = self.client.get(self.url)
-        self.assertContains(response, "£40.00")
+        self.assertContains(response, "£35.00")
         self.assertContains(response, self.booking.reference)
 
     def test_other_learners_cannot_pay(self):
@@ -43,7 +43,7 @@ class CheckoutTests(TestCase):
         self.assertEqual(response.url, "https://checkout.stripe.com/x")
         payment = Payment.objects.get()
         self.assertEqual(payment.stripe_session_id, "cs_1")
-        self.assertEqual(payment.amount_pence, 4000)
+        self.assertEqual(payment.amount_pence, 3500)
 
     @mock.patch("payments.views.stripe.checkout.Session.create")
     def test_stripe_error_is_reported(self, mock_create):
