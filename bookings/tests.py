@@ -21,7 +21,8 @@ class BookingModelTests(TestCase):
         booking = make_booking(self.learner, self.instructor, minutes=90)
         self.assertEqual(booking.end - booking.start, datetime.timedelta(minutes=90))
         self.assertEqual(booking.reference, f"DRX-{booking.pk:05d}")
-        self.assertEqual(booking.price_display, "£60.00")
+        self.assertEqual(booking.price_display, "£52.50")
+        self.assertEqual(booking.hours_display, "1.5")
 
     def test_change_cutoff(self):
         soon = make_booking(self.learner, self.instructor, start=timezone.now() + datetime.timedelta(hours=5))
@@ -112,7 +113,8 @@ class LearnerViewTests(TestCase):
             "date": timezone.localtime(start).date().isoformat(),
             "start_time": "10:00",
             "duration_minutes": "90",
-            "pickup_address": "12 High Road, Ilford",
+            "pickup_address": "12 Roman Road, London",
+            "pickup_postcode": "E3 5AA",
             "learner_notes": "",
         }
         data.update(overrides)
@@ -134,12 +136,21 @@ class LearnerViewTests(TestCase):
         booking = Booking.objects.get()
         self.assertRedirects(response, reverse("payments:checkout", args=[booking.pk]))
         self.assertEqual(booking.status, Booking.Status.PENDING)
-        self.assertEqual(booking.price_pence, 6000)
+        self.assertEqual(booking.price_pence, 5250)
+        self.assertEqual(booking.pickup_postcode, "E3 5AA")
         self.assertEqual(booking.learner, self.learner)
 
     def test_create_booking_form_prefills_address(self):
         response = self.client.get(reverse("bookings:create", args=["sam"]))
-        self.assertContains(response, "12 High Road, Ilford, IG3 8XX")
+        self.assertContains(response, "12 Roman Road, London")
+        self.assertContains(response, "E3 5AA")
+
+    def test_pickup_outside_area_rejected(self):
+        response = self.client.post(
+            reverse("bookings:create", args=["sam"]), self.booking_data(pickup_postcode="IG3 8XX")
+        )
+        self.assertContains(response, "only available in")
+        self.assertEqual(Booking.objects.count(), 0)
 
     def test_invalid_booking_is_not_saved(self):
         self.client.post(reverse("bookings:create", args=["sam"]), self.booking_data(start_time="22:00"))
@@ -173,7 +184,14 @@ class LearnerViewTests(TestCase):
         booking = make_booking(self.learner, self.instructor)
         response = self.client.post(reverse("bookings:cancel", args=[booking.pk]), follow=True)
         mock_refund.assert_called_once()
-        self.assertContains(response, "refund of £40.00")
+        self.assertContains(response, "refund of £35.00")
+
+    def test_cancel_package_booking_returns_hours(self):
+        booking = make_booking(
+            self.learner, self.instructor, payment_method=Booking.PaymentMethod.PACKAGE
+        )
+        response = self.client.post(reverse("bookings:cancel", args=[booking.pk]), follow=True)
+        self.assertContains(response, "1 hour went back into your package")
 
     def test_diary_is_for_instructors_only(self):
         self.assertEqual(self.client.get(reverse("bookings:diary")).status_code, 403)
