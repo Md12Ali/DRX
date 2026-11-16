@@ -2958,3 +2958,8 @@ h2 {
   width: auto;
   height: 40px;
 }
+
+/* Muted grey is too light on the lilac section: use the darker ink there (WCAG AA) */
+.section-tint .muted {
+  color: var(--ink-soft);
+}

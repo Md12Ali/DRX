@@ -22,6 +22,7 @@ REPORT = pathlib.Path("docs/testing")
 axe_results = {}
 console_errors = []
 internal_links = set()
+broken_links = []
 
 DESKTOP = {"width": 1366, "height": 900}
 MOBILE = {"width": 390, "height": 844}
@@ -37,7 +38,13 @@ def capture(page, name, url=None, mobile_too=False, wait_for=None):
     HTML.joinpath(f"{name}.html").write_text(page.content())
     check_accessibility(page, name)
     for href in page.eval_on_selector_all("a[href^='/']", "links => links.map(a => a.getAttribute('href'))"):
-        internal_links.add(href.split("#")[0])
+        href = href.split("#")[0]
+        if href and href not in internal_links and not href.startswith("/admin") and "logout" not in href:
+            internal_links.add(href)
+            # Checked with the same login as the page that shows the link
+            status = page.request.get(BASE + href, max_redirects=5).status
+            if status >= 400:
+                broken_links.append(f"{status} {href} (linked from {name})")
     if mobile_too:
         page.set_viewport_size(MOBILE)
         page.wait_for_timeout(300)
@@ -51,7 +58,9 @@ def check_accessibility(page, name):
     page.add_script_tag(content=AXE)
     result = page.evaluate(
         "async () => (await axe.run(document, {runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']}))"
-        ".violations.map(v => ({id: v.id, impact: v.impact, help: v.help, nodes: v.nodes.length}))"
+        ".violations.map(v => ({id: v.id, impact: v.impact, help: v.help, nodes: v.nodes.length,"
+        " where: v.nodes.slice(0, 3).map(n => n.target.join(' ') + ' | '"
+        " + (n.failureSummary || '').split('\\n').pop())}))"
     )
     axe_results[name] = result
 
@@ -66,6 +75,8 @@ def write_reports(page):
         lines.append(f"{name}: {status}")
         for v in violations:
             lines.append(f"    [{v['impact']}] {v['id']}: {v['help']} ({v['nodes']} element(s))")
+            for where in v["where"]:
+                lines.append(f"        {where}")
     lines.append("")
     lines.append(f"axe-core WCAG 2.1 A/AA: {len(axe_results)} pages checked, {total} violation(s) in total.")
     REPORT.joinpath("accessibility.txt").write_text("\n".join(lines) + "\n")
@@ -74,16 +85,9 @@ def write_reports(page):
         ("\n".join(console_errors) if console_errors else "No JavaScript errors in the console on any page.") + "\n"
     )
 
-    broken = []
-    for href in sorted(internal_links):
-        if not href or href.startswith("/admin") or "logout" in href:
-            continue
-        status = page.request.get(BASE + href, max_redirects=5).status
-        if status >= 400 and status != 403:
-            broken.append(f"{status} {href}")
     REPORT.joinpath("link-check.txt").write_text(
         f"{len(internal_links)} internal links checked.\n"
-        + ("\n".join(broken) if broken else "No broken internal links.") + "\n"
+        + ("\n".join(broken_links) if broken_links else "No broken internal links.") + "\n"
     )
 
 
