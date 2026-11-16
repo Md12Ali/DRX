@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Lesson {{ booking.reference }}{% endblock %}
+
+{% block content %}
+<section class="form-card form-card-wide" aria-labelledby="detail-title">
+  <a class="back-link" href="{% if is_booking_instructor %}{% url 'bookings:diary' %}{% else %}{% url 'bookings:dashboard' %}{% endif %}">&larr; Back</a>
+  <div class="section-heading-row">
+    <div>
+      <p class="eyebrow">{{ booking.reference }}</p>
+      <h1 id="detail-title">{{ booking.start|date:"l j F Y" }}</h1>
+    </div>
+    <span class="status-pill status-{{ booking.status }}">{{ booking.get_status_display }}</span>
+  </div>
+
+  <dl class="fact-grid">
+    <div><dt>Time</dt><dd>{{ booking.start|date:"H:i" }} – {{ booking.end|date:"H:i" }} ({{ booking.get_duration_minutes_display }})</dd></div>
+    {% if is_booking_instructor %}
+      <div><dt>Learner</dt><dd>{{ booking.learner.get_full_name|default:booking.learner.username }}{% if booking.learner.profile.phone %} · <a href="tel:{{ booking.learner.profile.phone }}">{{ booking.learner.profile.phone }}</a>{% endif %}</dd></div>
+    {% else %}
+      <div><dt>Instructor</dt><dd><a href="{{ booking.instructor.get_absolute_url }}">{{ booking.instructor.display_name }}</a></dd></div>
+    {% endif %}
+    <div><dt>Pick-up</dt><dd>{{ booking.pickup_address }}</dd></div>
+    <div><dt>Price</dt><dd>{{ booking.price_display }}{% if payment %} · {{ payment.get_status_display }}{% endif %}</dd></div>
+  </dl>
+
+  {% if booking.learner_notes %}
+    <h2>Notes from the learner</h2>
+    <p>{{ booking.learner_notes|linebreaksbr }}</p>
+  {% endif %}
+  {% if booking.instructor_notes %}
+    <h2>Lesson notes</h2>
+    <p class="notes-box">{{ booking.instructor_notes|linebreaksbr }}</p>
+  {% endif %}
+
+  <div class="button-row">
+    {% if is_booking_instructor %}
+      {% if booking.can_be_completed %}
+        <a class="button button-dark" href="{% url 'bookings:complete' booking.pk %}">Sign off lesson</a>
+      {% endif %}
+      <a class="button button-ghost" href="{% url 'progress:learner' booking.learner.username %}">Learner's progress</a>
+      {% if booking.status == "confirmed" and booking.is_upcoming %}
+        <form method="post" action="{% url 'bookings:instructor_cancel' booking.pk %}" class="js-confirm-form" data-confirm="Cancel this lesson and refund the learner in full?">
+          {% csrf_token %}
+          <button type="submit" class="button button-danger">Cancel and refund</button>
+        </form>
+      {% endif %}
+    {% else %}
+      {% if booking.is_awaiting_payment %}
+        <a class="button button-accent" href="{% url 'payments:checkout' booking.pk %}">Pay {{ booking.price_display }} now</a>
+      {% endif %}
+      {% if booking.can_be_changed_by_learner %}
+        <a class="button button-dark" href="{% url 'bookings:edit' booking.pk %}">Reschedule</a>
+        <a class="button button-ghost danger-text" href="{% url 'bookings:cancel' booking.pk %}">Cancel lesson</a>
+      {% elif booking.status == "confirmed" and booking.is_upcoming %}
+        <p class="muted">This lesson is less than 24 hours away. To change it, please call {{ booking.instructor.first_name }}.</p>
+      {% endif %}
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

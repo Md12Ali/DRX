@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}My details{% endblock %}
+
+{% block content %}
+<section class="form-card" aria-labelledby="profile-title">
+  <h1 id="profile-title">My details</h1>
+  <p class="muted">
+    Logged in as <strong>{{ user.username }}</strong> ({{ user.email }}).
+    {% if not is_instructor %}We use these details to pre-fill your bookings. Only your instructor sees them.{% endif %}
+  </p>
+
+  <form method="post" class="stack-form" novalidate data-loading-text="Saving…">
+    {% csrf_token %}
+    {% for field in form %}
+      {% include "includes/form_field.html" %}
+    {% endfor %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <div class="button-row">
+      <button type="submit" class="button button-dark">Save details</button>
+      <a class="button button-ghost" href="{% url 'bookings:dashboard' %}">Cancel</a>
+    </div>
+  </form>
+</section>
+
+{% if not is_instructor %}
+<section class="form-card danger-zone" aria-labelledby="danger-title">
+  <h2 id="danger-title">Delete account</h2>
+  <p>This permanently removes your account, bookings, progress and reviews.</p>
+  <a class="button button-danger" href="{% url 'accounts:account_delete' %}">Delete my account</a>
+</section>
+{% endif %}
+{% endblock %}

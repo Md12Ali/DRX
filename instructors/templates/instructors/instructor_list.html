@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Find a driving instructor{% endblock %}
+
+{% block content %}
+<section aria-labelledby="list-title">
+  <div class="page-heading">
+    <p class="eyebrow">Instructors</p>
+    <h1 id="list-title">Find your instructor</h1>
+    <p class="muted">Every DRX instructor is DVSA-approved. Compare areas, cars and prices, then book a time that suits you.</p>
+  </div>
+
+  <form method="get" class="filter-bar" role="search">
+    <div class="field">
+      <label for="filter-q">Area, postcode or name</label>
+      <input type="search" id="filter-q" name="q" value="{{ query }}" maxlength="60" placeholder="e.g. Romford">
+    </div>
+    <div class="field">
+      <label for="filter-transmission">Car</label>
+      <select id="filter-transmission" name="transmission">
+        <option value="">Manual or automatic</option>
+        <option value="manual"{% if transmission == "manual" %} selected{% endif %}>Manual</option>
+        <option value="automatic"{% if transmission == "automatic" %} selected{% endif %}>Automatic</option>
+      </select>
+    </div>
+    <button type="submit" class="button button-dark">Search</button>
+    {% if query or transmission %}<a class="button button-ghost" href="{% url 'instructors:list' %}">Clear</a>{% endif %}
+  </form>
+
+  <p class="results-summary" role="status">
+    {{ instructors|length }} instructor{{ instructors|length|pluralize }}{% if query %} matching “{{ query }}”{% endif %}{% if transmission %} teaching {{ transmission }}{% endif %}
+  </p>
+
+  {% if instructors %}
+    <div class="instructor-grid">
+      {% for instructor in instructors %}
+        {% include "includes/instructor_card.html" %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <p>No instructors match that search yet. Try a nearby town, or clear the filters.</p>
+      <a class="button button-dark" href="{% url 'instructors:list' %}">Show all instructors</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

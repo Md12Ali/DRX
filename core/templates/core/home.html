@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block title %}Book driving lessons online{% endblock %}
+{% block main_class %}landing{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow eyebrow-light">DVSA-approved instructors · East London</p>
+      <h1 id="hero-title">Learn to drive.<br><span class="highlight">Book in 60 seconds.</span></h1>
+      <p class="hero-lede">
+        Choose your instructor, pick a time that suits you and pay securely online.
+        After every lesson your instructor updates your progress, so you always know how close you are to test day.
+      </p>
+
+      <form class="hero-search" method="get" action="{% url 'instructors:list' %}" role="search">
+        <div class="hero-search-field">
+          <label for="hero-area">Your area or postcode</label>
+          <input type="search" id="hero-area" name="q" placeholder="e.g. Ilford or IG3" maxlength="60">
+        </div>
+        <div class="hero-search-field">
+          <label for="hero-transmission">Car</label>
+          <select id="hero-transmission" name="transmission">
+            <option value="">Any</option>
+            <option value="manual">Manual</option>
+            <option value="automatic">Automatic</option>
+          </select>
+        </div>
+        <button type="submit" class="button button-accent button-lg">Find instructors</button>
+      </form>
+
+      <ul class="hero-points">
+        <li>Lessons from {% if from_price %}£{% widthratio from_price 100 1 %}{% else %}£40{% endif %} an hour</li>
+        <li>Free cancellation up to 24 hours before</li>
+        <li>Instant card refunds</li>
+      </ul>
+    </div>
+
+    <div class="hero-visual" aria-hidden="true">
+      <div class="road">
+        <span class="road-line"></span>
+      </div>
+      <div class="hero-ticket">
+        <p class="ticket-label">Next lesson</p>
+        <p class="ticket-time">Sat 09:30</p>
+        <p class="ticket-meta">1.5 hours · Roundabouts</p>
+        <div class="ticket-progress"><span class="fill-72"></span></div>
+        <p class="ticket-meta">Test-ready: 72%</p>
+      </div>
+      <div class="l-plate">L</div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats strip -->
+<section class="stats-strip" aria-label="DRX in numbers">
+  <div class="container stats-grid">
+    <div><p class="stat-number">{{ instructor_count }}</p><p class="stat-label">instructor{{ instructor_count|pluralize }} taking bookings</p></div>
+    <div><p class="stat-number">{{ lessons_completed }}</p><p class="stat-label">lessons completed</p></div>
+    <div><p class="stat-number">{{ skill_count }}</p><p class="stat-label">skills tracked to test day</p></div>
+    <div><p class="stat-number">24h</p><p class="stat-label">free cancellation window</p></div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section class="section container" aria-labelledby="how-title">
+  <div class="section-heading">
+    <p class="eyebrow">How it works</p>
+    <h2 id="how-title">From first lesson to full licence</h2>
+  </div>
+  <ol class="steps">
+    <li>
+      <h3>Pick your instructor</h3>
+      <p>Compare prices, areas, cars and reviews from real learners. Manual or automatic.</p>
+    </li>
+    <li>
+      <h3>Book a time and pay</h3>
+      <p>See live availability, choose 1, 1.5 or 2 hours, and pay by card through Stripe.</p>
+    </li>
+    <li>
+      <h3>Track every skill</h3>
+      <p>Your instructor rates 16 syllabus skills after each lesson. Watch your test-ready score climb.</p>
+    </li>
+  </ol>
+</section>
+
+<!-- Featured instructors -->
+{% if featured_instructors %}
+<section class="section container" aria-labelledby="instructors-title">
+  <div class="section-heading section-heading-row">
+    <div>
+      <p class="eyebrow">Our instructors</p>
+      <h2 id="instructors-title">Book your first lesson</h2>
+    </div>
+    <a class="button button-ghost" href="{% url 'instructors:list' %}">See all instructors</a>
+  </div>
+  <div class="instructor-grid">
+    {% for instructor in featured_instructors %}
+      {% include "includes/instructor_card.html" %}
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- Features bento -->
+<section class="section container" aria-labelledby="why-title">
+  <div class="section-heading">
+    <p class="eyebrow">Why DRX</p>
+    <h2 id="why-title">Built around learners, not paperwork</h2>
+  </div>
+  <div class="bento">
+    <article class="bento-card bento-dark bento-wide">
+      <h3>Your progress, in one place</h3>
+      <p>Every skill from cockpit drill to independent driving is rated on the five-step scale UK instructors use, from "Introduced" to "Independent". You'll know exactly what to practise next.</p>
+      <div class="mini-bars" aria-hidden="true">
+        <span class="bar-100">Moving off</span>
+        <span class="bar-80">Junctions</span>
+        <span class="bar-60">Roundabouts</span>
+        <span class="bar-40">Parallel parking</span>
+      </div>
+    </article>
+    <article class="bento-card bento-accent">
+      <h3>No double bookings</h3>
+      <p>Times are checked live against your instructor's diary, and against your own.</p>
+    </article>
+    <article class="bento-card">
+      <h3>Reschedule online</h3>
+      <p>Move a lesson yourself up to 24 hours before. No phone tag.</p>
+    </article>
+    <article class="bento-card">
+      <h3>Secure payments</h3>
+      <p>Card payments go through Stripe. We never see or store your card details.</p>
+    </article>
+    <article class="bento-card">
+      <h3>Lesson notes</h3>
+      <p>Your instructor's notes after each lesson stay in your account.</p>
+    </article>
+    <article class="bento-card">
+      <h3>Automatic refunds</h3>
+      <p>Cancel in time and your money goes straight back to your card.</p>
+    </article>
+  </div>
+</section>
+
+<!-- Reviews (real reviews only) -->
+{% if latest_reviews %}
+<section class="section container" aria-labelledby="reviews-title">
+  <div class="section-heading">
+    <p class="eyebrow">Learner reviews</p>
+    <h2 id="reviews-title">What our learners say</h2>
+  </div>
+  <div class="review-grid">
+    {% for review in latest_reviews %}
+      <figure class="review-card">
+        <p class="stars" aria-label="{{ review.rating }} out of 5 stars">{{ review.stars }}</p>
+        <blockquote>{{ review.comment|truncatechars:220 }}</blockquote>
+        <figcaption>{{ review.learner.first_name|default:"A learner" }} · learned with <a href="{{ review.instructor.get_absolute_url }}">{{ review.instructor.display_name }}</a></figcaption>
+      </figure>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- FAQ -->
+<section class="section container faq" aria-labelledby="faq-title">
+  <div class="section-heading">
+    <p class="eyebrow">Questions</p>
+    <h2 id="faq-title">Good to know</h2>
+  </div>
+  <details>
+    <summary>Do I need a provisional licence?</summary>
+    <p>Yes. You need a valid provisional licence before your first lesson. You can apply on GOV.UK from age 15 years and 9 months, and drive from 17.</p>
+  </details>
+  <details>
+    <summary>Where do lessons start?</summary>
+    <p>Your instructor picks you up from the address you give when booking. You can change it for each lesson.</p>
+  </details>
+  <details>
+    <summary>What if I need to cancel?</summary>
+    <p>Cancel or reschedule in your account up to 24 hours before the lesson for a full refund. After that, please call your instructor.</p>
+  </details>
+  <details>
+    <summary>How many lessons will I need?</summary>
+    <p>Everyone is different. Your test-ready score shows how close you are, and your instructor will tell you when to book your test.</p>
+  </details>
+</section>
+
+<!-- Final call to action -->
+<section class="final-cta">
+  <div class="container final-cta-inner">
+    <h2>Ready when you are.</h2>
+    <p>Create a free account, choose an instructor and book your first lesson today.</p>
+    <a class="button button-accent button-lg" href="{% if user.is_authenticated %}{% url 'instructors:list' %}{% else %}{% url 'accounts:register' %}{% endif %}">Get started</a>
+  </div>
+</section>
+{% endblock %}

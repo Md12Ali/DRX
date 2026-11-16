@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Lesson booked{% endblock %}
+
+{% block content %}
+<section class="form-card result-card" aria-labelledby="success-title">
+  <p class="result-icon result-success" aria-hidden="true">&#10003;</p>
+  <h1 id="success-title">You're booked in!</h1>
+  <p>
+    <strong>{{ booking.start|date:"l j F" }} at {{ booking.start|date:"H:i" }}</strong>
+    with {{ booking.instructor.display_name }}. We received your payment of {{ payment.amount_display }}.
+  </p>
+  <p class="muted">Reference {{ booking.reference }}. Stripe will email a receipt to {{ user.email|default:"your email address" }}.</p>
+  <p class="muted">Remember to bring your provisional licence and glasses if you need them.</p>
+  <div class="button-row">
+    <a class="button button-dark" href="{% url 'bookings:dashboard' %}">Go to my lessons</a>
+    <a class="button button-ghost" href="{{ booking.instructor.get_absolute_url }}">Book another</a>
+  </div>
+</section>
+{% endblock %}

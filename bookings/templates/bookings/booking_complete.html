@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Sign off lesson{% endblock %}
+
+{% block content %}
+<section class="form-card" aria-labelledby="complete-title">
+  <h1 id="complete-title">Sign off lesson</h1>
+  <p class="muted">{{ booking.learner.first_name|default:booking.learner.username }} · {{ booking.start|date:"l j F, H:i" }} · {{ booking.get_duration_minutes_display }}</p>
+  <form method="post" class="stack-form" novalidate data-loading-text="Saving…">
+    {% csrf_token %}
+    {% include "includes/form_field.html" with field=form.instructor_notes %}
+    <p class="fine-print">Next you'll be able to update {{ booking.learner.first_name|default:"the learner" }}'s skill levels.</p>
+    <div class="button-row">
+      <button type="submit" class="button button-dark">Mark as completed</button>
+      <a class="button button-ghost" href="{{ booking.get_absolute_url }}">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

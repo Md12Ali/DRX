@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Delete account{% endblock %}
+
+{% block content %}
+<section class="form-card confirm-card" aria-labelledby="delete-title">
+  <h1 id="delete-title">Delete your account?</h1>
+  <p>Your account, every booking, your progress and any reviews you've written will be removed permanently. This can't be undone.</p>
+  <p class="muted">Lessons you've already paid for won't be refunded automatically. Cancel them first if you want a refund.</p>
+  <form method="post" class="button-row">
+    {% csrf_token %}
+    <button type="submit" class="button button-danger">Yes, delete everything</button>
+    <a class="button button-ghost" href="{% url 'accounts:profile' %}">No, keep my account</a>
+  </form>
+</section>
+{% endblock %}

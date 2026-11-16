@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}{{ instructor.display_name }}, driving instructor{% endblock %}
+{% block meta_description %}Book driving lessons with {{ instructor.display_name }} in {{ instructor.areas_covered }}. {{ instructor.tagline }}{% endblock %}
+
+{% block content %}
+<div class="profile-layout">
+  <section class="profile-main" aria-labelledby="instructor-name">
+    <a class="back-link" href="{% url 'instructors:list' %}">&larr; All instructors</a>
+
+    <header class="instructor-header">
+      {% include "includes/instructor_avatar.html" with size="xl" %}
+      <div>
+        <h1 id="instructor-name">{{ instructor.display_name }}</h1>
+        {% if instructor.tagline %}<p class="lede">{{ instructor.tagline }}</p>{% endif %}
+        <p class="rating-line">
+          {% if review_count %}
+            <span class="stars" aria-hidden="true">★</span> <strong>{{ average_rating }}</strong>
+            <a href="#reviews">{{ review_count }} review{{ review_count|pluralize }}</a>
+          {% else %}
+            <span class="muted">No reviews yet</span>
+          {% endif %}
+        </p>
+      </div>
+    </header>
+
+    <dl class="fact-grid">
+      <div><dt>Teaches</dt><dd>{{ instructor.get_teaches_display }}</dd></div>
+      <div><dt>Car</dt><dd>{{ instructor.car|default:"Dual-control car" }}</dd></div>
+      <div><dt>Areas</dt><dd>{{ instructor.areas_covered }}</dd></div>
+      <div><dt>Hours</dt><dd>{{ instructor.working_days_display }}, {{ instructor.day_start|time:"H:i" }}–{{ instructor.day_end|time:"H:i" }}</dd></div>
+    </dl>
+
+    {% if instructor.bio %}
+      <h2>About {{ instructor.first_name }}</h2>
+      <p class="bio">{{ instructor.bio|linebreaksbr }}</p>
+    {% endif %}
+
+    {% if availability %}
+      <h2>Free slots in the next two weeks</h2>
+      <p class="muted">Number of free one-hour slots each day. Pick a day to start booking.</p>
+      <ul class="availability-strip">
+        {% for day in availability %}
+          <li>
+            {% if day.free %}
+              <a class="day-chip day-free" href="{% url 'bookings:create' instructor.slug %}?date={{ day.date|date:'Y-m-d' }}">
+                <span class="day-name">{{ day.date|date:"D" }}</span>
+                <span class="day-num">{{ day.date|date:"j" }}</span>
+                <span class="day-count">{{ day.free }} free</span>
+              </a>
+            {% else %}
+              <span class="day-chip day-full">
+                <span class="day-name">{{ day.date|date:"D" }}</span>
+                <span class="day-num">{{ day.date|date:"j" }}</span>
+                <span class="day-count">{% if day.working %}Full{% else %}Off{% endif %}</span>
+              </span>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <section id="reviews" class="reviews" aria-labelledby="reviews-title">
+      <div class="section-heading-row">
+        <h2 id="reviews-title">Reviews</h2>
+        {% if can_review %}
+          <a class="button button-ghost button-small" href="{% url 'instructors:review_create' instructor.slug %}">Write a review</a>
+        {% elif own_review %}
+          <span class="review-own-actions">
+            <a href="{% url 'instructors:review_edit' own_review.pk %}">Edit your review</a>
+            <a class="danger-link" href="{% url 'instructors:review_delete' own_review.pk %}">Delete</a>
+          </span>
+        {% endif %}
+      </div>
+      {% for review in reviews %}
+        <figure class="review-card">
+          <p class="stars" aria-label="{{ review.rating }} out of 5 stars">{{ review.stars }}</p>
+          <blockquote>{{ review.comment|linebreaksbr }}</blockquote>
+          <figcaption>{{ review.learner.first_name|default:"A learner" }} · {{ review.created_on|date:"F Y" }}</figcaption>
+        </figure>
+      {% empty %}
+        <p class="muted">Reviews appear here after learners finish lessons with {{ instructor.first_name }}.</p>
+      {% endfor %}
+    </section>
+  </section>
+
+  <aside class="booking-panel" aria-labelledby="price-title">
+    <h2 id="price-title">Prices</h2>
+    <ul class="price-list">
+      {% for label, price in prices %}
+        <li><span>{{ label }}</span><strong>{{ price }}</strong></li>
+      {% endfor %}
+    </ul>
+    {% if is_instructor %}
+      <p class="muted">You're logged in as an instructor.</p>
+    {% elif instructor.is_accepting_pupils %}
+      <a class="button button-accent button-block button-lg" href="{% url 'bookings:create' instructor.slug %}">Book a lesson</a>
+      <p class="fine-print">Free cancellation up to 24 hours before. Secure card payment by Stripe.</p>
+    {% else %}
+      <p class="status-pill status-muted">Not taking new bookings</p>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

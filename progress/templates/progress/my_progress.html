@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}My progress{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <p class="eyebrow">My progress</p>
+  <h1>{% if summary.test_ready %}You're test-ready!{% else %}Your road to test day{% endif %}</h1>
+</div>
+
+<div class="dashboard-grid">
+  <section class="panel panel-dark" aria-labelledby="score-title">
+    <h2 id="score-title">Test-ready score</h2>
+    <p class="score-big">{{ summary.percent }}%</p>
+    <progress class="score-progress" value="{{ summary.percent }}" max="100" aria-label="Test-ready score">{{ summary.percent }}%</progress>
+    {% if summary.test_ready %}
+      <p>Talk to your instructor about booking your practical test.</p>
+      <a class="button button-accent" href="https://www.gov.uk/book-driving-test" target="_blank" rel="noopener">Book your test on GOV.UK<span class="visually-hidden"> (opens in a new tab)</span></a>
+    {% else %}
+      <p>You're test-ready at 85% with every skill at "Seldom prompted" or better.</p>
+    {% endif %}
+  </section>
+
+  <section class="panel" aria-labelledby="focus-title">
+    <h2 id="focus-title">Focus next</h2>
+    {% if summary.focus_next %}
+      <ul class="focus-list">
+        {% for skill in summary.focus_next %}<li><strong>{{ skill.name }}</strong><span class="muted">{{ skill.description }}</span></li>{% endfor %}
+      </ul>
+    {% else %}
+      <p>Every skill is at "Seldom prompted" or better. Brilliant work.</p>
+    {% endif %}
+  </section>
+</div>
+
+<section class="panel" aria-labelledby="skills-title">
+  <h2 id="skills-title">All skills</h2>
+  <ul class="skill-list">
+    {% for row in summary.rows %}
+      <li class="skill-row">
+        <div>
+          <p class="skill-name">{{ row.skill.name }}</p>
+          <p class="muted skill-cat">{{ row.skill.get_category_display }}</p>
+        </div>
+        <div class="skill-meter">
+          <div class="progress-track progress-track-small" aria-hidden="true">
+            <span class="progress-fill level-{{ row.level }}"></span>
+          </div>
+          <span class="skill-level">
+            {% for value, label in levels %}{% if value == row.level %}{{ label }}{% endif %}{% endfor %}
+            {% if not row.level %}Not started{% endif %}
+          </span>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

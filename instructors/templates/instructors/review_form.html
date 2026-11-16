@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}{% if is_edit %}Edit review{% else %}Review {{ instructor.display_name }}{% endif %}{% endblock %}
+
+{% block content %}
+<section class="form-card" aria-labelledby="review-title">
+  <h1 id="review-title">{% if is_edit %}Edit your review{% else %}Review {{ instructor.display_name }}{% endif %}</h1>
+  <p class="muted">Your first name and review are shown publicly on {{ instructor.first_name }}'s profile.</p>
+  <form method="post" class="stack-form" novalidate data-loading-text="Saving…">
+    {% csrf_token %}
+    {% for field in form %}
+      {% include "includes/form_field.html" %}
+    {% endfor %}
+    <div class="button-row">
+      <button type="submit" class="button button-dark">{% if is_edit %}Save changes{% else %}Post review{% endif %}</button>
+      <a class="button button-ghost" href="{{ instructor.get_absolute_url }}#reviews">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}
