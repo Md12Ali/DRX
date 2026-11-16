@@ -258,6 +258,51 @@
     tick();
   }
 
+  /* Home page: "Do you cover my postcode?" without reloading
+     ------------------------------------------------------------------------ */
+  function initPostcodeCheck() {
+    const form = document.querySelector(".js-postcode-check");
+    const output = document.querySelector(".js-postcode-result");
+    if (!form || !output) {
+      return;
+    }
+    form.addEventListener("submit", function (event) {
+      const value = form.elements.postcode.value.trim();
+      if (!value) {
+        return;
+      }
+      event.preventDefault();
+      const params = new URLSearchParams({ postcode: value });
+
+      fetch(form.dataset.checkUrl + "?" + params.toString(), { headers: { Accept: "application/json" } })
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          const result = document.createElement("p");
+          if (!data.valid) {
+            result.className = "result-no";
+            result.textContent = "That doesn't look like a UK postcode. Try something like E3 5AA.";
+          } else if (data.covered) {
+            result.className = "result-yes";
+            result.textContent = "Yes! " + data.postcode + " is in " + data.district + " (" + data.areas + "). ";
+            const link = document.createElement("a");
+            link.href = form.dataset.bookUrl;
+            link.textContent = "Book a lesson";
+            result.appendChild(link);
+          } else {
+            result.className = "result-no";
+            result.textContent = "Sorry, " + data.postcode + " (" + data.district + ") is outside the area I cover. " +
+              "You could choose a pick-up point in a covered area, like your school or work.";
+          }
+          output.replaceChildren(result);
+        })
+        .catch(function () {
+          form.submit();
+        });
+    });
+  }
+
   /* Dashboard score ring
      ------------------------------------------------------------------------ */
   function initScoreRings() {
@@ -275,6 +320,7 @@
     initConfirmForms();
     initSlotPicker();
     initHoldCountdown();
+    initPostcodeCheck();
     initScoreRings();
   });
 })();
