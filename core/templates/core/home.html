@@ -34,7 +34,7 @@
           {% include "includes/instructor_avatar.html" with size="md" %}
           <div>
             <p class="ticket-name">{{ instructor.display_name }}</p>
-            <p class="ticket-meta">{% if instructor.is_adi %}Approved Driving Instructor{% else %}Trainee driving instructor{% endif %}</p>
+            <p class="ticket-meta">Driving lessons · East London</p>
           </div>
         </div>
         <p class="ticket-time">{{ hourly_rate_display }}<span>/hour</span></p>
@@ -153,8 +153,8 @@
     <div>
       <p class="eyebrow">Your instructor</p>
       <h2 id="about-title">Hi, I'm {{ instructor.first_name }}</h2>
-      <p class="qualification-badge">{{ instructor.get_qualification_display }}</p>
-      <p>{% if instructor.bio %}{{ instructor.bio|truncatewords:60 }}{% else %}{{ instructor.tagline|default:"Calm, patient lessons that fit around your week." }}{% endif %}</p>
+      <p>{{ instructor.tagline|default:"Calm, patient lessons that fit around your week." }}</p>
+      {% include "includes/instructor_highlights.html" %}
       <ul class="chip-list">
         <li class="chip">{{ instructor.get_teaches_display }}</li>
         {% if instructor.car %}<li class="chip chip-soft">{{ instructor.car }}</li>{% endif %}

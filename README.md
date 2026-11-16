@@ -159,6 +159,12 @@ many more lessons do I need?" into a number the learner can see.
 
 ### UX decisions worth noting
 
+- **Honest, positive instructor details.** Instead of a formal qualification badge, the home page
+  and profile list five checkable selling points (calm and patient, lessons planned around you,
+  clear progress, door-to-door pick-up, flexible lengths). A small line underneath still says I'm
+  a DVSA-licensed trainee, because DVSA rules say a trainee must not appear to be a fully
+  qualified instructor. When the `qualification` field is set to ADI, it reads
+  "Approved Driving Instructor (ADI)" instead.
 - **Progressive enhancement:** the slot picker loads free times with JavaScript, but the date and
   time inputs still work without it. The server checks every rule again, so a booking can never
   break them.
@@ -181,7 +187,7 @@ many more lessons do I need?" into a number the learner can see.
 | Prices | Pay-as-you-go prices, every package with price per hour and saving, learner's hour balance and purchase history |
 | Packages | Stripe Checkout for packages, success/cancel handling, webhook; hours spent on bookings and returned on cancellation |
 | Areas | Pick-up postcodes checked against E1, E2, E3, E8, E9, E14, EC1, EC2, N1 on sign-up details and every booking |
-| Instructor profile | Qualification badge (trainee or ADI), facts, bio, prices, 14-day availability strip, reviews |
+| Instructor profile | "Why learn with me" highlights, facts, bio, prices, 14-day availability strip, reviews |
 | Booking | Live slot picker (JSON API), 1/1.5/2-hour lessons, notes, rule checks, 35-minute payment hold |
 | Payments | Stripe Checkout, success/cancel pages, webhook, automatic refunds on cancellation |
 | Learner dashboard | Next lesson, test-ready ring, hours driven, upcoming and past lessons |
