@@ -3,6 +3,8 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 
+from core.postcodes import covered_list_display, is_covered, normalise
+
 from .models import Profile
 
 User = get_user_model()
@@ -53,7 +55,8 @@ class ProfileForm(forms.ModelForm):
         }
         help_texts = {
             "phone": "Your instructor will text you if they're running late.",
-            "pickup_address": "Where lessons usually start, e.g. 12 High Road, Ilford.",
+            "pickup_address": "Where lessons usually start, e.g. 12 Roman Road, London.",
+            "postcode": "Pick-ups are available in E1, E2, E3, E8, E9, E14, EC1, EC2 and N1.",
         }
         widgets = {
             "phone": forms.TextInput(attrs={"autocomplete": "tel", "inputmode": "tel"}),
@@ -62,8 +65,18 @@ class ProfileForm(forms.ModelForm):
         }
 
     def clean_postcode(self):
-        """Store postcodes in capitals for consistency."""
-        return self.cleaned_data["postcode"].strip().upper()
+        """Tidy the postcode and check it's inside the area covered."""
+        raw = self.cleaned_data["postcode"].strip()
+        if not raw:
+            return ""
+        postcode = normalise(raw)
+        if not postcode:
+            raise forms.ValidationError("Enter a valid UK postcode, for example E3 5AA.")
+        if not is_covered(postcode):
+            raise forms.ValidationError(
+                f"Sorry, pick-ups are only available in {covered_list_display()}."
+            )
+        return postcode
 
     def clean_pickup_address(self):
         return self.cleaned_data["pickup_address"].strip()

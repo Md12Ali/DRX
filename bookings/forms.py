@@ -4,6 +4,8 @@ import datetime
 from django import forms
 from django.utils import timezone
 
+from core.postcodes import covered_list_display, is_covered, normalise
+
 from .models import Booking
 from .services import booking_problems
 
@@ -32,10 +34,11 @@ class BookingForm(forms.ModelForm):
 
     class Meta:
         model = Booking
-        fields = ("duration_minutes", "pickup_address", "learner_notes")
+        fields = ("duration_minutes", "pickup_address", "pickup_postcode", "learner_notes")
         labels = {
             "duration_minutes": "Lesson length",
             "pickup_address": "Pick-up address",
+            "pickup_postcode": "Pick-up postcode",
             "learner_notes": "Anything your instructor should know? (optional)",
         }
         widgets = {
@@ -69,13 +72,27 @@ class BookingForm(forms.ModelForm):
             )
         elif not self.initial.get("pickup_address"):
             # Never ask for information we already have.
-            self.initial["pickup_address"] = learner.profile.full_pickup_address
+            self.initial["pickup_address"] = learner.profile.pickup_address
+            self.initial["pickup_postcode"] = learner.profile.postcode
+        self.fields["pickup_postcode"].required = True
+        self.fields["pickup_postcode"].help_text = f"Pick-ups in {covered_list_display()}."
 
     def clean_pickup_address(self):
         address = self.cleaned_data["pickup_address"].strip()
         if len(address) < 6:
             raise forms.ValidationError("Please enter a full pick-up address.")
         return address
+
+    def clean_pickup_postcode(self):
+        """Valid UK postcode inside the area covered."""
+        postcode = normalise(self.cleaned_data["pickup_postcode"])
+        if not postcode:
+            raise forms.ValidationError("Enter a valid UK postcode, for example E3 5AA.")
+        if not is_covered(postcode):
+            raise forms.ValidationError(
+                f"Sorry, pick-ups are only available in {covered_list_display()}."
+            )
+        return postcode
 
     def clean(self):
         """Combine date and time, then check every booking rule."""

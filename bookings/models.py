@@ -54,6 +54,10 @@ class Booking(models.Model):
         CANCELLED = "cancelled", "Cancelled"
         EXPIRED = "expired", "Expired (not paid)"
 
+    class PaymentMethod(models.TextChoices):
+        CARD = "card", "Card"
+        PACKAGE = "package", "Package hours"
+
     class Duration(models.IntegerChoices):
         ONE_HOUR = 60, "1 hour"
         NINETY_MINUTES = 90, "1.5 hours"
@@ -76,10 +80,16 @@ class Booking(models.Model):
         default=Duration.ONE_HOUR,
     )
     pickup_address = models.CharField(max_length=200)
+    pickup_postcode = models.CharField(max_length=10, blank=True)
     learner_notes = models.TextField(max_length=500, blank=True)
     instructor_notes = models.TextField(max_length=1000, blank=True)
     price_pence = models.PositiveIntegerField()
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
+    payment_method = models.CharField(
+        max_length=10,
+        choices=PaymentMethod.choices,
+        default=PaymentMethod.CARD,
+    )
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
@@ -107,6 +117,21 @@ class Booking(models.Model):
     @property
     def price_display(self):
         return f"£{self.price_pence / 100:.2f}"
+
+    @property
+    def paid_with_package(self):
+        return self.payment_method == self.PaymentMethod.PACKAGE
+
+    @property
+    def hours_display(self):
+        """'1', '1.5' or '2' - used for package hours."""
+        hours = self.duration_minutes / 60
+        return f"{hours:g}"
+
+    @property
+    def hours_label(self):
+        """'1 hour', '1.5 hours' or '2 hours'."""
+        return f"{self.hours_display} hour{'' if self.duration_minutes == 60 else 's'}"
 
     @property
     def reference(self):

@@ -9,7 +9,7 @@ UK_PHONE_VALIDATOR = RegexValidator(
 )
 UK_POSTCODE_VALIDATOR = RegexValidator(
     regex=r"^[A-Za-z]{1,2}\d[A-Za-z\d]?\s?\d[A-Za-z]{2}$",
-    message="Enter a valid UK postcode, for example IG3 8XX.",
+    message="Enter a valid UK postcode, for example E3 5AA.",
 )
 
 

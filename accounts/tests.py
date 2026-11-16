@@ -19,7 +19,7 @@ class ProfileModelTests(TestCase):
 
     def test_full_pickup_address(self):
         user = make_learner("amira")
-        self.assertEqual(user.profile.full_pickup_address, "12 High Road, Ilford, IG3 8XX")
+        self.assertEqual(user.profile.full_pickup_address, "12 Roman Road, London, E3 5AA")
         self.assertTrue(user.profile.is_complete)
 
     def test_is_instructor(self):
@@ -47,13 +47,21 @@ class FormTests(TestCase):
         self.assertIn("phone", form.errors)
         self.assertIn("postcode", form.errors)
 
-    def test_profile_uppercases_postcode(self):
+    def test_profile_tidies_postcode(self):
         form = ProfileForm(data={
-            "phone": "07700 900123", "pickup_address": "1 High Road",
-            "postcode": "ig3 8xx", "transmission": "automatic",
+            "phone": "07700 900123", "pickup_address": "1 Roman Road",
+            "postcode": "e35aa", "transmission": "automatic",
         })
         self.assertTrue(form.is_valid())
-        self.assertEqual(form.cleaned_data["postcode"], "IG3 8XX")
+        self.assertEqual(form.cleaned_data["postcode"], "E3 5AA")
+
+    def test_profile_rejects_postcode_outside_area(self):
+        form = ProfileForm(data={
+            "phone": "07700 900123", "pickup_address": "1 High Road",
+            "postcode": "IG3 8XX", "transmission": "manual",
+        })
+        self.assertFalse(form.is_valid())
+        self.assertIn("only available in", form.errors["postcode"][0])
 
 
 class AuthViewTests(TestCase):
@@ -86,11 +94,11 @@ class AuthViewTests(TestCase):
         user = make_learner("amira", complete_profile=False)
         self.client.login(username="amira", password=PASSWORD)
         self.client.post(reverse("accounts:profile"), {
-            "phone": "07700 900456", "pickup_address": "5 Green Lane, Ilford",
-            "postcode": "ig1 1aa", "transmission": "automatic",
+            "phone": "07700 900456", "pickup_address": "5 Dalston Lane",
+            "postcode": "e8 1aa", "transmission": "automatic",
         })
         user.profile.refresh_from_db()
-        self.assertEqual(user.profile.postcode, "IG1 1AA")
+        self.assertEqual(user.profile.postcode, "E8 1AA")
         self.assertEqual(user.profile.transmission, "automatic")
 
     def test_learner_can_delete_account(self):
