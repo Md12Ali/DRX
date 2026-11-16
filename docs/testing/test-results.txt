@@ -158,7 +158,7 @@ test_learner_sees_own_progress (progress.tests.ProgressViewTests.test_learner_se
 test_syllabus_is_loaded_by_migration (progress.tests.SyllabusTests.test_syllabus_is_loaded_by_migration) ... ok
 
 ----------------------------------------------------------------------
-Ran 117 tests in 71.204s
+Ran 117 tests in 56.798s
 
 OK
 Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...

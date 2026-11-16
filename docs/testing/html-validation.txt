@@ -1,17 +1,2 @@
-Error: Bad value “” for attribute “for” on element “label”: An ID must not be the empty string.
-From line 80, column 3; to line 80, column 16 in resource file:/home/runner/work/DRX/DRX/docs/testing/html/booking-form.html
-Error: The value of the “for” attribute of the “label” element must be the ID of a non-hidden form control.
-From line 80, column 3; to line 80, column 16 in resource file:/home/runner/work/DRX/DRX/docs/testing/html/booking-form.html
-Error: Bad value “” for attribute “for” on element “label”: An ID must not be the empty string.
-From line 85, column 3; to line 85, column 16 in resource file:/home/runner/work/DRX/DRX/docs/testing/html/booking-postcode-outside-area.html
-Error: The value of the “for” attribute of the “label” element must be the ID of a non-hidden form control.
-From line 85, column 3; to line 85, column 16 in resource file:/home/runner/work/DRX/DRX/docs/testing/html/booking-postcode-outside-area.html
-Error: Bad value “” for attribute “for” on element “label”: An ID must not be the empty string.
-From line 194, column 3; to line 194, column 16 in resource file:/home/runner/work/DRX/DRX/docs/testing/html/instructor-edit-profile.html
-Error: Element “img” is missing one or more of the following attributes: “src”, “srcset”.
-From line 232, column 5; to line 232, column 92 in resource file:/home/runner/work/DRX/DRX/docs/testing/html/instructor-edit-profile.html
-Error: The value of the “for” attribute of the “label” element must be the ID of a non-hidden form control.
-From line 194, column 3; to line 194, column 16 in resource file:/home/runner/work/DRX/DRX/docs/testing/html/instructor-edit-profile.html
-Error: Bad value “street-address” for attribute “autocomplete” on element “input”: The autofill field name “street-address” is not allowed in this context.
-From line 92, column 3; to line 92, column 197 in resource file:/home/runner/work/DRX/DRX/docs/testing/html/my-details.html
-Document checking completed.
+Document checking completed. No errors found.
+No HTML errors found in 23 pages.
