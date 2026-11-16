@@ -19,7 +19,12 @@ PREVIEW_DAYS = 14
 
 
 def instructor_list(request):
-    """All instructors, filterable by transmission and area or name."""
+    """
+    All instructors, filterable by transmission and area or name. While the
+    school has a single instructor, this goes straight to their profile.
+    """
+    if Instructor.objects.count() == 1 and not request.GET:
+        return redirect(Instructor.objects.get())
     instructors = Instructor.objects.with_ratings()
     query = request.GET.get("q", "").strip()[:60]
     transmission = request.GET.get("transmission", "")

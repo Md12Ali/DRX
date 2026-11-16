@@ -18,6 +18,14 @@ class InstructorQuerySet(models.QuerySet):
         """Instructors currently taking new learners."""
         return self.filter(is_accepting_pupils=True)
 
+    def main(self):
+        """
+        The instructor this website is built around: the first one who is
+        taking bookings (or the first one at all). Lets the site work as a
+        personal website today and grow into a multi-instructor school later.
+        """
+        return self.order_by("-is_accepting_pupils", "created_on").first()
+
     def with_ratings(self):
         """Attach the average rating and number of reviews."""
         return self.select_related("user").annotate(
@@ -28,6 +36,10 @@ class InstructorQuerySet(models.QuerySet):
 
 class Instructor(models.Model):
     """A DVSA-approved driving instructor who teaches through DRX."""
+
+    class Qualification(models.TextChoices):
+        TRAINEE = "trainee", "Trainee driving instructor (DVSA trainee licence)"
+        ADI = "adi", "DVSA Approved Driving Instructor (ADI)"
 
     class Teaches(models.TextChoices):
         MANUAL = "manual", "Manual"
@@ -42,6 +54,12 @@ class Instructor(models.Model):
     slug = models.SlugField(max_length=60, unique=True)
     display_name = models.CharField(max_length=60)
     tagline = models.CharField(max_length=120, blank=True)
+    qualification = models.CharField(
+        max_length=10,
+        choices=Qualification.choices,
+        default=Qualification.TRAINEE,
+        help_text="Only choose ADI once you're on the ADI register. Trainees must not advertise as ADIs.",
+    )
     bio = models.TextField(max_length=1200, blank=True)
     areas_covered = models.CharField(
         max_length=200,
@@ -52,7 +70,7 @@ class Instructor(models.Model):
     photo = models.ImageField(upload_to="instructors/", blank=True)
     hourly_rate_pence = models.PositiveIntegerField(
         validators=[MinValueValidator(1000), MaxValueValidator(20000)],
-        default=4000,
+        default=3500,
     )
     working_days = models.CharField(
         max_length=7,
@@ -88,6 +106,10 @@ class Instructor(models.Model):
     @property
     def hourly_rate_display(self):
         return f"£{self.hourly_rate_pence / 100:.0f}"
+
+    @property
+    def is_adi(self):
+        return self.qualification == self.Qualification.ADI
 
     @property
     def area_list(self):

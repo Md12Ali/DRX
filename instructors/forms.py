@@ -25,7 +25,7 @@ class InstructorProfileForm(forms.ModelForm):
     class Meta:
         model = Instructor
         fields = (
-            "tagline", "bio", "areas_covered", "teaches", "car", "photo",
+            "qualification", "tagline", "bio", "areas_covered", "teaches", "car", "photo",
             "day_start", "day_end", "is_accepting_pupils",
         )
         labels = {
