@@ -9,7 +9,7 @@ from django.utils import timezone
 from core.testing import PASSWORD, future_start, make_booking, make_instructor, make_learner
 
 from .models import Booking
-from .services import available_start_times, booking_problems
+from .services import available_start_times, booking_problems, week_timetable
 
 
 class BookingModelTests(TestCase):
@@ -236,3 +236,84 @@ class InstructorViewTests(TestCase):
         booking.refresh_from_db()
         self.assertEqual(booking.status, Booking.Status.CANCELLED)
         mock_refund.assert_called_once()
+
+
+class TimetableTests(TestCase):
+    """The weekly timetable: free, booked, own lessons, privacy and week limits."""
+
+    def setUp(self):
+        self.instructor = make_instructor("sam")
+        self.learner = make_learner("lily")
+        self.other = make_learner("omar")
+        self.start = future_start(days=3, hour=10)
+        self.week = self.start.date() - datetime.timedelta(days=self.start.weekday())
+        self.url = reverse("bookings:timetable", args=["sam"])
+
+    def cell(self, table, when):
+        """The timetable cell for an aware datetime."""
+        local = timezone.localtime(when)
+        row = next(r for r in table["rows"] if r["time"] == local.time())
+        return row["cells"][(local.date() - table["days"][0]).days]
+
+    def test_free_booked_and_own_slots(self):
+        make_booking(self.other, self.instructor, start=self.start)
+        mine = make_booking(self.learner, self.instructor, start=self.start + datetime.timedelta(hours=3))
+        table = week_timetable(self.instructor, self.week, 60, viewer=self.learner)
+
+        self.assertEqual(self.cell(table, self.start)["state"], "booked")
+        self.assertEqual(self.cell(table, self.start + datetime.timedelta(minutes=30))["state"], "booked")
+        self.assertEqual(self.cell(table, mine.start)["state"], "yours")
+        self.assertEqual(self.cell(table, self.start + datetime.timedelta(hours=1))["state"], "free")
+
+    def test_slot_just_before_a_lesson_is_closed_for_longer_lessons(self):
+        make_booking(self.other, self.instructor, start=self.start)
+        before = self.start - datetime.timedelta(hours=1)
+        self.assertEqual(self.cell(week_timetable(self.instructor, self.week, 60), before)["state"], "free")
+        self.assertEqual(self.cell(week_timetable(self.instructor, self.week, 120), before)["state"], "closed")
+
+    def test_days_off_are_marked(self):
+        self.instructor.working_days = "012345"  # Monday to Saturday
+        self.instructor.save()
+        table = week_timetable(self.instructor, self.week, 60)
+        self.assertTrue(all(row["cells"][6]["state"] == "off" for row in table["rows"]))
+
+    def test_visitors_can_see_it_and_free_times_link_to_the_booking_form(self):
+        response = self.client.get(self.url, {"week": self.week.isoformat(), "duration": 90})
+        self.assertEqual(response.status_code, 200)
+        booking_link = (
+            f'{reverse("bookings:create", args=["sam"])}?date={self.start:%Y-%m-%d}'
+            f'&amp;time={timezone.localtime(self.start):%H:%M}&amp;duration=90'
+        )
+        self.assertContains(response, booking_link)
+
+    def test_learners_never_see_who_else_booked(self):
+        make_booking(self.other, self.instructor, start=self.start)
+        self.client.force_login(self.learner)
+        response = self.client.get(self.url, {"week": self.week.isoformat()})
+        self.assertContains(response, "Booked")
+        self.assertNotContains(response, "Omar")
+
+    def test_instructor_sees_learner_names(self):
+        make_booking(self.other, self.instructor, start=self.start)
+        self.client.force_login(self.instructor.user)
+        response = self.client.get(self.url, {"week": self.week.isoformat()})
+        self.assertContains(response, "Omar")
+
+    def test_week_is_kept_inside_the_booking_window(self):
+        this_week = timezone.localdate() - datetime.timedelta(days=timezone.localdate().weekday())
+        response = self.client.get(self.url, {"week": "2001-01-01", "duration": "999"})
+        self.assertEqual(response.context["week"], this_week)
+        self.assertEqual(response.context["duration"], 60)
+        self.assertIsNone(response.context["previous_week"])
+        response = self.client.get(self.url, {"week": "2999-01-01"})
+        self.assertIsNone(response.context["next_week"])
+
+    def test_booking_form_is_prefilled_from_the_timetable(self):
+        self.client.force_login(self.learner)
+        response = self.client.get(
+            reverse("bookings:create", args=["sam"]),
+            {"date": f"{self.start:%Y-%m-%d}", "time": "10:00", "duration": "120"},
+        )
+        form = response.context["form"]
+        self.assertEqual(form.initial["start_time"], "10:00")
+        self.assertEqual(form.initial["duration_minutes"], 120)

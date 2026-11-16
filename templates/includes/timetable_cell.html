@@ -1,0 +1,23 @@
+{# One half-hour slot in the timetable. Used by the week grid and the mobile day list. #}
+{% if cell.state == "free" %}
+  {% if is_owner %}
+    <span class="tt-slot tt-free">Free</span>
+  {% else %}
+    <a class="tt-slot tt-free" href="{% url 'bookings:create' instructor.slug %}?date={{ cell.start|date:'Y-m-d' }}&amp;time={{ cell.start|time:'H:i' }}&amp;duration={{ duration }}">
+      <span aria-hidden="true">{{ cell.start|time:"H:i" }}</span>
+      <span class="visually-hidden">Book {{ cell.start|date:"l j F" }} at {{ cell.start|time:"H:i" }}</span>
+    </a>
+  {% endif %}
+{% elif cell.state == "yours" %}
+  <a class="tt-slot tt-yours" href="{% url 'bookings:detail' cell.booking.pk %}">Your lesson</a>
+{% elif cell.state == "booked" %}
+  {% if is_owner %}
+    <a class="tt-slot tt-booked" href="{% url 'bookings:detail' cell.booking.pk %}">{{ cell.booking.learner.first_name|default:"Booked" }}</a>
+  {% else %}
+    <span class="tt-slot tt-booked">Booked</span>
+  {% endif %}
+{% elif cell.state == "off" %}
+  <span class="tt-slot tt-off"><span class="visually-hidden">Day off</span></span>
+{% else %}
+  <span class="tt-slot tt-closed"><span class="visually-hidden">Not available</span></span>
+{% endif %}

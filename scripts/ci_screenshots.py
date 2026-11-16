@@ -123,6 +123,7 @@ with sync_playwright() as playwright:
     capture(page, "prices", "/prices/", mobile_too=True)
     capture(page, "instructor-profile", f"/instructors/{slug}/", mobile_too=True)
     capture(page, "how-it-works", "/about/")
+    capture(page, "timetable-visitor", f"/bookings/timetable/{slug}/")
     capture(page, "register", "/accounts/register/")
     page.click("main button[type=submit]")
     capture(page, "register-validation-errors")
@@ -132,6 +133,7 @@ with sync_playwright() as playwright:
     # Learner pages
     log_in(page, "jamil")
     capture(page, "learner-dashboard", "/bookings/", mobile_too=True)
+    capture(page, "timetable", f"/bookings/timetable/{slug}/?week={DEMO['next_week']}", mobile_too=True)
     capture(page, "booking-form", f"/bookings/new/{slug}/?date={DEMO['free_date']}", mobile_too=True,
             wait_for=".slot-button")
     page.click(".slot-button >> nth=2")
@@ -150,6 +152,7 @@ with sync_playwright() as playwright:
     context.clear_cookies()
     log_in(page, "ali")
     capture(page, "instructor-diary", "/bookings/diary/", mobile_too=True)
+    capture(page, "instructor-timetable", f"/bookings/timetable/{slug}/?week={DEMO['next_week']}")
     capture(page, "instructor-sign-off", f"/bookings/{DEMO['sign_off']}/complete/")
     capture(page, "instructor-rate-skills", "/progress/learners/jamil/")
     capture(page, "instructor-edit-profile", "/instructors/me/edit/")

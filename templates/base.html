@@ -31,6 +31,7 @@
       <ul class="nav-menu" id="nav-menu">
         {% if is_instructor %}
           <li><a href="{% url 'bookings:diary' %}"{% if current == 'diary' %} aria-current="page"{% endif %}>My diary</a></li>
+          <li><a href="{% url 'bookings:timetable' current_instructor.slug %}"{% if current == 'timetable' %} aria-current="page"{% endif %}>Timetable</a></li>
           <li><a href="{{ current_instructor.get_absolute_url }}"{% if app == 'instructors' and current == 'detail' %} aria-current="page"{% endif %}>Public profile</a></li>
           <li><a href="{% url 'instructors:edit' %}"{% if current == 'edit' and app == 'instructors' %} aria-current="page"{% endif %}>Edit profile</a></li>
         {% else %}
@@ -38,7 +39,10 @@
             <li><a href="{{ main_instructor.get_absolute_url }}"{% if app == 'instructors' %} aria-current="page"{% endif %}>About me</a></li>
           {% endif %}
           <li><a href="{% url 'packages:list' %}"{% if app == 'packages' %} aria-current="page"{% endif %}>Prices</a></li>
-          <li><a href="{% url 'core:home' %}#areas">Areas</a></li>
+          {% if main_instructor %}
+            <li><a href="{% url 'bookings:timetable' main_instructor.slug %}"{% if current == 'timetable' %} aria-current="page"{% endif %}>Timetable</a></li>
+          {% endif %}
+          {% if not user.is_authenticated %}<li><a href="{% url 'core:home' %}#areas">Areas</a></li>{% endif %}
           {% if user.is_authenticated %}
             <li><a href="{% url 'bookings:dashboard' %}"{% if current == 'dashboard' %} aria-current="page"{% endif %}>My lessons</a></li>
             <li><a href="{% url 'progress:mine' %}"{% if app == 'progress' %} aria-current="page"{% endif %}>Progress</a></li>

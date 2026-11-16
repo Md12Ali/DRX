@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Timetable: free and booked lesson times{% endblock %}
+{% block meta_description %}See when {{ instructor.display_name }} is free and book an automatic driving lesson online.{% endblock %}
+
+{% block content %}
+<header class="page-heading timetable-heading">
+  <div>
+    <p class="eyebrow">Timetable</p>
+    <h1>Pick a free time and book it</h1>
+    <p class="lede">
+      {% if is_owner %}Your week at a glance: free times and who has booked.
+      {% else %}See when {{ instructor.first_name }} is free and when lessons are already booked. Tap a free time to book it.{% endif %}
+    </p>
+  </div>
+  <a class="button button-ghost" href="tel:{{ contact_phone_link }}">Can't see a time? Call {{ contact_phone }}</a>
+</header>
+
+<!-- Lesson length and week -->
+<section class="panel timetable-controls" aria-label="Timetable options">
+  <form method="get" class="js-timetable-form duration-choice">
+    <input type="hidden" name="week" value="{{ week|date:'Y-m-d' }}">
+    <fieldset>
+      <legend>Lesson length</legend>
+      <div class="duration-options">
+        {% for value, label in durations %}
+          <label class="duration-option">
+            <input type="radio" name="duration" value="{{ value }}"{% if value == duration %} checked{% endif %}>
+            <span>{{ label }}</span>
+          </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+    <noscript><button type="submit" class="button button-dark button-small">Show times</button></noscript>
+  </form>
+
+  <nav class="week-nav" aria-label="Choose a week">
+    {% if previous_week %}
+      <a class="button button-ghost button-small" href="?week={{ previous_week|date:'Y-m-d' }}&amp;duration={{ duration }}">&larr; Previous week</a>
+    {% else %}
+      <span class="button button-ghost button-small is-disabled" aria-disabled="true">&larr; Previous week</span>
+    {% endif %}
+    <p class="week-label">{{ columns.0.date|date:"j M" }} &ndash; {{ columns.6.date|date:"j M Y" }}</p>
+    {% if next_week %}
+      <a class="button button-ghost button-small" href="?week={{ next_week|date:'Y-m-d' }}&amp;duration={{ duration }}">Next week &rarr;</a>
+    {% else %}
+      <span class="button button-ghost button-small is-disabled" aria-disabled="true">Next week &rarr;</span>
+    {% endif %}
+  </nav>
+
+  <ul class="tt-legend" aria-label="Key">
+    <li><span class="tt-key tt-free"></span> Free: tap to book</li>
+    <li><span class="tt-key tt-booked"></span> Booked</li>
+    {% if user.is_authenticated and not is_owner %}<li><span class="tt-key tt-yours"></span> Your lesson</li>{% endif %}
+    <li><span class="tt-key tt-closed"></span> Not available</li>
+  </ul>
+</section>
+
+{% if not user.is_authenticated %}
+  <p class="message message-info tt-login-note">You can look without an account. When you pick a time, you'll log in or sign up, then the time is filled in for you.</p>
+{% endif %}
+
+<!-- Week grid (tablet and desktop) -->
+<div class="timetable-scroll">
+  <table class="timetable">
+    <caption class="visually-hidden">Lesson times for the week of {{ week|date:"j F Y" }}, {{ duration }}-minute lessons</caption>
+    <thead>
+      <tr>
+        <th scope="col" class="tt-time-head">Time</th>
+        {% for column in columns %}
+          <th scope="col"{% if column.date == today %} class="is-today"{% endif %}>
+            <span class="tt-day">{{ column.date|date:"D" }}</span>
+            <span class="tt-date">{{ column.date|date:"j M" }}</span>
+            <span class="tt-count">{% if not column.works %}Day off{% elif column.free %}{{ column.free }} free{% else %}Full{% endif %}</span>
+          </th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in table.rows %}
+        <tr>
+          <th scope="row" class="tt-time">{{ row.time|time:"H:i" }}</th>
+          {% for cell in row.cells %}
+            <td>{% include "includes/timetable_cell.html" %}</td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Day-by-day list (phones) -->
+<div class="timetable-days">
+  {% for column in columns %}
+    <section class="tt-day-card{% if column.date == today %} is-today{% endif %}" aria-label="{{ column.date|date:'l j F' }}">
+      <h2>{{ column.date|date:"l j F" }} <span class="tt-count">{% if not column.works %}Day off{% elif column.free %}{{ column.free }} free{% else %}Full{% endif %}</span></h2>
+      {% if column.slots %}
+        <ul class="tt-day-slots">
+          {% for time, cell in column.slots %}
+            <li>
+              {% if cell.state == "free" %}
+                {% include "includes/timetable_cell.html" %}
+              {% elif cell.state == "yours" %}
+                <a class="tt-slot tt-yours" href="{% url 'bookings:detail' cell.booking.pk %}">{{ time|time:"H:i" }} · You</a>
+              {% elif is_owner %}
+                <a class="tt-slot tt-booked" href="{% url 'bookings:detail' cell.booking.pk %}">{{ time|time:"H:i" }} · {{ cell.booking.learner.first_name|default:"Booked" }}</a>
+              {% else %}
+                <span class="tt-slot tt-booked">{{ time|time:"H:i" }} · Booked</span>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="muted">{% if column.works %}No times left this day.{% else %}{{ instructor.first_name }} doesn't teach on {{ column.date|date:"l" }}s.{% endif %}</p>
+      {% endif %}
+    </section>
+  {% endfor %}
+</div>
+
+<p class="muted tt-footnote">
+  Lessons need {{ notice_hours }} hours' notice and can be booked up to {{ weeks_ahead }} weeks ahead.
+  A time you pick is held for you while you pay.
+</p>
+{% endblock %}

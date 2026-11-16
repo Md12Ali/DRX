@@ -76,6 +76,17 @@ booking(at(4, 17), 60, method=Booking.PaymentMethod.PACKAGE)
 pending = booking(at(6, 11), 120, Booking.Status.PENDING)
 to_sign_off = booking(at(-1, 15), 60)
 
+# Next week: a mix of lessons, so the timetable shows free, booked and "your lesson" slots
+monday = 7 - timezone.localdate().weekday()
+sara = User.objects.create_user("sara", "sara@example.com", PASSWORD, first_name="Sara")
+for day, hour, minutes in [(0, 10, 120), (1, 14, 60), (2, 9, 90), (2, 18, 60), (3, 12, 120), (5, 14, 90)]:
+    Booking.objects.create(
+        learner=sara, instructor=instructor, start=at(monday + day, hour), duration_minutes=minutes,
+        pickup_address="5 Mare Street, London", pickup_postcode="E8 1HE",
+        price_pence=instructor.lesson_price_pence(minutes), status=Booking.Status.CONFIRMED,
+    )
+booking(at(monday + 2, 13), 60, method=Booking.PaymentMethod.PACKAGE)
+
 levels = [5, 5, 4, 4, 4, 3, 3, 4, 2, 1, 3, 2, 2, 1, 0, 3]
 for skill, level in zip(Skill.objects.all(), levels):
     if level:
@@ -86,5 +97,6 @@ with open("ci-demo.json", "w") as handle:
         "password": PASSWORD, "slug": instructor.slug, "pending": pending.pk,
         "next": next_lesson.pk, "sign_off": to_sign_off.pk,
         "free_date": (timezone.localdate() + datetime.timedelta(days=3)).isoformat(),
+        "next_week": (timezone.localdate() + datetime.timedelta(days=monday)).isoformat(),
     }, handle)
 print("Demo data ready")
