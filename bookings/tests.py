@@ -21,7 +21,7 @@ class BookingModelTests(TestCase):
         booking = make_booking(self.learner, self.instructor, minutes=120)
         self.assertEqual(booking.end - booking.start, datetime.timedelta(minutes=120))
         self.assertEqual(booking.reference, f"DRX-{booking.pk:05d}")
-        self.assertEqual(booking.price_display, "£52.50")
+        self.assertEqual(booking.price_display, "£70.00")
         self.assertEqual(booking.hours_display, "2")
 
     def test_change_cutoff(self):
@@ -136,7 +136,7 @@ class LearnerViewTests(TestCase):
         booking = Booking.objects.get()
         self.assertRedirects(response, reverse("payments:checkout", args=[booking.pk]))
         self.assertEqual(booking.status, Booking.Status.PENDING)
-        self.assertEqual(booking.price_pence, 5250)
+        self.assertEqual(booking.price_pence, 7000)
         self.assertEqual(booking.pickup_postcode, "E3 5AA")
         self.assertEqual(booking.learner, self.learner)
 
