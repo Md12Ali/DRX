@@ -1,0 +1,27 @@
+home: 1 violation(s)
+    [serious] color-contrast: Elements must meet minimum color contrast ratio thresholds (1 element(s))
+home-postcode-check: 1 violation(s)
+    [serious] color-contrast: Elements must meet minimum color contrast ratio thresholds (1 element(s))
+prices: no violations
+instructor-profile: no violations
+how-it-works: no violations
+register: no violations
+register-validation-errors: no violations
+login: no violations
+error-404: no violations
+learner-dashboard: no violations
+booking-form: no violations
+booking-postcode-outside-area: no violations
+checkout: no violations
+booking-detail: no violations
+booking-cancel-confirm: no violations
+progress: no violations
+my-details: no violations
+prices-logged-in: no violations
+learner-blocked-from-diary: no violations
+instructor-diary: no violations
+instructor-sign-off: no violations
+instructor-rate-skills: no violations
+instructor-edit-profile: no violations
+
+axe-core WCAG 2.1 A/AA: 23 pages checked, 2 violation(s) in total.

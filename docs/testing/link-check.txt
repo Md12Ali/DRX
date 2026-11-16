@@ -1,0 +1,5 @@
+38 internal links checked.
+404 /bookings/3/cancel/
+404 /bookings/3/edit/
+404 /bookings/5/cancel/
+404 /bookings/5/edit/

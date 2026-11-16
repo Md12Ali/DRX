@@ -1,0 +1,1 @@
+No JavaScript errors in the console on any page.

@@ -1,5 +1,5 @@
 Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
-Found 118 test(s).
+Found 119 test(s).
 Operations to perform:
   Synchronize unmigrated apps: humanize, messages, runserver_nostatic, staticfiles
   Apply all migrations: accounts, admin, auth, bookings, contenttypes, instructors, packages, payments, progress, sessions
@@ -10,6 +10,7 @@ Running migrations:
   Applying contenttypes.0001_initial... OK
   Applying auth.0001_initial... OK
   Applying accounts.0001_initial... OK
+  Applying accounts.0002_default_automatic... OK
   Applying admin.0001_initial... OK
   Applying admin.0002_logentry_remove_auto_add... OK
   Applying admin.0003_logentry_add_action_flag_choices... OK
@@ -29,6 +30,7 @@ Running migrations:
   Applying bookings.0001_initial... OK
   Applying bookings.0002_pickup_postcode_payment_method... OK
   Applying instructors.0002_qualification_and_rate... OK
+  Applying instructors.0003_default_automatic... OK
   Applying packages.0001_initial... OK
   Applying packages.0002_seed_packages... OK
   Applying payments.0001_initial... OK
@@ -109,6 +111,7 @@ test_display_helpers (instructors.tests.InstructorModelTests.test_display_helper
 test_lesson_price_is_pro_rata (instructors.tests.InstructorModelTests.test_lesson_price_is_pro_rata) ... ok
 test_main_instructor_prefers_one_taking_bookings (instructors.tests.InstructorModelTests.test_main_instructor_prefers_one_taking_bookings) ... ok
 test_new_instructors_are_shown_as_trainees (instructors.tests.InstructorModelTests.test_new_instructors_are_shown_as_trainees) ... ok
+test_new_instructors_teach_automatic (instructors.tests.InstructorModelTests.test_new_instructors_teach_automatic) ... ok
 test_no_times_on_days_off (instructors.tests.InstructorModelTests.test_no_times_on_days_off) ... ok
 test_teaches_transmission (instructors.tests.InstructorModelTests.test_teaches_transmission) ... ok
 test_cannot_review_without_completed_lesson (instructors.tests.ReviewTests.test_cannot_review_without_completed_lesson) ... ok
@@ -159,7 +162,7 @@ test_learner_sees_own_progress (progress.tests.ProgressViewTests.test_learner_se
 test_syllabus_is_loaded_by_migration (progress.tests.SyllabusTests.test_syllabus_is_loaded_by_migration) ... ok
 
 ----------------------------------------------------------------------
-Ran 118 tests in 48.409s
+Ran 119 tests in 54.078s
 
 OK
 Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
