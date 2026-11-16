@@ -1,15 +1,17 @@
-home: 1 violation(s)
-    [serious] color-contrast: Elements must meet minimum color contrast ratio thresholds (1 element(s))
-home-postcode-check: 1 violation(s)
-    [serious] color-contrast: Elements must meet minimum color contrast ratio thresholds (1 element(s))
+home: no violations
+home-postcode-check: no violations
 prices: no violations
 instructor-profile: no violations
 how-it-works: no violations
+timetable-visitor: 1 violation(s)
+    [serious] color-contrast: Elements must meet minimum color contrast ratio thresholds (1 element(s))
+        .is-today[scope="col"] > .tt-count |   Element has insufficient color contrast of 3.69 (foreground color: #0f7a55, background color: #ffd23f, font size: 9.4pt (12.48px), font weight: bold). Expected contrast ratio of 4.5:1
 register: no violations
 register-validation-errors: no violations
 login: no violations
 error-404: no violations
 learner-dashboard: no violations
+timetable: no violations
 booking-form: no violations
 booking-postcode-outside-area: no violations
 checkout: no violations
@@ -20,8 +22,9 @@ my-details: no violations
 prices-logged-in: no violations
 learner-blocked-from-diary: no violations
 instructor-diary: no violations
+instructor-timetable: no violations
 instructor-sign-off: no violations
 instructor-rate-skills: no violations
 instructor-edit-profile: no violations
 
-axe-core WCAG 2.1 A/AA: 23 pages checked, 2 violation(s) in total.
+axe-core WCAG 2.1 A/AA: 26 pages checked, 1 violation(s) in total.
