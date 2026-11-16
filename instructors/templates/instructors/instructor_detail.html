@@ -12,7 +12,6 @@
       {% include "includes/instructor_avatar.html" with size="xl" %}
       <div>
         <h1 id="instructor-name">{{ instructor.display_name }}</h1>
-        <p class="qualification-badge">{{ instructor.get_qualification_display }}</p>
         {% if instructor.tagline %}<p class="lede">{{ instructor.tagline }}</p>{% endif %}
         <p class="rating-line">
           {% if review_count %}
@@ -31,6 +30,9 @@
       <div><dt>Areas</dt><dd>{{ instructor.areas_covered }}</dd></div>
       <div><dt>Hours</dt><dd>{{ instructor.working_days_display }}, {{ instructor.day_start|time:"H:i" }}–{{ instructor.day_end|time:"H:i" }}</dd></div>
     </dl>
+
+    <h2>Why learn with {{ instructor.first_name }}</h2>
+    {% include "includes/instructor_highlights.html" %}
 
     {% if instructor.bio %}
       <h2>About {{ instructor.first_name }}</h2>
