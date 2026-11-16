@@ -174,7 +174,9 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
-    SECURE_SSL_REDIRECT = os.environ.get("SECURE_SSL_REDIRECT", "False") == "True"
+    # The test client talks plain HTTP, so never redirect to HTTPS during tests.
+    SECURE_SSL_REDIRECT = os.environ.get("SECURE_SSL_REDIRECT", "False") == "True" and not RUNNING_TESTS
+    SECURE_HSTS_SECONDS = 0 if RUNNING_TESTS else int(os.environ.get("SECURE_HSTS_SECONDS", "3600"))
 
 
 # ---------------------------------------------------------------------------
