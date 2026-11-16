@@ -1,5 +1,5 @@
 Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
-Found 117 test(s).
+Found 118 test(s).
 Operations to perform:
   Synchronize unmigrated apps: humanize, messages, runserver_nostatic, staticfiles
   Apply all migrations: accounts, admin, auth, bookings, contenttypes, instructors, packages, payments, progress, sessions
@@ -84,6 +84,7 @@ test_invalid_booking_is_not_saved (bookings.tests.LearnerViewTests.test_invalid_
 test_pickup_outside_area_rejected (bookings.tests.LearnerViewTests.test_pickup_outside_area_rejected) ... ok
 test_reschedule (bookings.tests.LearnerViewTests.test_reschedule) ... ok
 test_about_page (core.tests.CorePageTests.test_about_page) ... ok
+test_contact_phone_on_every_page (core.tests.CorePageTests.test_contact_phone_on_every_page) ... ok
 test_custom_404 (core.tests.CorePageTests.test_custom_404) ... ok
 test_home_page (core.tests.CorePageTests.test_home_page) ... ok
 test_home_postcode_checker (core.tests.CorePageTests.test_home_postcode_checker) ... ok
@@ -158,7 +159,7 @@ test_learner_sees_own_progress (progress.tests.ProgressViewTests.test_learner_se
 test_syllabus_is_loaded_by_migration (progress.tests.SyllabusTests.test_syllabus_is_loaded_by_migration) ... ok
 
 ----------------------------------------------------------------------
-Ran 117 tests in 48.893s
+Ran 118 tests in 48.539s
 
 OK
 Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
