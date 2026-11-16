@@ -22,7 +22,7 @@ with Django**.
 
 | Lessons | Price |
 | --- | --- |
-| Automatic, pay as you go | **£35 an hour** (1, 1.5 or 2-hour lessons) |
+| Automatic, pay as you go | **£35 an hour** (1 or 2-hour lessons) |
 | Packages | 5 h £170 · 10 h £330 · 20 h £640 · 30 h £930 |
 | Pick-up areas | **E1, E2, E3, E8, E9, E14, EC1, EC2, N1** |
 | Contact | **07476 283894** (call or text) |
@@ -97,7 +97,7 @@ Every story below is implemented and was checked in the manual tests in [TESTING
 | 6 | Learner | register, log in and log out | my bookings and progress are kept | Accounts app |
 | 7 | Learner | save my phone and pick-up address once | I'm never asked again when booking | My details; booking form pre-filled |
 | 8 | Learner | see a week timetable of when the instructor is free and booked, and book a free time straight from it | I can find a time that suits me | **Timetable** page, live slot picker |
-| 9 | Learner | choose a 1, 1.5 or 2-hour lesson and see the price | I know what I'll pay | Booking form summary |
+| 9 | Learner | choose a 1 or 2-hour lesson and see the price | I know what I'll pay | Booking form summary |
 | 10 | Learner | pay securely and get a clear result | I know whether I'm booked | Stripe Checkout, success and cancel pages |
 | 11 | Learner | buy a package, see my balance and pay with hours | I save money | Prices page, checkout "use package hours" |
 | 12 | Learner | see my next, upcoming and past lessons | I can plan | Learner dashboard |
@@ -241,8 +241,8 @@ All screenshots are taken automatically by a real browser on every push (desktop
 | Prices | Pay-as-you-go prices, every package with price per hour and saving, the learner's hour balance and purchase history |
 | Packages | Stripe Checkout for packages, success and cancel handling, webhook; hours spent on bookings and returned on cancellation |
 | Instructor profile | "Why learn with me" highlights, facts, bio, prices, 14-day availability strip, reviews |
-| Timetable | Week grid (Monday to Sunday, half-hour rows) showing **free**, **booked** and **your lesson** slots for 1, 1.5 or 2-hour lessons, up to 8 weeks ahead; tap a free time to book it with the date, time and length filled in; learners never see who else booked, the instructor sees first names; day-by-day list on phones |
-| Booking | Live slot picker (JSON API), 1/1.5/2-hour lessons, notes, rule checks, 35-minute payment hold with countdown |
+| Timetable | Week grid (Monday to Sunday, half-hour rows) showing **free**, **booked** and **your lesson** slots for 1 or 2-hour lessons, up to 8 weeks ahead; tap a free time to book it with the date, time and length filled in; learners never see who else booked, the instructor sees first names; day-by-day list on phones |
+| Booking | Live slot picker (JSON API), 1 or 2-hour lessons, notes, rule checks, 35-minute payment hold with countdown |
 | Payments | Stripe Checkout, success and cancel pages, webhook, automatic refunds on cancellation |
 | Learner dashboard | Next lesson, test-ready ring, hours left, upcoming and past lessons |
 | Booking detail | Status, payment, lesson notes, reschedule or cancel (learner), sign off or cancel (instructor) |
@@ -407,7 +407,7 @@ Constraint: `one_review_per_learner` (instructor, learner) is unique.
 | learner | ForeignKey → User | CASCADE |
 | instructor | ForeignKey → Instructor | PROTECT |
 | start / end | DateTimeField | `end` is worked out from the duration |
-| duration_minutes | PositiveSmallIntegerField, choices 60 / 90 / 120 | Default 60 |
+| duration_minutes | PositiveSmallIntegerField, choices 60 / 120 | Default 60 (the 1.5-hour option was removed in migration `0003`) |
 | pickup_address | CharField(200) | Required |
 | pickup_postcode | CharField(10) | Validation: covered district |
 | learner_notes | TextField(500), optional | |
@@ -537,7 +537,7 @@ python manage.py migrate        # creates the tables, the 16 skills and the 4 pa
 python manage.py createsuperuser
 python manage.py setup_instructor <your-username> --name "Mohammed Ali"
 python manage.py runserver
-python manage.py test           # 127 tests
+python manage.py test           # 130 tests
 ```
 
 Without `DATABASE_URL`, the project uses a local SQLite file. Without Stripe keys, everything works
@@ -570,7 +570,7 @@ fixed, and the known limitations, is in **[TESTING.md](TESTING.md)**. In summary
 
 | Check | Tool | Result |
 | --- | --- | --- |
-| Automated tests | `python manage.py test` | **127 tests, all pass** |
+| Automated tests | `python manage.py test` | **130 tests, all pass** |
 | Coverage | coverage.py | 90% of application code |
 | Python style (PEP 8) | flake8 | 0 findings |
 | JavaScript | JSHint | 0 warnings |
@@ -649,7 +649,7 @@ database (free plan, Frankfurt, does not expire).
   autocomplete value`). Run `git log --stat` to see each change.
 - **Branches and pull requests.** Work happens on feature branches (`drx-website`, `redesign`,
   `highlights`, `logo-automatic`) and is merged into `main` after the GitHub Actions checks pass.
-- **Tests with every app.** Each app was committed with its own tests; the 127 tests run on every
+- **Tests with every app.** Each app was committed with its own tests; the 130 tests run on every
   push and in every deploy. For honesty: tests were usually written in the same or the next commit as
   the feature, rather than always before it.
 - **Bugs found by the checks are fixed in their own commits** and listed in

@@ -131,8 +131,12 @@ class Instructor(models.Model):
 
     def price_table(self):
         """[(label, '£40.00'), ...] for every lesson length on offer."""
-        lengths = [(60, "1 hour"), (90, "1.5 hours"), (120, "2 hours")]
-        return [(label, f"£{self.lesson_price_pence(minutes) / 100:.2f}") for minutes, label in lengths]
+        from bookings.models import Booking  # imported here: bookings already imports this app
+
+        return [
+            (label, f"£{self.lesson_price_pence(minutes) / 100:.2f}")
+            for minutes, label in Booking.Duration.choices
+        ]
 
     def works_on(self, date):
         """True if ``date`` is one of the instructor's working days."""

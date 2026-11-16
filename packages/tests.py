@@ -56,13 +56,13 @@ class BalanceTests(TestCase):
     def test_package_lessons_use_hours_and_cancelling_returns_them(self):
         give_hours(self.learner, 5)
         booking = make_booking(
-            self.learner, self.instructor, minutes=90, payment_method=Booking.PaymentMethod.PACKAGE
+            self.learner, self.instructor, minutes=120, payment_method=Booking.PaymentMethod.PACKAGE
         )
         make_booking(
             self.learner, self.instructor, minutes=60, status=Booking.Status.CANCELLED,
             payment_method=Booking.PaymentMethod.PACKAGE,
         )
-        self.assertEqual(package_minutes_balance(self.learner), 210)
+        self.assertEqual(package_minutes_balance(self.learner), 180)
         booking.cancel()
         self.assertEqual(package_minutes_balance(self.learner), 300)
 
@@ -118,7 +118,8 @@ class BuyPackageTests(TestCase):
         response = self.client.get(reverse("packages:list"))
         self.assertContains(response, "£330")
         self.assertContains(response, "save £20")
-        self.assertContains(response, "1.5 hours £52.50")
+        self.assertContains(response, "2 hours £70.00")
+        self.assertNotContains(response, "1.5 hours")
 
     def test_buying_requires_login(self):
         self.client.logout()

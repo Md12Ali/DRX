@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
+from bookings.models import Booking
 from payments.stripe_client import create_checkout_session, stripe_ready
 
 from .models import LessonPackage, PackagePurchase, hours_display, package_minutes_balance
@@ -23,7 +24,7 @@ def package_list(request):
         "hourly_rate": f"£{settings.STANDARD_HOURLY_RATE_PENCE / 100:.0f}",
         "payg_prices": [
             (label, f"£{settings.STANDARD_HOURLY_RATE_PENCE * minutes / 60 / 100:.2f}")
-            for minutes, label in ((60, "1 hour"), (90, "1.5 hours"), (120, "2 hours"))
+            for minutes, label in Booking.Duration.choices
         ],
     }
     if request.user.is_authenticated:
