@@ -41,7 +41,7 @@ jobs:
         run: |
           pip install -r requirements.txt coverage flake8 playwright
           python -m playwright install --with-deps chromium
-          npm install --no-save vnu-jar jshint
+          npm install --no-save vnu-jar jshint axe-core
 
       - name: Check models match migrations
         run: python manage.py makemigrations --check --dry-run

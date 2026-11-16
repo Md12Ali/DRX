@@ -1,0 +1,28 @@
+home: no violations
+home-postcode-check: no violations
+prices: no violations
+instructor-profile: no violations
+how-it-works: no violations
+timetable-visitor: no violations
+register: no violations
+register-validation-errors: no violations
+login: no violations
+error-404: no violations
+learner-dashboard: no violations
+timetable: no violations
+booking-form: no violations
+booking-postcode-outside-area: no violations
+checkout: no violations
+booking-detail: no violations
+booking-cancel-confirm: no violations
+progress: no violations
+my-details: no violations
+prices-logged-in: no violations
+learner-blocked-from-diary: no violations
+instructor-diary: no violations
+instructor-timetable: no violations
+instructor-sign-off: no violations
+instructor-rate-skills: no violations
+instructor-edit-profile: no violations
+
+axe-core WCAG 2.1 A/AA: 26 pages checked, 0 violation(s) in total.

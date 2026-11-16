@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="{% block meta_description %}Driving lessons in East London (E1, E2, E3, E8, E9, E14, EC1, EC2, N1). £35 an hour, money-saving packages, online booking and secure card payment.{% endblock %}">
+  <meta name="description" content="{% block meta_description %}Automatic driving lessons in East London (E1, E2, E3, E8, E9, E14, EC1, EC2, N1). £35 an hour, money-saving packages, online booking and secure card payment.{% endblock %}">
   <title>{% block title %}Driving lessons{% endblock %} · DRX</title>
   <link rel="icon" href="{% static 'images/favicon.svg' %}" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,9 +18,8 @@
   <!-- Header and main navigation -->
   <header class="site-header">
     <nav class="nav container" aria-label="Main">
-      <a class="brand" href="{% url 'core:home' %}" aria-label="DRX home">
-        <img src="{% static 'images/favicon.svg' %}" alt="" width="34" height="34">
-        <span class="brand-word">DRX</span>
+      <a class="brand" href="{% url 'core:home' %}">
+        <img class="brand-logo" src="{% static 'images/logo.svg' %}" alt="DRX home" width="141" height="44">
       </a>
 
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu">
@@ -32,6 +31,7 @@
       <ul class="nav-menu" id="nav-menu">
         {% if is_instructor %}
           <li><a href="{% url 'bookings:diary' %}"{% if current == 'diary' %} aria-current="page"{% endif %}>My diary</a></li>
+          <li><a href="{% url 'bookings:timetable' current_instructor.slug %}"{% if current == 'timetable' %} aria-current="page"{% endif %}>Timetable</a></li>
           <li><a href="{{ current_instructor.get_absolute_url }}"{% if app == 'instructors' and current == 'detail' %} aria-current="page"{% endif %}>Public profile</a></li>
           <li><a href="{% url 'instructors:edit' %}"{% if current == 'edit' and app == 'instructors' %} aria-current="page"{% endif %}>Edit profile</a></li>
         {% else %}
@@ -39,7 +39,10 @@
             <li><a href="{{ main_instructor.get_absolute_url }}"{% if app == 'instructors' %} aria-current="page"{% endif %}>About me</a></li>
           {% endif %}
           <li><a href="{% url 'packages:list' %}"{% if app == 'packages' %} aria-current="page"{% endif %}>Prices</a></li>
-          <li><a href="{% url 'core:home' %}#areas">Areas</a></li>
+          {% if main_instructor %}
+            <li><a href="{% url 'bookings:timetable' main_instructor.slug %}"{% if current == 'timetable' %} aria-current="page"{% endif %}>Timetable</a></li>
+          {% endif %}
+          {% if not user.is_authenticated %}<li><a href="{% url 'core:home' %}#areas">Areas</a></li>{% endif %}
           {% if user.is_authenticated %}
             <li><a href="{% url 'bookings:dashboard' %}"{% if current == 'dashboard' %} aria-current="page"{% endif %}>My lessons</a></li>
             <li><a href="{% url 'progress:mine' %}"{% if app == 'progress' %} aria-current="page"{% endif %}>Progress</a></li>
@@ -87,7 +90,7 @@
   <footer class="site-footer">
     <div class="container footer-grid">
       <div>
-        <p class="footer-brand">{{ site_name }}</p>
+        <p class="footer-logo"><img src="{% static 'images/logo-light.svg' %}" alt="{{ site_name }}" width="128" height="40"></p>
         <p class="footer-note">Driving lessons in East London{% if main_instructor %} with {{ main_instructor.display_name }}{% endif %}. {{ hourly_rate_display }} an hour, packages that save you money, booking and payment online.</p>
         <p class="footer-note">Pick-ups in {{ covered_list }}.</p>
       </div>

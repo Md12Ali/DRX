@@ -14,9 +14,9 @@ bookings/admin.py                                  9      0   100%
 bookings/apps.py                                   4      0   100%
 bookings/forms.py                                 72      3    96%
 bookings/models.py                               106      4    96%
-bookings/services.py                              53      2    96%
+bookings/services.py                              84      2    98%
 bookings/urls.py                                   4      0   100%
-bookings/views.py                                147     19    87%
+bookings/views.py                                175     20    89%
 core/__init__.py                                   0      0   100%
 core/apps.py                                       4      0   100%
 core/context_processors.py                         7      0   100%
@@ -60,4 +60,4 @@ progress/models.py                                53      3    94%
 progress/urls.py                                   4      0   100%
 progress/views.py                                 38      6    84%
 ------------------------------------------------------------------
-TOTAL                                           1563    154    90%
+TOTAL                                           1622    155    90%

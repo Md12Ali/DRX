@@ -57,6 +57,7 @@ class ProfileForm(forms.ModelForm):
             "phone": "Your instructor will text you if they're running late.",
             "pickup_address": "Where lessons usually start, e.g. 12 Roman Road, London.",
             "postcode": "Pick-ups are available in E1, E2, E3, E8, E9, E14, EC1, EC2 and N1.",
+            "transmission": "My lessons are in an automatic car.",
         }
         widgets = {
             "phone": forms.TextInput(attrs={"autocomplete": "tel", "inputmode": "tel"}),

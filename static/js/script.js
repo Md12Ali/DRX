@@ -311,6 +311,19 @@
     });
   }
 
+  /* Timetable: show the new lesson length as soon as it is chosen
+     (without JavaScript, a "Show times" button submits the form). */
+  function initTimetableForm() {
+    const form = document.querySelector(".js-timetable-form");
+    if (!form) {
+      return;
+    }
+    form.addEventListener("change", function () {
+      form.setAttribute("aria-busy", "true");
+      form.submit();
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     initNavToggle();
     initMessageDismiss();
@@ -322,5 +335,6 @@
     initHoldCountdown();
     initPostcodeCheck();
     initScoreRings();
+    initTimetableForm();
   });
 })();

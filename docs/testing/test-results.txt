@@ -1,5 +1,5 @@
 Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
-Found 118 test(s).
+Found 127 test(s).
 Operations to perform:
   Synchronize unmigrated apps: humanize, messages, runserver_nostatic, staticfiles
   Apply all migrations: accounts, admin, auth, bookings, contenttypes, instructors, packages, payments, progress, sessions
@@ -10,6 +10,7 @@ Running migrations:
   Applying contenttypes.0001_initial... OK
   Applying auth.0001_initial... OK
   Applying accounts.0001_initial... OK
+  Applying accounts.0002_default_automatic... OK
   Applying admin.0001_initial... OK
   Applying admin.0002_logentry_remove_auto_add... OK
   Applying admin.0003_logentry_add_action_flag_choices... OK
@@ -29,6 +30,7 @@ Running migrations:
   Applying bookings.0001_initial... OK
   Applying bookings.0002_pickup_postcode_payment_method... OK
   Applying instructors.0002_qualification_and_rate... OK
+  Applying instructors.0003_default_automatic... OK
   Applying packages.0001_initial... OK
   Applying packages.0002_seed_packages... OK
   Applying payments.0001_initial... OK
@@ -83,6 +85,14 @@ test_incomplete_profile_is_sent_to_details_page (bookings.tests.LearnerViewTests
 test_invalid_booking_is_not_saved (bookings.tests.LearnerViewTests.test_invalid_booking_is_not_saved) ... ok
 test_pickup_outside_area_rejected (bookings.tests.LearnerViewTests.test_pickup_outside_area_rejected) ... ok
 test_reschedule (bookings.tests.LearnerViewTests.test_reschedule) ... ok
+test_booking_form_is_prefilled_from_the_timetable (bookings.tests.TimetableTests.test_booking_form_is_prefilled_from_the_timetable) ... ok
+test_days_off_are_marked (bookings.tests.TimetableTests.test_days_off_are_marked) ... ok
+test_free_booked_and_own_slots (bookings.tests.TimetableTests.test_free_booked_and_own_slots) ... ok
+test_instructor_sees_learner_names (bookings.tests.TimetableTests.test_instructor_sees_learner_names) ... ok
+test_learners_never_see_who_else_booked (bookings.tests.TimetableTests.test_learners_never_see_who_else_booked) ... ok
+test_slot_just_before_a_lesson_is_closed_for_longer_lessons (bookings.tests.TimetableTests.test_slot_just_before_a_lesson_is_closed_for_longer_lessons) ... ok
+test_visitors_can_see_it_and_free_times_link_to_the_booking_form (bookings.tests.TimetableTests.test_visitors_can_see_it_and_free_times_link_to_the_booking_form) ... ok
+test_week_is_kept_inside_the_booking_window (bookings.tests.TimetableTests.test_week_is_kept_inside_the_booking_window) ... ok
 test_about_page (core.tests.CorePageTests.test_about_page) ... ok
 test_contact_phone_on_every_page (core.tests.CorePageTests.test_contact_phone_on_every_page) ... ok
 test_custom_404 (core.tests.CorePageTests.test_custom_404) ... ok
@@ -109,6 +119,7 @@ test_display_helpers (instructors.tests.InstructorModelTests.test_display_helper
 test_lesson_price_is_pro_rata (instructors.tests.InstructorModelTests.test_lesson_price_is_pro_rata) ... ok
 test_main_instructor_prefers_one_taking_bookings (instructors.tests.InstructorModelTests.test_main_instructor_prefers_one_taking_bookings) ... ok
 test_new_instructors_are_shown_as_trainees (instructors.tests.InstructorModelTests.test_new_instructors_are_shown_as_trainees) ... ok
+test_new_instructors_teach_automatic (instructors.tests.InstructorModelTests.test_new_instructors_teach_automatic) ... ok
 test_no_times_on_days_off (instructors.tests.InstructorModelTests.test_no_times_on_days_off) ... ok
 test_teaches_transmission (instructors.tests.InstructorModelTests.test_teaches_transmission) ... ok
 test_cannot_review_without_completed_lesson (instructors.tests.ReviewTests.test_cannot_review_without_completed_lesson) ... ok
@@ -159,7 +170,7 @@ test_learner_sees_own_progress (progress.tests.ProgressViewTests.test_learner_se
 test_syllabus_is_loaded_by_migration (progress.tests.SyllabusTests.test_syllabus_is_loaded_by_migration) ... ok
 
 ----------------------------------------------------------------------
-Ran 118 tests in 48.409s
+Ran 127 tests in 59.675s
 
 OK
 Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...

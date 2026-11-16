@@ -41,7 +41,8 @@
 
     {% if availability %}
       <h2>Free slots in the next two weeks</h2>
-      <p class="muted">Number of free one-hour slots each day. Pick a day to start booking.</p>
+      <p class="muted">Number of free one-hour slots each day. Pick a day to start booking, or
+        <a href="{% url 'bookings:timetable' instructor.slug %}">open the full timetable</a> to see every free and booked time.</p>
       <ul class="availability-strip">
         {% for day in availability %}
           <li>

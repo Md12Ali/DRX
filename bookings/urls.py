@@ -12,6 +12,7 @@ urlpatterns = [
     path("<int:pk>/edit/", views.booking_edit, name="edit"),
     path("<int:pk>/cancel/", views.booking_cancel, name="cancel"),
     path("diary/", views.diary, name="diary"),
+    path("timetable/<slug:slug>/", views.timetable, name="timetable"),
     path("<int:pk>/complete/", views.booking_complete, name="complete"),
     path("<int:pk>/instructor-cancel/", views.instructor_cancel, name="instructor_cancel"),
 ]

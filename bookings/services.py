@@ -86,3 +86,54 @@ def booking_problems(instructor, learner, start, duration_minutes, exclude_booki
         problems.append("You already have a lesson booked at that time.")
 
     return problems
+
+
+def week_timetable(instructor, week_start, duration_minutes, viewer=None):
+    """
+    A Monday-to-Sunday timetable for ``instructor`` in half-hour rows.
+
+    Returns ``{"days": [date, ...], "rows": [{"time": time, "cells": [cell, ...]}, ...]}``.
+    Each cell is a dict with ``state``:
+
+    - ``"free"``: a lesson of ``duration_minutes`` can start here (``start`` is set)
+    - ``"booked"``: another lesson holds this half hour (``booking`` is set)
+    - ``"yours"``: the viewer's own lesson holds it (``booking`` is set)
+    - ``"off"``: the instructor doesn't work that day
+    - ``"closed"``: in the past, inside the notice period, beyond the booking
+      window, or too close to another lesson or the end of the day for this length
+    """
+    step = datetime.timedelta(minutes=settings.BOOKING_SLOT_STEP_MINUTES)
+    days = [week_start + datetime.timedelta(days=offset) for offset in range(7)]
+    current_tz = timezone.get_current_timezone()
+
+    week_from = timezone.make_aware(datetime.datetime.combine(days[0], datetime.time.min), current_tz)
+    week_to = week_from + datetime.timedelta(days=7)
+    taken = list(instructor.bookings.holding_slot().overlapping(week_from, week_to).select_related("learner"))
+    free = {day: set(available_start_times(instructor, day, duration_minutes)) for day in days}
+
+    # Half-hour row labels from the start to the end of the working day
+    times = []
+    moment = datetime.datetime.combine(week_start, instructor.day_start)
+    finish = datetime.datetime.combine(week_start, instructor.day_end)
+    while moment + step <= finish:
+        times.append(moment.time())
+        moment += step
+
+    rows = []
+    for row_time in times:
+        cells = []
+        for day in days:
+            start = timezone.make_aware(datetime.datetime.combine(day, row_time), current_tz)
+            cell = {"state": "closed", "start": start}
+            if not instructor.works_on(day):
+                cell["state"] = "off"
+            else:
+                holder = next((b for b in taken if b.start < start + step and b.end > start), None)
+                if holder is not None:
+                    is_mine = viewer is not None and holder.learner_id == viewer.pk
+                    cell.update(state="yours" if is_mine else "booked", booking=holder)
+                elif start in free[day]:
+                    cell["state"] = "free"
+            cells.append(cell)
+        rows.append({"time": row_time, "cells": cells})
+    return {"days": days, "rows": rows}

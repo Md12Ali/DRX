@@ -2,6 +2,7 @@
 import datetime
 import logging
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -17,6 +18,7 @@ from progress.models import progress_summary
 
 from .forms import BookingForm, CompleteLessonForm
 from .models import Booking
+from .services import booking_window, week_timetable
 
 logger = logging.getLogger(__name__)
 
@@ -84,9 +86,14 @@ def booking_create(request, slug):
             return redirect("payments:checkout", booking.pk)
         messages.error(request, "That lesson couldn't be booked. Please check the details below.")
     else:
+        # The timetable links here with the date, time and length already chosen
         initial = {}
         if request.GET.get("date"):
             initial["date"] = request.GET["date"]
+        if request.GET.get("time"):
+            initial["start_time"] = request.GET["time"]
+        if request.GET.get("duration", "").isdigit() and int(request.GET["duration"]) in Booking.Duration.values:
+            initial["duration_minutes"] = int(request.GET["duration"])
         form = BookingForm(initial=initial, instructor=instructor, learner=request.user)
 
     context = {"form": form, "instructor": instructor, "is_edit": False}
@@ -251,3 +258,56 @@ def instructor_cancel(request, pk):
     else:
         messages.success(request, "Lesson cancelled and the learner refunded.")
     return redirect("bookings:diary")
+
+
+def _monday(date):
+    return date - datetime.timedelta(days=date.weekday())
+
+
+def timetable(request, slug):
+    """
+    A week of the instructor's diary: free times to book, booked times, and
+    the learner's own lessons. Visitors can look; booking needs a login.
+    Learners never see who else has booked; the instructor sees first names.
+    """
+    instructor = get_object_or_404(Instructor, slug=slug)
+    Booking.objects.expire_stale_holds()
+
+    duration = request.GET.get("duration", "")
+    duration = int(duration) if duration.isdigit() and int(duration) in Booking.Duration.values else 60
+
+    this_week = _monday(timezone.localdate())
+    last_week = _monday(timezone.localtime(booking_window()[1]).date())
+    try:
+        week = _monday(datetime.date.fromisoformat(request.GET.get("week", "")))
+    except ValueError:
+        week = this_week
+    week = min(max(week, this_week), last_week)
+
+    viewer = request.user if request.user.is_authenticated else None
+    table = week_timetable(instructor, week, duration, viewer=viewer)
+    # The same data turned into one column per day, for the mobile day-by-day list
+    columns = []
+    for index, day in enumerate(table["days"]):
+        slots = [(row["time"], row["cells"][index]) for row in table["rows"]]
+        columns.append({
+            "date": day,
+            "free": sum(1 for _, cell in slots if cell["state"] == "free"),
+            "works": instructor.works_on(day),
+            "slots": [(time, cell) for time, cell in slots if cell["state"] in ("free", "booked", "yours")],
+        })
+    context = {
+        "instructor": instructor,
+        "table": table,
+        "columns": columns,
+        "duration": duration,
+        "durations": Booking.Duration.choices,
+        "week": week,
+        "previous_week": week - datetime.timedelta(weeks=1) if week > this_week else None,
+        "next_week": week + datetime.timedelta(weeks=1) if week < last_week else None,
+        "is_owner": viewer is not None and getattr(viewer, "instructor", None) == instructor,
+        "today": timezone.localdate(),
+        "notice_hours": settings.BOOKING_MIN_NOTICE_HOURS,
+        "weeks_ahead": settings.BOOKING_MAX_WEEKS_AHEAD,
+    }
+    return render(request, "bookings/timetable.html", context)
