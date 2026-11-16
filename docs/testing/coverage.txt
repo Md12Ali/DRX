@@ -19,7 +19,7 @@ bookings/urls.py                                   4      0   100%
 bookings/views.py                                147     19    87%
 core/__init__.py                                   0      0   100%
 core/apps.py                                       4      0   100%
-core/context_processors.py                         5      0   100%
+core/context_processors.py                         7      0   100%
 core/management/__init__.py                        0      0   100%
 core/management/commands/__init__.py               0      0   100%
 core/management/commands/setup_instructor.py      24     24     0%
@@ -29,7 +29,7 @@ core/urls.py                                       4      0   100%
 core/utils.py                                      9      2    78%
 core/views.py                                     32      2    94%
 drx/__init__.py                                    0      0   100%
-drx/settings.py                                   63     12    81%
+drx/settings.py                                   64     12    81%
 drx/urls.py                                       12      1    92%
 instructors/__init__.py                            0      0   100%
 instructors/admin.py                              13      0   100%
@@ -60,4 +60,4 @@ progress/models.py                                53      3    94%
 progress/urls.py                                   4      0   100%
 progress/views.py                                 38      6    84%
 ------------------------------------------------------------------
-TOTAL                                           1560    154    90%
+TOTAL                                           1563    154    90%

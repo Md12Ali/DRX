@@ -40,7 +40,7 @@
   <h2 id="cancellations">Cancellations and refunds</h2>
   <ul>
     <li>Reschedule or cancel online up to <strong>24 hours</strong> before a lesson. Card payments are refunded in full; package hours go back into your balance.</li>
-    <li>Inside 24 hours, please call me. Late cancellations may not be refunded.</li>
+    <li>Inside 24 hours, please call me on <a href="tel:{{ contact_phone_link }}">{{ contact_phone }}</a>. Late cancellations may not be refunded.</li>
     <li>If I have to cancel, you always get your money or hours back.</li>
   </ul>
 
@@ -49,6 +49,9 @@
     Payments are handled by Stripe. DRX never sees or stores your card details. You can delete your
     account at any time from "My details", which removes your bookings and progress.
   </p>
+
+  <h2 id="contact">Contact me</h2>
+  <p>Call or text <a href="tel:{{ contact_phone_link }}"><strong>{{ contact_phone }}</strong></a> with any question about lessons, prices or pick-ups. If I'm driving, I'll call you back.</p>
 
   <div class="button-row">
     <a class="button button-dark" href="{% url 'packages:list' %}">See prices</a>

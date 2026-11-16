@@ -9,7 +9,7 @@
   <div class="container hero-grid">
     <div class="hero-copy">
       <p class="eyebrow eyebrow-light">Driving lessons · East London</p>
-      <h1 id="hero-title">Learn to drive with {% if instructor %}{{ instructor.first_name }}{% else %}DRX{% endif %}.<br><span class="highlight">Book online in 60 seconds.</span></h1>
+      <h1 id="hero-title">Learn to drive with {% if instructor %}{{ instructor.first_name }}{% else %}DRX{% endif %}.<br>Book online in <span class="highlight">60 seconds.</span></h1>
       <p class="hero-lede">
         Patient one-to-one lessons around Bow, Hackney, Shoreditch, Islington and Canary Wharf.
         Pick a time that suits you, pay securely online, and watch your progress to test day after every lesson.
@@ -23,6 +23,7 @@
         <li>Free cancellation up to 24 hours before</li>
         <li>Pick-up from your door</li>
       </ul>
+      <p class="hero-call">Questions first? Call or text <a href="tel:{{ contact_phone_link }}">{{ contact_phone }}</a></p>
     </div>
 
     <div class="hero-visual" aria-hidden="true">
@@ -42,6 +43,7 @@
         <p class="ticket-meta">Your test-ready score, updated every lesson</p>
       </div>
       {% endif %}
+      <div class="price-sticker">{{ hourly_rate_display }}<small>an hour</small></div>
       <div class="l-plate">L</div>
     </div>
   </div>
@@ -246,8 +248,25 @@
   </details>
   <details>
     <summary>What if I need to cancel?</summary>
-    <p>Cancel or reschedule in your account up to 24 hours before the lesson. Card payments are refunded and package hours are returned. Inside 24 hours, please call me.</p>
+    <p>Cancel or reschedule in your account up to 24 hours before the lesson. Card payments are refunded and package hours are returned. Inside 24 hours, please call me on <a href="tel:{{ contact_phone_link }}">{{ contact_phone }}</a>.</p>
   </details>
+</section>
+
+<!-- Contact -->
+<section class="section container" aria-labelledby="contact-title">
+  <div class="contact-card">
+    <div>
+      <h2 id="contact-title">Not sure yet? Just ask.</h2>
+      <p>Call or text me about lessons, prices, pick-ups or your test. If I'm driving, I'll call you back.</p>
+    </div>
+    <div>
+      <p class="contact-number"><a href="tel:{{ contact_phone_link }}">{{ contact_phone }}</a></p>
+      <div class="button-row">
+        <a class="button button-dark" href="tel:{{ contact_phone_link }}">Call me</a>
+        <a class="button button-ghost" href="sms:{{ contact_phone_link }}">Send a text</a>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- Final call to action -->

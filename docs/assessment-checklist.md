@@ -16,7 +16,7 @@ Where each criterion in the qualification specification is met in the DRX projec
 | 1.8 Main navigation and structured layout | `templates/base.html` nav, which changes for visitors, learners and the instructor | Screenshots |
 | 1.9 Custom Python logic | Booking rules, slot generation, postcode districts, package hour balance, test-ready score | `bookings/services.py`, `core/postcodes.py`, `packages/models.py`, `progress/models.py` |
 | 1.10 Functions with compound statements (if/loops) | e.g. `available_start_times`, `booking_problems`, `progress_summary`, `SkillRatingsForm.save` | Same files |
-| 1.11 Manual or automated testing of functionality, usability, responsiveness, data | 117 automated tests, manual test table, screenshots at desktop and mobile sizes | `docs/testing/test-results.txt`, README → Testing |
+| 1.11 Manual or automated testing of functionality, usability, responsiveness, data | 118 automated tests, manual test table, screenshots at desktop and mobile sizes | `docs/testing/test-results.txt`, README → Testing |
 | 2.1 Relational schema with clear relationships | User, Profile, Instructor, Booking, Payment, LessonPackage, PackagePurchase, Review, Skill, SkillRating | README → Data schema (ERD) |
 | 2.2 At least two custom models | Nine custom models | `*/models.py` |
 | 2.3 A form that creates records (besides auth) | Booking, review, package purchase, skill ratings | `bookings/forms.py`, `instructors/forms.py` |

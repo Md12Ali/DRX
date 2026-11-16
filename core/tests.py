@@ -54,6 +54,12 @@ class CorePageTests(TestCase):
     def test_about_page(self):
         self.assertContains(self.client.get(reverse("core:about")), "Cancellations")
 
+    def test_contact_phone_on_every_page(self):
+        for url in [reverse("core:home"), reverse("core:about"), reverse("packages:list")]:
+            response = self.client.get(url)
+            self.assertContains(response, "07476 283894")
+            self.assertContains(response, 'href="tel:+447476283894"')
+
     def test_custom_404(self):
         response = self.client.get("/no-such-page/")
         self.assertContains(response, "Back to the home page", status_code=404)
