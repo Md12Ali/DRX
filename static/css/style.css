@@ -2963,3 +2963,13 @@ h2 {
 .section-tint .muted {
   color: var(--ink-soft);
 }
+
+/* Keyboard focus: ink outline (15.9:1 on cream), sunshine yellow on the dark footer (11.6:1) */
+:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.site-footer :focus-visible {
+  outline-color: var(--sun);
+}
