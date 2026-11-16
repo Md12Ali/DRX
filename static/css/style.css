@@ -8,30 +8,37 @@
 /* 1. Tokens
    ========================================================================== */
 :root {
-  --bg: #f4f5f2;
+  /* "Fresh licence" palette: warm paper, deep indigo ink, tangerine, sunshine, mint, lilac */
+  --bg: #fff8ef;
   --surface: #ffffff;
-  --ink: #101419;
-  --ink-soft: #3d4550;
-  --muted: #5b6470;
-  --line: #dde1e4;
-  --road: #171c23;
-  --road-2: #232a33;
-  --amber: #f4b400;
-  --amber-soft: #fff4d1;
-  --amber-text: #7a5800;
-  --signal: #c8233a;
-  --signal-soft: #fdebed;
-  --go: #1b7343;
-  --go-soft: #e2f3e9;
-  --info: #23529e;
-  --info-soft: #e7eef9;
+  --ink: #1b1a3a;
+  --ink-soft: #3b3a5c;
+  --muted: #5d5c78;
+  --line: #e7dfd2;
+  --road: #1b1a3a;
+  --road-2: #2c2b55;
+  --amber: #ff6b3d;
+  --amber-soft: #ffe6da;
+  --amber-text: #a8360f;
+  --sun: #ffd23f;
+  --sun-soft: #fff3c4;
+  --mint: #7ee0b8;
+  --lilac: #d9cdff;
+  --signal: #d62839;
+  --signal-soft: #fde8ea;
+  --go: #0f7a55;
+  --go-soft: #dcf5ea;
+  --info: #3b4cca;
+  --info-soft: #e7e9fb;
 
-  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: "Archivo", "Arial Black", "Helvetica Neue", sans-serif;
+  --font-body: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Bricolage Grotesque", "Arial Black", "Helvetica Neue", sans-serif;
 
-  --radius: 16px;
-  --radius-sm: 10px;
-  --shadow: 0 1px 2px rgba(16, 20, 25, 0.06), 0 8px 24px rgba(16, 20, 25, 0.06);
+  --radius: 20px;
+  --radius-sm: 12px;
+  --border: 2px solid var(--ink);
+  --shadow: 4px 4px 0 var(--ink);
+  --shadow-lg: 7px 7px 0 var(--ink);
   --max-width: 1180px;
 }
 
@@ -68,7 +75,7 @@ h2,
 h3 {
   margin: 0 0 0.5em;
   font-family: var(--font-display);
-  font-stretch: 112%;
+  font-stretch: 100%;
   font-weight: 800;
   line-height: 1.08;
   letter-spacing: -0.02em;
@@ -244,7 +251,7 @@ img {
 .brand-word {
   font-family: var(--font-display);
   font-size: 1.6rem;
-  font-stretch: 112%;
+  font-stretch: 100%;
   font-weight: 900;
   letter-spacing: 0.04em;
 }
@@ -362,7 +369,7 @@ img {
   color: #fff;
   font-family: var(--font-display);
   font-size: 1.5rem;
-  font-stretch: 112%;
+  font-stretch: 100%;
   font-weight: 900;
 }
 
@@ -424,7 +431,7 @@ img {
 }
 
 .button-accent:hover {
-  background: #ffc933;
+  background: #ff8a63;
   color: var(--ink);
 }
 
@@ -434,7 +441,7 @@ img {
 }
 
 .button-dark:hover {
-  background: #2b333d;
+  background: var(--road-2);
   color: #fff;
 }
 
@@ -634,7 +641,7 @@ input:focus,
 select:focus,
 textarea:focus {
   border-color: var(--ink);
-  outline: 3px solid rgba(244, 180, 0, 0.5);
+  outline: 3px solid rgba(255, 107, 61, 0.5);
   outline-offset: 0;
 }
 
@@ -831,7 +838,7 @@ textarea:focus {
   bottom: -7rem;
   left: 50%;
   width: 46%;
-  background: linear-gradient(90deg, #2b333d 0 3%, var(--road-2) 3% 97%, #2b333d 97%);
+  background: linear-gradient(90deg, #2c2b55 0 3%, var(--road-2) 3% 97%, #2c2b55 97%);
   transform: translateX(-50%) perspective(500px) rotateX(18deg);
 }
 
@@ -878,7 +885,7 @@ textarea:focus {
   margin: 0.2rem 0;
   font-family: var(--font-display);
   font-size: 1.9rem;
-  font-stretch: 112%;
+  font-stretch: 100%;
   font-weight: 900;
 }
 
@@ -941,14 +948,14 @@ textarea:focus {
   margin: 0;
   font-family: var(--font-display);
   font-size: 2.2rem;
-  font-stretch: 112%;
+  font-stretch: 100%;
   font-weight: 900;
   line-height: 1;
 }
 
 .stat-label {
   margin: 0.3rem 0 0;
-  color: #3b2e00;
+  color: var(--ink);
   font-weight: 600;
 }
 
@@ -1030,7 +1037,7 @@ textarea:focus {
 }
 
 .bento-accent p {
-  color: #3b2e00;
+  color: var(--ink);
 }
 
 .mini-bars {
@@ -1104,7 +1111,7 @@ textarea:focus {
 
 .stars {
   margin: 0 0 0.4rem;
-  color: #b88500;
+  color: var(--amber-text);
   letter-spacing: 0.1em;
 }
 
@@ -1252,7 +1259,7 @@ textarea:focus {
 .price-tag strong {
   font-family: var(--font-display);
   font-size: 1.5rem;
-  font-stretch: 112%;
+  font-stretch: 100%;
 }
 
 .price-tag span {
@@ -1542,7 +1549,7 @@ textarea:focus {
 .summary-total dd {
   font-family: var(--font-display);
   font-size: 1.5rem;
-  font-stretch: 112%;
+  font-stretch: 100%;
 }
 
 .hold-timer {
@@ -1639,7 +1646,7 @@ textarea:focus {
   color: var(--amber);
   font-family: var(--font-display);
   font-size: 1.6rem;
-  font-stretch: 112%;
+  font-stretch: 100%;
   font-weight: 900;
 }
 
@@ -1779,7 +1786,7 @@ textarea:focus {
 }
 
 .diary-lesson:hover {
-  background: #2b333d;
+  background: var(--road-2);
   color: #fff;
 }
 
@@ -1881,7 +1888,7 @@ textarea:focus {
   margin: 0;
   font-family: var(--font-display);
   font-size: 2.3rem;
-  font-stretch: 112%;
+  font-stretch: 100%;
   font-weight: 900;
   line-height: 1.1;
 }
@@ -1972,7 +1979,7 @@ textarea:focus {
 .district-code {
   font-family: var(--font-display);
   font-size: 1.5rem;
-  font-stretch: 112%;
+  font-stretch: 100%;
   font-weight: 900;
 }
 
@@ -2108,7 +2115,7 @@ textarea:focus {
   color: var(--amber);
   font-family: var(--font-display);
   font-size: 4rem;
-  font-stretch: 112%;
+  font-stretch: 100%;
   font-weight: 900;
   line-height: 1;
 }
@@ -2377,8 +2384,9 @@ textarea:focus {
     flex-direction: column;
     align-items: stretch;
     padding: 0.75rem 1rem 1.25rem;
-    background: var(--road);
-    box-shadow: var(--shadow);
+    border-bottom: var(--border);
+    background: var(--bg);
+    box-shadow: none;
   }
 
   .nav-menu.is-open {
@@ -2458,5 +2466,443 @@ textarea:focus {
 
   .skill-meter {
     grid-template-columns: 1fr 8rem;
+  }
+}
+
+/* 15. Fresh licence theme
+   Bold, friendly look: warm paper, ink outlines, hard offset shadows and sticker accents.
+   ========================================================================== */
+body {
+  background-color: var(--bg);
+}
+
+h1,
+h2 {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.eyebrow {
+  display: inline-block;
+  padding: 0.3rem 0.75rem;
+  border: var(--border);
+  border-radius: 999px;
+  background: var(--sun);
+  color: var(--ink);
+  letter-spacing: 0.08em;
+}
+
+.eyebrow-light {
+  color: var(--ink);
+}
+
+/* Header: light bar with an ink underline */
+.site-header {
+  border-bottom: var(--border);
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.brand,
+.brand:hover {
+  color: var(--ink);
+}
+
+.brand-word {
+  letter-spacing: -0.02em;
+}
+
+.nav-menu a:not(.button),
+.nav-link-button {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.nav-menu a:not(.button):hover,
+.nav-link-button:hover {
+  background: var(--sun-soft);
+  color: var(--ink);
+}
+
+.nav-menu a[aria-current="page"] {
+  color: var(--ink);
+  box-shadow: inset 0 -3px 0 var(--amber);
+}
+
+.nav-menu .nav-phone {
+  gap: 0.35rem;
+  font-weight: 700;
+}
+
+.nav-toggle {
+  border: var(--border);
+  background: var(--sun);
+}
+
+.nav-toggle-bars,
+.nav-toggle-bars::before,
+.nav-toggle-bars::after {
+  background: var(--ink);
+}
+
+/* Buttons: outlined pills with a hard shadow that "presses" in */
+.button {
+  border: var(--border);
+  box-shadow: 3px 3px 0 var(--ink);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.12s ease;
+}
+
+.button:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.button:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--ink);
+}
+
+.button-ghost {
+  border-color: var(--ink);
+  background: var(--surface);
+}
+
+.button-outline-light {
+  border-color: var(--ink);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.button-outline-light:hover {
+  background: var(--sun);
+  color: var(--ink);
+}
+
+.button-danger {
+  color: #fff;
+}
+
+/* Cards and panels share the ink outline */
+.panel,
+.price-card,
+.package-card,
+.steps li,
+.bento-card,
+.review-card,
+.about-card,
+.district,
+.booking-summary,
+.stat-card,
+.dash-card,
+.instructor-card {
+  border: var(--border);
+  box-shadow: var(--shadow);
+}
+
+.panel-dark {
+  border-color: var(--ink);
+}
+
+/* Hero: light paper, giant headline, sticker visuals */
+.hero {
+  padding-block: 4rem 5rem;
+  background:
+    radial-gradient(circle at 85% 30%, var(--sun) 0 170px, transparent 171px),
+    radial-gradient(circle at 8% 110%, var(--lilac) 0 140px, transparent 141px),
+    var(--bg);
+  color: var(--ink-soft);
+}
+
+.hero h1 {
+  color: var(--ink);
+  font-size: clamp(2.6rem, 6vw, 4.8rem);
+  line-height: 1;
+}
+
+.highlight {
+  position: relative;
+  z-index: 0;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.highlight::after {
+  content: "";
+  position: absolute;
+  right: -0.1em;
+  bottom: 0.05em;
+  left: -0.1em;
+  z-index: -1;
+  height: 0.38em;
+  border-radius: 6px;
+  background: var(--amber);
+  transform: rotate(-1.5deg);
+}
+
+.hero-lede {
+  color: var(--ink-soft);
+}
+
+.hero-points li::before {
+  color: var(--go);
+}
+
+.hero-call {
+  margin: 1.25rem 0 0;
+  font-weight: 600;
+}
+
+.hero-call a {
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.road {
+  top: -2rem;
+  bottom: -6rem;
+  border-inline: var(--border);
+  background: var(--road);
+  transform: translateX(-50%) rotate(8deg);
+}
+
+.road-line {
+  background: repeating-linear-gradient(to bottom, var(--sun) 0 48px, transparent 48px 96px);
+}
+
+.hero-ticket {
+  border: var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.price-sticker {
+  position: absolute;
+  top: 2%;
+  left: 4%;
+  display: grid;
+  place-items: center;
+  width: 118px;
+  height: 118px;
+  border: var(--border);
+  border-radius: 50%;
+  background: var(--mint);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 800;
+  line-height: 0.95;
+  text-align: center;
+  transform: rotate(-12deg);
+}
+
+.price-sticker small {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.l-plate {
+  border: var(--border);
+  border-width: 6px;
+  border-color: #fff;
+  box-shadow: var(--shadow), inset 0 0 0 4px var(--signal);
+}
+
+/* Ribbon of key facts, tilted like a banner */
+.stats-strip {
+  position: relative;
+  z-index: 1;
+  margin-block: -1.25rem 1rem;
+  padding-block: 1.25rem;
+  border-block: var(--border);
+  background: var(--amber);
+  transform: rotate(-1.2deg);
+}
+
+.stat-number {
+  color: var(--ink);
+}
+
+.stat-label {
+  font-weight: 700;
+}
+
+/* How it works: big outlined numbers */
+.steps li:nth-child(1) {
+  background: var(--sun-soft);
+}
+
+.steps li:nth-child(2) {
+  background: var(--amber-soft);
+}
+
+.steps li:nth-child(3) {
+  background: var(--go-soft);
+}
+
+.steps li::before {
+  border: var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+/* Areas section */
+.section-tint {
+  border-block: var(--border);
+  background: var(--lilac);
+}
+
+.district {
+  background: var(--surface);
+}
+
+.district-code {
+  color: var(--ink);
+}
+
+/* Prices: the featured package pops in tangerine */
+.price-card,
+.package-card {
+  background: var(--surface);
+}
+
+.price-card-popular {
+  background: var(--sun-soft);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Bento */
+.bento-dark {
+  background: var(--road);
+}
+
+.bento-accent {
+  border-color: var(--ink);
+  background: var(--amber);
+}
+
+.bento-card:nth-child(3) {
+  background: var(--sun-soft);
+}
+
+.bento-card:nth-child(4) {
+  background: var(--go-soft);
+}
+
+.bento-card:nth-child(5) {
+  background: var(--lilac);
+}
+
+.mini-bars span::before {
+  background: var(--mint);
+  opacity: 1;
+}
+
+.mini-bars span {
+  color: var(--ink);
+}
+
+.mini-bars span.bar-40,
+.mini-bars span.bar-60 {
+  color: #fff;
+}
+
+/* FAQ as outlined cards */
+.faq details {
+  margin-bottom: 0.75rem;
+  padding: 1rem 1.25rem;
+  border: var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+
+/* Contact card */
+.contact-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1.5rem;
+  align-items: center;
+  padding: 2rem;
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--mint);
+  box-shadow: var(--shadow-lg);
+}
+
+.contact-card h2 {
+  margin-bottom: 0.25rem;
+}
+
+.contact-card p {
+  margin: 0;
+  color: var(--ink);
+}
+
+.contact-number {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.contact-number a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+/* Final call to action and footer: deep indigo */
+.final-cta {
+  border-top: var(--border);
+  background: var(--amber);
+  color: var(--ink);
+}
+
+.final-cta h2 {
+  color: var(--ink);
+}
+
+.final-cta .button-accent {
+  background: var(--surface);
+}
+
+.site-footer {
+  border-top: var(--border);
+  background: var(--road);
+}
+
+.footer-grid {
+  grid-template-columns: 1.4fr 1fr 1fr;
+}
+
+.footer-contact a {
+  color: var(--sun);
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-card {
+    grid-template-columns: 1fr;
+  }
+
+  .price-sticker {
+    width: 96px;
+    height: 96px;
+    font-size: 1.35rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button,
+  .button:hover,
+  .button:active {
+    transform: none;
+    transition: none;
   }
 }

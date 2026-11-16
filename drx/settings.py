@@ -202,6 +202,8 @@ BOOKING_SLOT_STEP_MINUTES = 30       # lessons start on the hour or half hour
 # Business details (one place to change them)
 # ---------------------------------------------------------------------------
 SITE_NAME = "DRX"
+# Contact number shown to learners (header, home page, footer, how it works page)
+CONTACT_PHONE = os.environ.get("CONTACT_PHONE", "07476 283894")
 STANDARD_HOURLY_RATE_PENCE = 3500    # £35 an hour, pay as you go
 
 # Postcode districts covered for pick-ups, with the neighbourhoods they include.
