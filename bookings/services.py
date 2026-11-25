@@ -66,7 +66,7 @@ def booking_problems(instructor, learner, start, duration_minutes, exclude_booki
             f"You can book up to {settings.BOOKING_MAX_WEEKS_AHEAD} weeks ahead."
         )
     if local_start.minute % settings.BOOKING_SLOT_STEP_MINUTES or local_start.second:
-        problems.append("Lessons start on the hour or half past the hour.")
+        problems.append("Lessons start on the hour (for example 09:00 or 10:00).")
     if not instructor.works_on(local_start.date()):
         problems.append(f"{instructor.first_name} doesn't teach on {local_start:%A}s.")
     elif start not in instructor.candidate_start_times(local_start.date(), duration_minutes):
@@ -90,13 +90,13 @@ def booking_problems(instructor, learner, start, duration_minutes, exclude_booki
 
 def week_timetable(instructor, week_start, duration_minutes, viewer=None):
     """
-    A Monday-to-Sunday timetable for ``instructor`` in half-hour rows.
+    A Monday-to-Sunday timetable for ``instructor`` in one-hour rows.
 
     Returns ``{"days": [date, ...], "rows": [{"time": time, "cells": [cell, ...]}, ...]}``.
     Each cell is a dict with ``state``:
 
     - ``"free"``: a lesson of ``duration_minutes`` can start here (``start`` is set)
-    - ``"booked"``: another lesson holds this half hour (``booking`` is set)
+    - ``"booked"``: another lesson holds this hour (``booking`` is set)
     - ``"yours"``: the viewer's own lesson holds it (``booking`` is set)
     - ``"off"``: the instructor doesn't work that day
     - ``"closed"``: in the past, inside the notice period, beyond the booking

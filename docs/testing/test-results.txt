@@ -1,5 +1,5 @@
 Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
-Found 130 test(s).
+Found 132 test(s).
 Operations to perform:
   Synchronize unmigrated apps: humanize, messages, runserver_nostatic, staticfiles
   Apply all migrations: accounts, admin, auth, bookings, contenttypes, instructors, packages, payments, progress, sessions
@@ -61,7 +61,7 @@ test_available_times_skip_cancelled_bookings (bookings.tests.BookingRuleTests.te
 test_day_off (bookings.tests.BookingRuleTests.test_day_off) ... ok
 test_instructor_clash (bookings.tests.BookingRuleTests.test_instructor_clash) ... ok
 test_learner_clash_with_other_instructor (bookings.tests.BookingRuleTests.test_learner_clash_with_other_instructor) ... ok
-test_odd_start_minute (bookings.tests.BookingRuleTests.test_odd_start_minute) ... ok
+test_lessons_start_on_the_hour (bookings.tests.BookingRuleTests.test_lessons_start_on_the_hour) ... ok
 test_outside_working_hours (bookings.tests.BookingRuleTests.test_outside_working_hours) ... ok
 test_rescheduling_ignores_own_booking (bookings.tests.BookingRuleTests.test_rescheduling_ignores_own_booking) ... ok
 test_short_notice_rejected (bookings.tests.BookingRuleTests.test_short_notice_rejected) ... ok
@@ -156,6 +156,8 @@ test_stripe_error_is_reported (payments.tests.CheckoutTests.test_stripe_error_is
 ok
 test_success_confirms_booking (payments.tests.CheckoutTests.test_success_confirms_booking) ... ok
 test_summary_page (payments.tests.CheckoutTests.test_summary_page) ... ok
+test_test_card_is_hidden_with_live_keys (payments.tests.CheckoutTests.test_test_card_is_hidden_with_live_keys) ... ok
+test_test_card_is_shown_in_test_mode (payments.tests.CheckoutTests.test_test_card_is_shown_in_test_mode) ... ok
 test_unpaid_session_not_trusted (payments.tests.CheckoutTests.test_unpaid_session_not_trusted) ... ok
 test_failed_refund_is_flagged (payments.tests.RefundTests.test_failed_refund_is_flagged) ... Refund failed for DRX-00001: Down
 ok
@@ -174,7 +176,7 @@ test_learner_sees_own_progress (progress.tests.ProgressViewTests.test_learner_se
 test_syllabus_is_loaded_by_migration (progress.tests.SyllabusTests.test_syllabus_is_loaded_by_migration) ... ok
 
 ----------------------------------------------------------------------
-Ran 130 tests in 61.010s
+Ran 132 tests in 31.232s
 
 OK
 Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...

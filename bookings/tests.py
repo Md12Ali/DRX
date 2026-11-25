@@ -64,12 +64,13 @@ class BookingRuleTests(TestCase):
         self.assertTrue(any("weeks ahead" in problem for problem in problems))
 
     def test_outside_working_hours(self):
-        problems = booking_problems(self.instructor, self.learner, future_start(hour=19, minute=30), 60)
+        problems = booking_problems(self.instructor, self.learner, future_start(hour=20), 60)
         self.assertTrue(any("teaches between" in problem for problem in problems))
 
-    def test_odd_start_minute(self):
-        problems = booking_problems(self.instructor, self.learner, future_start(minute=15), 60)
-        self.assertTrue(any("half past" in problem for problem in problems))
+    def test_lessons_start_on_the_hour(self):
+        for minute in (15, 30):
+            problems = booking_problems(self.instructor, self.learner, future_start(minute=minute), 60)
+            self.assertTrue(any("start on the hour" in problem for problem in problems))
 
     def test_day_off(self):
         start = future_start()
@@ -78,8 +79,8 @@ class BookingRuleTests(TestCase):
         self.assertTrue(any("doesn't teach on" in problem for problem in problems))
 
     def test_instructor_clash(self):
-        make_booking(make_learner("ben"), self.instructor, start=future_start(hour=10))
-        problems = booking_problems(self.instructor, self.learner, future_start(hour=10, minute=30), 60)
+        make_booking(make_learner("ben"), self.instructor, start=future_start(hour=10), minutes=120)
+        problems = booking_problems(self.instructor, self.learner, future_start(hour=11), 60)
         self.assertTrue(any("just been booked" in problem for problem in problems))
 
     def test_learner_clash_with_other_instructor(self):
@@ -91,7 +92,7 @@ class BookingRuleTests(TestCase):
     def test_rescheduling_ignores_own_booking(self):
         booking = make_booking(self.learner, self.instructor, start=future_start(hour=10))
         problems = booking_problems(
-            self.instructor, self.learner, future_start(hour=10, minute=30), 60, exclude_booking=booking
+            self.instructor, self.learner, future_start(hour=11), 60, exclude_booking=booking
         )
         self.assertEqual(problems, [])
 
@@ -261,7 +262,6 @@ class TimetableTests(TestCase):
         table = week_timetable(self.instructor, self.week, 60, viewer=self.learner)
 
         self.assertEqual(self.cell(table, self.start)["state"], "booked")
-        self.assertEqual(self.cell(table, self.start + datetime.timedelta(minutes=30))["state"], "booked")
         self.assertEqual(self.cell(table, mine.start)["state"], "yours")
         self.assertEqual(self.cell(table, self.start + datetime.timedelta(hours=1))["state"], "free")
 

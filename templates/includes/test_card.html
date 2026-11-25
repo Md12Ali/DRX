@@ -1,0 +1,8 @@
+{# Shown when Stripe runs in test mode, so a tester knows which card to use. #}
+{% if stripe_test_mode %}
+  <aside class="test-card" aria-label="Test payments">
+    <p class="test-card-title">Test mode: no real money is taken</p>
+    <p>Pay with card <strong>4242 4242 4242 4242</strong>, any future expiry date (for example 12/34), any 3-digit CVC and any postcode.
+      To see a failed payment, use <strong>4000 0000 0000 0002</strong>.</p>
+  </aside>
+{% endif %}

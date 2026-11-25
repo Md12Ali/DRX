@@ -19,4 +19,6 @@ def site_info(request):
         "hourly_rate_display": f"£{settings.STANDARD_HOURLY_RATE_PENCE / 100:.0f}",
         "covered_districts": settings.COVERED_POSTCODE_DISTRICTS,
         "covered_list": covered_list_display(),
+        # Stripe test keys: show the test card so assessors can pay without real money
+        "stripe_test_mode": settings.STRIPE_SECRET_KEY.startswith("sk_test_"),
     }

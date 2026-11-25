@@ -28,9 +28,24 @@ with Django**.
 | Contact | **07476 283894** (call or text) |
 
 > **Payments use Stripe test mode.** Use card `4242 4242 4242 4242`, any future expiry date and any
-> CVC. No real money is taken.
+> CVC. No real money is taken. To see a declined payment, use `4000 0000 0000 0002`. The checkout
+> and prices pages show these cards whenever test keys are in use.
 
 ![DRX home page](docs/screenshots/home-desktop.png)
+
+### Response to assessor feedback (P4.1 and P4.2)
+
+The first submission did not show a working payment, because the live site had no Stripe keys.
+Card payment through **Stripe Checkout** now works on the live site in test mode, for single lessons
+and for lesson packages:
+
+- **4.1:** Stripe payment code is in `payments/` (lessons) and `packages/` (packages), with a webhook
+  and automatic refunds. See [section 12.3](#123-connect-stripe).
+- **4.2:** after paying, the learner sees a success page with the booking or package details. A
+  declined card is reported by Stripe. Leaving Stripe without paying shows "Payment cancelled. You
+  have not been charged.", and Stripe being unreachable shows a clear message. Tests 13 to 13c in
+  [TESTING.md](TESTING.md#5-manual-test-plan-and-results) and the automated tests in
+  `payments/tests.py` and `packages/tests.py` cover these cases.
 
 ---
 
@@ -241,7 +256,7 @@ All screenshots are taken automatically by a real browser on every push (desktop
 | Prices | Pay-as-you-go prices, every package with price per hour and saving, the learner's hour balance and purchase history |
 | Packages | Stripe Checkout for packages, success and cancel handling, webhook; hours spent on bookings and returned on cancellation |
 | Instructor profile | "Why learn with me" highlights, facts, bio, prices, 14-day availability strip, reviews |
-| Timetable | Week grid (Monday to Sunday, half-hour rows) showing **free**, **booked** and **your lesson** slots for 1 or 2-hour lessons, up to 8 weeks ahead; tap a free time to book it with the date, time and length filled in; learners never see who else booked, the instructor sees first names; day-by-day list on phones |
+| Timetable | Week grid (Monday to Sunday, one row per hour) showing **free**, **booked** and **your lesson** slots for 1 or 2-hour lessons, up to 8 weeks ahead; tap a free time to book it with the date, time and length filled in; learners never see who else booked, the instructor sees first names; day-by-day list on phones |
 | Booking | Live slot picker (JSON API), 1 or 2-hour lessons, notes, rule checks, 35-minute payment hold with countdown |
 | Payments | Stripe Checkout, success and cancel pages, webhook, automatic refunds on cancellation |
 | Learner dashboard | Next lesson, test-ready ring, hours left, upcoming and past lessons |
@@ -292,7 +307,7 @@ All values live in one place, `drx/settings.py`; the logic lives in `bookings/se
 | --- | --- |
 | Minimum notice | 12 hours |
 | Book ahead | up to 8 weeks |
-| Start times | on the hour or half hour, inside the instructor's working days and hours |
+| Start times | on the hour, inside the instructor's working days and hours (which also start and end on the hour) |
 | Lesson fits | the lesson must end by the instructor's finish time |
 | No clashes | neither the instructor nor the learner can be double-booked |
 | Payment hold | an unpaid booking holds its slot for 35 minutes, then expires |
@@ -537,7 +552,7 @@ python manage.py migrate        # creates the tables, the 16 skills and the 4 pa
 python manage.py createsuperuser
 python manage.py setup_instructor <your-username> --name "Mohammed Ali"
 python manage.py runserver
-python manage.py test           # 130 tests
+python manage.py test           # 132 tests
 ```
 
 Without `DATABASE_URL`, the project uses a local SQLite file. Without Stripe keys, everything works
@@ -570,8 +585,8 @@ fixed, and the known limitations, is in **[TESTING.md](TESTING.md)**. In summary
 
 | Check | Tool | Result |
 | --- | --- | --- |
-| Automated tests | `python manage.py test` | **130 tests, all pass** |
-| Coverage | coverage.py | 90% of application code |
+| Automated tests | `python manage.py test` | **132 tests, all pass** |
+| Coverage | coverage.py | 91% of application code |
 | Python style (PEP 8) | flake8 | 0 findings |
 | JavaScript | JSHint | 0 warnings |
 | HTML | W3C Nu HTML Checker | 0 errors on every page |
@@ -649,7 +664,7 @@ database (free plan, Frankfurt, does not expire).
   autocomplete value`). Run `git log --stat` to see each change.
 - **Branches and pull requests.** Work happens on feature branches (`drx-website`, `redesign`,
   `highlights`, `logo-automatic`) and is merged into `main` after the GitHub Actions checks pass.
-- **Tests with every app.** Each app was committed with its own tests; the 130 tests run on every
+- **Tests with every app.** Each app was committed with its own tests; the 132 tests run on every
   push and in every deploy. For honesty: tests were usually written in the same or the next commit as
   the feature, rather than always before it.
 - **Bugs found by the checks are fixed in their own commits** and listed in

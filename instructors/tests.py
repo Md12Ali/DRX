@@ -23,8 +23,8 @@ class InstructorModelTests(TestCase):
     def test_candidate_start_times_fit_working_day(self):
         day = timezone.localdate() + datetime.timedelta(days=2)
         times = self.instructor.candidate_start_times(day, 60)
-        # 08:00 to 19:00 in 30-minute steps = 23 start times
-        self.assertEqual(len(times), 23)
+        # 08:00 to 19:00 on the hour = 12 start times
+        self.assertEqual(len(times), 12)
         self.assertEqual(timezone.localtime(times[-1]).time(), datetime.time(19, 0))
         two_hour = self.instructor.candidate_start_times(day, 120)
         self.assertEqual(timezone.localtime(two_hour[-1]).time(), datetime.time(18, 0))
@@ -109,7 +109,7 @@ class AvailabilityApiTests(TestCase):
         date = (timezone.localdate() + datetime.timedelta(days=3)).isoformat()
         times = self.client.get(self.url, {"date": date, "duration": "60"}).json()["times"]
         self.assertNotIn("10:00", times)
-        self.assertNotIn("09:30", times)  # would overlap 10:00-10:30
+        self.assertNotIn("09:30", times)  # lessons start on the hour
         self.assertIn("09:00", times)
         self.assertIn("11:00", times)
 

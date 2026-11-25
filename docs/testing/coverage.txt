@@ -34,7 +34,7 @@ drx/urls.py                                       12      1    92%
 instructors/__init__.py                            0      0   100%
 instructors/admin.py                              13      0   100%
 instructors/apps.py                                4      0   100%
-instructors/forms.py                              44      2    95%
+instructors/forms.py                              47      2    96%
 instructors/models.py                            106      4    96%
 instructors/urls.py                                4      0   100%
 instructors/views.py                             118     13    89%
@@ -60,4 +60,4 @@ progress/models.py                                53      3    94%
 progress/urls.py                                   4      0   100%
 progress/views.py                                 38      6    84%
 ------------------------------------------------------------------
-TOTAL                                           1622    152    91%
+TOTAL                                           1625    152    91%

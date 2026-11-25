@@ -31,6 +31,13 @@ class CheckoutTests(TestCase):
         self.assertContains(response, "£35.00")
         self.assertContains(response, self.booking.reference)
 
+    def test_test_card_is_shown_in_test_mode(self):
+        self.assertContains(self.client.get(self.url), "4242 4242 4242 4242")
+
+    @override_settings(STRIPE_SECRET_KEY="sk_live_dummy")
+    def test_test_card_is_hidden_with_live_keys(self):
+        self.assertNotContains(self.client.get(self.url), "4242 4242 4242 4242")
+
     def test_other_learners_cannot_pay(self):
         make_learner("ben")
         self.client.login(username="ben", password=PASSWORD)
