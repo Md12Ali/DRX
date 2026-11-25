@@ -24,8 +24,8 @@ before every deploy, so a failing test stops a broken version going live.
 
 | Check | Tool | Result | Report |
 | --- | --- | --- | --- |
-| Automated tests | Django test runner | **130 tests, all pass** | [test-results.txt](docs/testing/test-results.txt) |
-| Coverage | coverage.py | 90% of application code | [coverage.txt](docs/testing/coverage.txt) |
+| Automated tests | Django test runner | **132 tests, all pass** | [test-results.txt](docs/testing/test-results.txt) |
+| Coverage | coverage.py | 91% of application code | [coverage.txt](docs/testing/coverage.txt) |
 | Python style (PEP 8) | flake8 (max line 119) | 0 findings | [flake8.txt](docs/testing/flake8.txt) |
 | JavaScript | JSHint (`esversion: 11`) | 0 warnings | [jshint.txt](docs/testing/jshint.txt) |
 | HTML | W3C Nu HTML Checker | 0 errors on every page | [html-validation.txt](docs/testing/html-validation.txt) |
@@ -47,14 +47,14 @@ PostgreSQL in production), Chromium through Playwright, Ubuntu (GitHub Actions).
 Run them with:
 
 ```bash
-python manage.py test                 # all 130 tests
+python manage.py test                 # all 132 tests
 coverage run manage.py test && coverage report
 ```
 
 | App | What is tested |
 | --- | --- |
-| **bookings** | Every booking rule: 12-hour notice, 8-week window, working days and hours, half-hour starts, instructor and learner clashes, rescheduling, the 35-minute hold and its expiry, the 24-hour change cut-off, cancelling with a card refund or with package hours returned, instructor sign-off and cancellation, permissions (learners only see their own bookings, only instructors reach the diary). **Timetable:** free, booked and "your lesson" slots; longer lessons closing slots before another lesson; days off; visitors can look and free times link to the booking form with date, time and length; learners never see other learners' names; the instructor does; weeks are kept inside the booking window; the booking form is pre-filled from the timetable. **Lesson lengths:** only 1 and 2 hours are offered; a 1.5-hour booking is refused; the timetable ignores a 1.5-hour request. |
-| **payments** | Checkout page, redirect to Stripe, Stripe outage and missing keys handled with a message, expired hold, success checked with Stripe (an unpaid session is not trusted), cancel page, webhook signature and events, refunds and failed refunds. |
+| **bookings** | Every booking rule: 12-hour notice, 8-week window, working days and hours, lessons starting on the hour, instructor and learner clashes, rescheduling, the 35-minute hold and its expiry, the 24-hour change cut-off, cancelling with a card refund or with package hours returned, instructor sign-off and cancellation, permissions (learners only see their own bookings, only instructors reach the diary). **Timetable:** free, booked and "your lesson" slots; longer lessons closing slots before another lesson; days off; visitors can look and free times link to the booking form with date, time and length; learners never see other learners' names; the instructor does; weeks are kept inside the booking window; the booking form is pre-filled from the timetable. **Lesson lengths:** only 1 and 2 hours are offered; a 1.5-hour booking is refused; the timetable ignores a 1.5-hour request. |
+| **payments** | Checkout page, test cards shown only with Stripe test keys, redirect to Stripe, Stripe outage and missing keys handled with a message, expired hold, success checked with Stripe (an unpaid session is not trusted), cancel page, webhook signature and events, refunds and failed refunds. |
 | **packages** | Savings maths, hour balance, paying for a lesson with hours (enough and not enough), buying through Stripe, success, cancel, webhook. |
 | **instructors** | Pro-rata pricing, start-time generation, default automatic and trainee, profile page and highlights, availability API, profile editing rules, review permissions and full review CRUD. |
 | **progress** | Syllabus data migration (16 skills), score maths, test-ready rule, rating permissions. |
@@ -125,7 +125,10 @@ card can only be run once the Stripe test keys are added on Render (case 13).
 | 10 | Learner dashboard | Log in as a learner | Next lesson, test-ready score, package hours, upcoming and past lessons | Pass | `learner-dashboard-desktop.png` |
 | 11 | Live free times | Pick a date on the booking form | Free start times load without a page reload | Pass | `booking-form-desktop.png` |
 | 12 | Postcode outside the area | Book with postcode `IG3 8XX` | "Sorry, pick-ups are only available in …" and nothing is booked | Pass | `booking-postcode-outside-area-desktop.png` |
-| 13 | Card payment | Continue to payment, pay with `4242 4242 4242 4242` | Stripe Checkout, then "You're booked in!" | **To run on the live site once the Stripe test keys are added** | - |
+| 13 | Card payment (success) | Book a lesson, choose *Pay by card*, pay with `4242 4242 4242 4242` | Stripe Checkout, then the success page "You're booked in!"; booking shows *Confirmed, paid by card* | To run on the live site with the Stripe test keys | - |
+| 13a | Card payment (declined) | Pay with `4000 0000 0000 0002` | Stripe shows "Your card was declined"; DRX takes no money and the booking stays unpaid | To run on the live site with the Stripe test keys | - |
+| 13b | Leave Stripe without paying | Press the back arrow on the Stripe page | DRX page "Payment cancelled. You have not been charged." with a button to try again | To run on the live site with the Stripe test keys | - |
+| 13c | Buy a package | Prices, *Buy 10 hours*, pay with `4242 4242 4242 4242` | Success page; the 10 hours appear in the balance on Prices and the dashboard | To run on the live site with the Stripe test keys | - |
 | 14 | Checkout page | Open checkout for an unpaid booking | Summary, hold countdown, pay by card or with package hours | Pass | `checkout-desktop.png` |
 | 15 | Booking detail | Open a booked lesson | Status, payment, notes, reschedule and cancel | Pass | `booking-detail-desktop.png` |
 | 16 | Cancel confirmation | Press Cancel | A confirmation page appears before anything changes | Pass | `booking-cancel-confirm-desktop.png` |
