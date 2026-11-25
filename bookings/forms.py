@@ -25,7 +25,7 @@ class BookingForm(forms.ModelForm):
     )
     start_time = forms.TimeField(
         label="Start time",
-        help_text="Lessons start on the hour or half hour.",
+        help_text="Lessons start on the hour.",
         widget=forms.TimeInput(
             attrs={"type": "time", "step": 1800, "class": "js-booking-time"},
             format="%H:%M",

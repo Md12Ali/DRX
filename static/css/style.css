@@ -3281,3 +3281,22 @@ a.tt-free:hover {
 .timetable thead th.is-today .tt-count {
   color: var(--ink);
 }
+
+/* Test-mode payment note (only shown with Stripe test keys) */
+.test-card {
+  margin: 1rem 0;
+  padding: 0.9rem 1.1rem;
+  border: var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--sun-soft);
+  color: var(--ink);
+}
+
+.test-card p {
+  margin: 0;
+}
+
+.test-card-title {
+  margin-bottom: 0.3rem;
+  font-weight: 800;
+}

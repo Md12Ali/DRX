@@ -195,7 +195,7 @@ BOOKING_MIN_NOTICE_HOURS = 12        # earliest a lesson can be booked
 BOOKING_MAX_WEEKS_AHEAD = 8          # furthest ahead a lesson can be booked
 BOOKING_CHANGE_CUTOFF_HOURS = 24     # learners can't change/cancel later than this
 BOOKING_PAYMENT_HOLD_MINUTES = 35    # unpaid bookings hold the slot this long
-BOOKING_SLOT_STEP_MINUTES = 30       # lessons start on the hour or half hour
+BOOKING_SLOT_STEP_MINUTES = 60       # lessons start on the hour
 
 
 # ---------------------------------------------------------------------------

@@ -69,7 +69,7 @@ done2 = booking(
 )
 Payment.objects.create(booking=done1, amount_pence=done1.price_pence, status=Payment.Status.PAID,
                        stripe_session_id="cs_demo_1", paid_on=timezone.now())
-next_lesson = booking(at(2, 9, 30), 120)
+next_lesson = booking(at(2, 9), 120)
 Payment.objects.create(booking=next_lesson, amount_pence=next_lesson.price_pence, status=Payment.Status.PAID,
                        stripe_session_id="cs_demo_2", paid_on=timezone.now())
 booking(at(4, 17), 60, method=Booking.PaymentMethod.PACKAGE)

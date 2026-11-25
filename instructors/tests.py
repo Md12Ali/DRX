@@ -109,7 +109,7 @@ class AvailabilityApiTests(TestCase):
         date = (timezone.localdate() + datetime.timedelta(days=3)).isoformat()
         times = self.client.get(self.url, {"date": date, "duration": "60"}).json()["times"]
         self.assertNotIn("10:00", times)
-        self.assertNotIn("09:30", times)  # would overlap 10:00-10:30
+        self.assertNotIn("09:30", times)  # lessons start on the hour
         self.assertIn("09:00", times)
         self.assertIn("11:00", times)
 

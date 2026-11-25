@@ -36,8 +36,8 @@ class InstructorProfileForm(forms.ModelForm):
         }
         widgets = {
             "bio": forms.Textarea(attrs={"rows": 5, "data-max-length": 1200}),
-            "day_start": forms.TimeInput(attrs={"type": "time", "step": 1800}, format="%H:%M"),
-            "day_end": forms.TimeInput(attrs={"type": "time", "step": 1800}, format="%H:%M"),
+            "day_start": forms.TimeInput(attrs={"type": "time", "step": 3600}, format="%H:%M"),
+            "day_end": forms.TimeInput(attrs={"type": "time", "step": 3600}, format="%H:%M"),
             "photo": forms.ClearableFileInput(attrs={"accept": "image/*", "data-preview": "photo-preview"}),
         }
 
@@ -55,6 +55,10 @@ class InstructorProfileForm(forms.ModelForm):
     def clean(self):
         cleaned = super().clean()
         start, end = cleaned.get("day_start"), cleaned.get("day_end")
+        # Lessons start on the hour, so the working day starts and ends on the hour
+        for name, value in (("day_start", start), ("day_end", end)):
+            if value and value.minute:
+                self.add_error(name, "Please use a whole hour, for example 08:00.")
         if start and end and (end.hour * 60 + end.minute) - (start.hour * 60 + start.minute) < 60:
             self.add_error("day_end", "Your working day must be at least one hour long.")
         return cleaned

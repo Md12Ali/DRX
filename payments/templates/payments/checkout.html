@@ -43,8 +43,8 @@
         {% csrf_token %}
         <button type="submit" class="button {% if can_use_package %}button-dark{% else %}button-accent{% endif %} button-lg button-block">Pay {{ booking.price_display }} securely</button>
       </form>
-      <p class="fine-print">You'll be taken to Stripe's secure checkout. Your card details never touch this site.
-        Test mode: use card 4242 4242 4242 4242, any future date and any CVC.</p>
+      <p class="fine-print">You'll be taken to Stripe's secure checkout. Your card details never touch this site.</p>
+      {% include "includes/test_card.html" %}
     </section>
   </div>
   {% if not has_package_hours %}
