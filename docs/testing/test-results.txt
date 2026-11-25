@@ -118,7 +118,7 @@ test_unknown_instructor_404 (instructors.tests.DirectoryViewTests.test_unknown_i
 test_instructor_updates_rate_and_days (instructors.tests.InstructorEditTests.test_instructor_updates_rate_and_days) ... ok
 test_learners_cannot_edit (instructors.tests.InstructorEditTests.test_learners_cannot_edit) ... ok
 test_working_day_must_be_an_hour (instructors.tests.InstructorEditTests.test_working_day_must_be_an_hour) ... ok
-test_candidate_start_times_fit_working_day (instructors.tests.InstructorModelTests.test_candidate_start_times_fit_working_day) ... FAIL
+test_candidate_start_times_fit_working_day (instructors.tests.InstructorModelTests.test_candidate_start_times_fit_working_day) ... ok
 test_display_helpers (instructors.tests.InstructorModelTests.test_display_helpers) ... ok
 test_lesson_price_is_pro_rata (instructors.tests.InstructorModelTests.test_lesson_price_is_pro_rata) ... ok
 test_main_instructor_prefers_one_taking_bookings (instructors.tests.InstructorModelTests.test_main_instructor_prefers_one_taking_bookings) ... ok
@@ -175,18 +175,10 @@ test_learner_cannot_rate (progress.tests.ProgressViewTests.test_learner_cannot_r
 test_learner_sees_own_progress (progress.tests.ProgressViewTests.test_learner_sees_own_progress) ... ok
 test_syllabus_is_loaded_by_migration (progress.tests.SyllabusTests.test_syllabus_is_loaded_by_migration) ... ok
 
-======================================================================
-FAIL: test_candidate_start_times_fit_working_day (instructors.tests.InstructorModelTests.test_candidate_start_times_fit_working_day)
 ----------------------------------------------------------------------
-Traceback (most recent call last):
-  File "/home/runner/work/DRX/DRX/instructors/tests.py", line 27, in test_candidate_start_times_fit_working_day
-    self.assertEqual(len(times), 23)
-AssertionError: 12 != 23
+Ran 132 tests in 31.232s
 
-----------------------------------------------------------------------
-Ran 132 tests in 46.652s
-
-FAILED (failures=1)
+OK
 Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
  OK
 System check identified no issues (0 silenced).
